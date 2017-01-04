@@ -53,11 +53,11 @@ FORMS    += mainwindow.ui \
 
 
 INCLUDEPATH += .
-INCLUDEPATH += /home/luiz/csappmidi
-INCLUDEPATH += /home/luiz/csappmidi/include
-INCLUDEPATH += /home/luiz/csappmidi/src-library
-INCLUDEPATH += /home/luiz/csappmidi/lib
-INCLUDEPATH += /home/luiz/csappmidi/obj
+INCLUDEPATH += csappmidi
+INCLUDEPATH += csappmidi/include
+INCLUDEPATH += csappmidi/src-library
+INCLUDEPATH += csappmidi/lib
+INCLUDEPATH += csappmidi/obj
 
 INCLUDEPATH += /usr/local/include
 INCLUDEPATH += /usr/local/include/opencv
