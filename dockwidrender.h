@@ -25,6 +25,9 @@
 
 #include <QDockWidget>
 
+#include <QDialog>
+#include <QColor>
+
 namespace Ui {
 class DockWidRender;
 }
@@ -70,8 +73,22 @@ private slots:
 
     void on_checkBox_7_toggled(bool checked);
 
+    void on_pushButton_clicked();
+
+    void on_checkBox_8_toggled(bool checked);
+
+    void on_comboBox_currentIndexChanged(int index);
+
+    void on_spinBox_8_valueChanged(int arg1);
+
+    void on_spinBox_9_valueChanged(int arg1);
+
+    void on_checkBox_9_toggled(bool checked);
+
 private:
     Ui::DockWidRender *ui;
+
+    QColor hlines;
 };
 
 #endif // DOCKWIDRENDER_H

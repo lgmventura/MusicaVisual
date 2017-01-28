@@ -1189,6 +1189,66 @@ void AnimPainter::blocks_paint(cv::Mat image, int startMidiTime, int endMidiTime
             cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {60,60,60});
         }
     }
+
+    if (renderproperties->hlines)
+    {
+        float note_height = (float)window_height*((float)(1.0)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0;// - renderproperties->vertShift;
+        if(renderproperties->hlines_type == 0) // One line every n semitones + half shift
+        {
+            for (int i = 0; i < (pitch_max - pitch_min)/renderproperties->hlines_n/2 + 1; i++)
+            {
+                int hline_y = (float)window_height/2 - (note_height*i*renderproperties->hlines_n) - renderproperties->vertShift - renderproperties->hlines_offset*note_height + renderproperties->half_shift*note_height/2;
+                cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {renderproperties->hlines_colour[2], renderproperties->hlines_colour[1], renderproperties->hlines_colour[0]});
+                hline_y = (float)window_height/2 + (note_height*(i+1)*renderproperties->hlines_n) - renderproperties->vertShift - renderproperties->hlines_offset*note_height + renderproperties->half_shift*note_height/2;
+                cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {renderproperties->hlines_colour[2], renderproperties->hlines_colour[1], renderproperties->hlines_colour[0]});
+            }
+        }
+        if(renderproperties->hlines_type == 1) // One line every n semitones and a brighter line every n semitones
+        {
+            for (int i = 0; i < (pitch_max - pitch_min); i++)
+            {
+                if (i%renderproperties->hlines_n == 0)
+                {
+                   int hline_y = (float)window_height/2 - (note_height*i) - renderproperties->vertShift - renderproperties->hlines_offset*note_height + renderproperties->half_shift*note_height/2;
+                   cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {renderproperties->hlines_colour[2], renderproperties->hlines_colour[1], renderproperties->hlines_colour[0]});
+                   hline_y = (float)window_height/2 + (note_height*(i)) - renderproperties->vertShift - renderproperties->hlines_offset*note_height + renderproperties->half_shift*note_height/2;
+                   cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {renderproperties->hlines_colour[2], renderproperties->hlines_colour[1], renderproperties->hlines_colour[0]});
+                }
+                else
+                {
+                    int hline_y = (float)window_height/2 - (note_height*i) - renderproperties->vertShift - renderproperties->hlines_offset*note_height + renderproperties->half_shift*note_height/2;
+                    cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {renderproperties->hlines_colour[2]/2, renderproperties->hlines_colour[1]/2, renderproperties->hlines_colour[0]/2});
+                    hline_y = (float)window_height/2 + (note_height*(i)) - renderproperties->vertShift - renderproperties->hlines_offset*note_height + renderproperties->half_shift*note_height/2;
+                    cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {renderproperties->hlines_colour[2]/2, renderproperties->hlines_colour[1]/2, renderproperties->hlines_colour[0]/2});
+                }
+            }
+        }
+        if(renderproperties->hlines_type == 2) // Keyboard
+        {
+            for (int i = pitch_min; i < pitch_max + 1; i++)
+            {
+                short ii = i%12;
+                if (ii == 2 || ii == 4 || ii == 7 || ii == 9 || ii == 11)
+                {
+                    int hline_y = (float)window_height/2 + note_height*(pitch_max - pitch_min)*0.75 - (note_height*i) - renderproperties->vertShift - renderproperties->hlines_offset*note_height + renderproperties->half_shift*note_height/2;
+                    cv::rectangle(image, cv::Point(0, hline_y + 1), cv::Point(window_width, hline_y + note_height), {renderproperties->hlines_colour[2], renderproperties->hlines_colour[1], renderproperties->hlines_colour[0]}, -1);
+                }
+            }
+        }
+        if(renderproperties->hlines_type == 3) // Inverse Keyboard
+        {
+            for (int i = pitch_min; i < pitch_max + 1; i++)
+            {
+                short ii = i%12;
+                if (ii == 0 || ii == 1 || ii == 3 || ii == 5 || ii == 6 || ii == 8 || ii == 10)
+                {
+                    int hline_y = (float)window_height/2 + note_height*(pitch_max - pitch_min)*0.75 - (note_height*i) - renderproperties->vertShift - renderproperties->hlines_offset*note_height + renderproperties->half_shift*note_height/2;
+                    cv::rectangle(image, cv::Point(0, hline_y + 1), cv::Point(window_width, hline_y + note_height), {renderproperties->hlines_colour[2], renderproperties->hlines_colour[1], renderproperties->hlines_colour[0]}, -1);
+                }
+            }
+        }
+    }
+
     if (renderproperties->sep_render[0])
     {
         if (renderproperties->blur_size[0] > 0 && renderproperties->blur_size[1] > 0)

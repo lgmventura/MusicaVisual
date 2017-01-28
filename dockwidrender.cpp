@@ -24,6 +24,9 @@
 #include "ui_dockwidrender.h"
 #include "mainwindow.h"
 
+#include <QColor>
+#include <QColorDialog>
+
 extern RenderP *renderproperties;
 extern std::string *codec_fourcc;
 
@@ -49,6 +52,19 @@ DockWidRender::DockWidRender(QWidget *parent) :
 
     ui->checkBox_6->setChecked(renderproperties->extra_time[0]);
     ui->checkBox_7->setChecked(renderproperties->extra_time[1]);
+
+    ui->checkBox_8->setChecked(renderproperties->hlines);
+    ui->comboBox->setCurrentIndex(renderproperties->hlines_type);
+    ui->spinBox_8->setValue(renderproperties->hlines_n);
+
+    ui->spinBox_9->setMaximum(renderproperties->hlines_n - 1);
+    ui->spinBox_9->setValue(renderproperties->hlines_offset);
+    ui->checkBox_9->setChecked(renderproperties->half_shift);
+
+    hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
+    QPalette pal = ui->widget->palette();
+    pal.setColor(QPalette::Window, hlines);
+    ui->widget->setPalette(pal);
 }
 
 DockWidRender::~DockWidRender()
@@ -134,4 +150,47 @@ void DockWidRender::on_checkBox_6_toggled(bool checked)
 void DockWidRender::on_checkBox_7_toggled(bool checked)
 {
     renderproperties->extra_time[1] = checked;
+}
+
+void DockWidRender::on_pushButton_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(renderproperties->hlines_colour[0],
+        renderproperties->hlines_colour[1],
+        renderproperties->hlines_colour[2]);
+    tcolor = QColorDialog::getColor(tcolor, this);
+
+    renderproperties->hlines_colour[0] = tcolor.red();
+    renderproperties->hlines_colour[1] = tcolor.green();
+    renderproperties->hlines_colour[2] = tcolor.blue();
+    hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
+    QPalette pal = ui->widget->palette();
+    pal.setColor(QPalette::Window, hlines);
+    ui->widget->setPalette(pal);
+}
+
+void DockWidRender::on_checkBox_8_toggled(bool checked)
+{
+    renderproperties->hlines = checked;
+}
+
+void DockWidRender::on_comboBox_currentIndexChanged(int index)
+{
+    renderproperties->hlines_type = index;
+}
+
+void DockWidRender::on_spinBox_8_valueChanged(int arg1)
+{
+    renderproperties->hlines_n = arg1;
+    ui->spinBox_9->setMaximum(arg1 - 1);
+}
+
+void DockWidRender::on_spinBox_9_valueChanged(int arg1)
+{
+    renderproperties->hlines_offset = arg1;
+}
+
+void DockWidRender::on_checkBox_9_toggled(bool checked)
+{
+    renderproperties->half_shift = checked;
 }

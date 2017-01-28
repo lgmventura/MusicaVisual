@@ -98,6 +98,12 @@ public:
     short blur_size[2] = {0,0};
     short blur_size_movnotes[2] = {0,0};
     bool extra_time[2] = {0,1};
+    bool hlines = 0;
+    short hlines_type = 0;
+    short hlines_colour[3] = {50,50,50};
+    short hlines_n = 12;
+    short hlines_offset = 0;
+    bool half_shift;
 };
 
 namespace Ui {
