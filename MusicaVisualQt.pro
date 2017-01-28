@@ -14,11 +14,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    ../../../../../../../home/luiz/csappmidi/src-library/MidiFile.cpp \
-    ../../../../../../../home/luiz/csappmidi/src-library/MidiEvent.cpp \
-    ../../../../../../../home/luiz/csappmidi/src-library/MidiEventList.cpp \
-    ../../../../../../../home/luiz/csappmidi/src-library/MidiMessage.cpp \
-    ../../../../../../../home/luiz/csappmidi/src-library/Binasc.cpp \
+    csappmidi/src-library/MidiFile.cpp \
+    csappmidi/src-library/MidiEvent.cpp \
+    csappmidi/src-library/MidiEventList.cpp \
+    csappmidi/src-library/MidiMessage.cpp \
+    csappmidi/src-library/Binasc.cpp \
     dockwidgettracks.cpp \
     dialogcolorpicker.cpp \
     midimessages.cpp \
@@ -29,11 +29,11 @@ SOURCES += main.cpp\
     help1.cpp
 
 HEADERS  += mainwindow.h \
-    ../../../../../../../home/luiz/csappmidi/include/MidiFile.h \
-    ../../../../../../../home/luiz/csappmidi/include/MidiEventList.h \
-    ../../../../../../../home/luiz/csappmidi/include/MidiEvent.h \
-    ../../../../../../../home/luiz/csappmidi/include/MidiMessage.h \
-    ../../../../../../../home/luiz/csappmidi/include/Binasc.h \
+    csappmidi/include/MidiFile.h \
+    csappmidi/include/MidiEventList.h \
+    csappmidi/include/MidiEvent.h \
+    csappmidi/include/MidiMessage.h \
+    csappmidi/include/Binasc.h \
     dockwidgettracks.h \
     dialogcolorpicker.h \
     midimessages.h \
@@ -53,11 +53,11 @@ FORMS    += mainwindow.ui \
 
 
 INCLUDEPATH += .
-INCLUDEPATH += /home/luiz/csappmidi
-INCLUDEPATH += /home/luiz/csappmidi/include
-INCLUDEPATH += /home/luiz/csappmidi/src-library
-INCLUDEPATH += /home/luiz/csappmidi/lib
-INCLUDEPATH += /home/luiz/csappmidi/obj
+INCLUDEPATH += csappmidi
+INCLUDEPATH += csappmidi/include
+INCLUDEPATH += csappmidi/src-library
+INCLUDEPATH += csappmidi/lib
+INCLUDEPATH += csappmidi/obj
 
 INCLUDEPATH += /usr/local/include
 INCLUDEPATH += /usr/local/include/opencv
