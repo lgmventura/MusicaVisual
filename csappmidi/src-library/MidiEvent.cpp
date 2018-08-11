@@ -11,7 +11,7 @@
 //                for the MidiFile class.
 //
 
-#include "MidiEvent.h"
+#include "csappmidi/include/MidiEvent.h"
 #include <stdlib.h>
 
 using namespace std;

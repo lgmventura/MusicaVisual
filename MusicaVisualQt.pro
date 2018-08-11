@@ -41,7 +41,13 @@ HEADERS  += mainwindow.h \
     playthread.h \
     dockwidrender.h \
     about.h \
-    help1.h
+    help1.h \
+    csappmidi/include/Binasc.h \
+    csappmidi/include/MidiEvent.h \
+    csappmidi/include/MidiEventList.h \
+    csappmidi/include/MidiFile.h \
+    csappmidi/include/MidiMessage.h \
+    csappmidi/include/Options.h
 
 FORMS    += mainwindow.ui \
     dockwidgettracks.ui \

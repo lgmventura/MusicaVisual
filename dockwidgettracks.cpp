@@ -118,6 +118,46 @@ DockWidgetTracks::DockWidgetTracks(QWidget *parent) :
     pal16.setColor(QPalette::Window, ct16);
     ui->widget1_16->setPalette(pal16);
 
+    ct17.setRgb(tracksproperties->getCv(16,0), tracksproperties->getCv(16,1), tracksproperties->getCv(16,2));
+    QPalette pal17 = ui->widget1_17->palette();
+    pal17.setColor(QPalette::Window, ct17);
+    ui->widget1_17->setPalette(pal17);
+
+    ct18.setRgb(tracksproperties->getCv(17,0), tracksproperties->getCv(17,1), tracksproperties->getCv(17,2));
+    QPalette pal18 = ui->widget1_18->palette();
+    pal18.setColor(QPalette::Window, ct18);
+    ui->widget1_18->setPalette(pal18);
+
+    ct19.setRgb(tracksproperties->getCv(18,0), tracksproperties->getCv(18,1), tracksproperties->getCv(18,2));
+    QPalette pal19= ui->widget1_19->palette();
+    pal19.setColor(QPalette::Window, ct19);
+    ui->widget1_19->setPalette(pal19);
+
+    ct20.setRgb(tracksproperties->getCv(19,0), tracksproperties->getCv(19,1), tracksproperties->getCv(19,2));
+    QPalette pal20= ui->widget1_20->palette();
+    pal20.setColor(QPalette::Window, ct20);
+    ui->widget1_20->setPalette(pal20);
+
+    ct21.setRgb(tracksproperties->getCv(20,0), tracksproperties->getCv(20,1), tracksproperties->getCv(20,2));
+    QPalette pal21= ui->widget1_21->palette();
+    pal21.setColor(QPalette::Window, ct21);
+    ui->widget1_21->setPalette(pal21);
+
+    ct22.setRgb(tracksproperties->getCv(21,0), tracksproperties->getCv(21,1), tracksproperties->getCv(21,2));
+    QPalette pal22= ui->widget1_22->palette();
+    pal22.setColor(QPalette::Window, ct22);
+    ui->widget1_22->setPalette(pal22);
+
+    ct23.setRgb(tracksproperties->getCv(22,0), tracksproperties->getCv(22,1), tracksproperties->getCv(22,2));
+    QPalette pal23= ui->widget1_23->palette();
+    pal23.setColor(QPalette::Window, ct23);
+    ui->widget1_23->setPalette(pal23);
+
+    ct24.setRgb(tracksproperties->getCv(23,0), tracksproperties->getCv(23,1), tracksproperties->getCv(23,2));
+    QPalette pal24= ui->widget1_24->palette();
+    pal24.setColor(QPalette::Window, ct24);
+    ui->widget1_24->setPalette(pal24);
+
 
 
     ui->notesAppear1->setCurrentIndex(tracksproperties->shape[0]);
@@ -136,6 +176,14 @@ DockWidgetTracks::DockWidgetTracks(QWidget *parent) :
     ui->notesAppear1_14->setCurrentIndex(tracksproperties->shape[13]);
     ui->notesAppear1_15->setCurrentIndex(tracksproperties->shape[14]);
     ui->notesAppear1_16->setCurrentIndex(tracksproperties->shape[15]);
+    ui->notesAppear1_17->setCurrentIndex(tracksproperties->shape[16]);
+    ui->notesAppear1_18->setCurrentIndex(tracksproperties->shape[17]);
+    ui->notesAppear1_19->setCurrentIndex(tracksproperties->shape[18]);
+    ui->notesAppear1_20->setCurrentIndex(tracksproperties->shape[19]);
+    ui->notesAppear1_21->setCurrentIndex(tracksproperties->shape[20]);
+    ui->notesAppear1_22->setCurrentIndex(tracksproperties->shape[21]);
+    ui->notesAppear1_23->setCurrentIndex(tracksproperties->shape[22]);
+    ui->notesAppear1_24->setCurrentIndex(tracksproperties->shape[23]);
 
     ui->spinBox->setValue(tracksproperties->track_blur[0]);
     ui->spinBox_2->setValue(tracksproperties->track_blur[1]);
@@ -153,6 +201,14 @@ DockWidgetTracks::DockWidgetTracks(QWidget *parent) :
     ui->spinBox_14->setValue(tracksproperties->track_blur[13]);
     ui->spinBox_15->setValue(tracksproperties->track_blur[14]);
     ui->spinBox_16->setValue(tracksproperties->track_blur[15]);
+    ui->spinBox_17->setValue(tracksproperties->track_blur[16]);
+    ui->spinBox_18->setValue(tracksproperties->track_blur[17]);
+    ui->spinBox_19->setValue(tracksproperties->track_blur[18]);
+    ui->spinBox_20->setValue(tracksproperties->track_blur[19]);
+    ui->spinBox_21->setValue(tracksproperties->track_blur[20]);
+    ui->spinBox_22->setValue(tracksproperties->track_blur[21]);
+    ui->spinBox_23->setValue(tracksproperties->track_blur[22]);
+    ui->spinBox_24->setValue(tracksproperties->track_blur[23]);
 
     ui->notesConnect1->setCurrentIndex(tracksproperties->interconnect[0]);
     ui->notesConnect1_2->setCurrentIndex(tracksproperties->interconnect[1]);
@@ -170,6 +226,14 @@ DockWidgetTracks::DockWidgetTracks(QWidget *parent) :
     ui->notesConnect1_14->setCurrentIndex(tracksproperties->interconnect[13]);
     ui->notesConnect1_15->setCurrentIndex(tracksproperties->interconnect[14]);
     ui->notesConnect1_16->setCurrentIndex(tracksproperties->interconnect[15]);
+    ui->notesConnect1_17->setCurrentIndex(tracksproperties->interconnect[16]);
+    ui->notesConnect1_18->setCurrentIndex(tracksproperties->interconnect[17]);
+    ui->notesConnect1_19->setCurrentIndex(tracksproperties->interconnect[18]);
+    ui->notesConnect1_20->setCurrentIndex(tracksproperties->interconnect[19]);
+    ui->notesConnect1_21->setCurrentIndex(tracksproperties->interconnect[20]);
+    ui->notesConnect1_22->setCurrentIndex(tracksproperties->interconnect[21]);
+    ui->notesConnect1_23->setCurrentIndex(tracksproperties->interconnect[22]);
+    ui->notesConnect1_24->setCurrentIndex(tracksproperties->interconnect[23]);
 
     ui->colorScheme1->setCurrentIndex(tracksproperties->colorScheme[0]);
     ui->colorScheme1_2->setCurrentIndex(tracksproperties->colorScheme[1]);
@@ -187,6 +251,14 @@ DockWidgetTracks::DockWidgetTracks(QWidget *parent) :
     ui->colorScheme1_14->setCurrentIndex(tracksproperties->colorScheme[13]);
     ui->colorScheme1_15->setCurrentIndex(tracksproperties->colorScheme[14]);
     ui->colorScheme1_16->setCurrentIndex(tracksproperties->colorScheme[15]);
+    ui->colorScheme1_17->setCurrentIndex(tracksproperties->colorScheme[16]);
+    ui->colorScheme1_18->setCurrentIndex(tracksproperties->colorScheme[17]);
+    ui->colorScheme1_19->setCurrentIndex(tracksproperties->colorScheme[18]);
+    ui->colorScheme1_20->setCurrentIndex(tracksproperties->colorScheme[19]);
+    ui->colorScheme1_21->setCurrentIndex(tracksproperties->colorScheme[20]);
+    ui->colorScheme1_22->setCurrentIndex(tracksproperties->colorScheme[21]);
+    ui->colorScheme1_23->setCurrentIndex(tracksproperties->colorScheme[22]);
+    ui->colorScheme1_24->setCurrentIndex(tracksproperties->colorScheme[23]);
 }
 
 DockWidgetTracks::~DockWidgetTracks()
@@ -514,6 +586,166 @@ void DockWidgetTracks::on_pushButton_16_clicked()
     ui->widget1_16->setPalette(pal);
 }
 
+void DockWidgetTracks::on_pushButton_17_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(tracksproperties->getCv(16,0),
+        tracksproperties->getCv(16,1),
+        tracksproperties->getCv(16,2));
+    if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
+    else
+        tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+
+    tracksproperties->setCv(16,0,tcolor.red());
+    tracksproperties->setCv(16,1,tcolor.green());
+    tracksproperties->setCv(16,2,tcolor.blue());
+    ct17.setRgb(tracksproperties->getCv(16,0), tracksproperties->getCv(16,1), tracksproperties->getCv(16,2));
+    QPalette pal = ui->widget1_17->palette();
+    pal.setColor(QPalette::Window, ct17);
+    ui->widget1_17->setPalette(pal);
+}
+
+void DockWidgetTracks::on_pushButton_18_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(tracksproperties->getCv(17,0),
+        tracksproperties->getCv(17,1),
+        tracksproperties->getCv(17,2));
+    if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
+    else
+        tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+
+    tracksproperties->setCv(17,0,tcolor.red());
+    tracksproperties->setCv(17,1,tcolor.green());
+    tracksproperties->setCv(17,2,tcolor.blue());
+    ct18.setRgb(tracksproperties->getCv(17,0), tracksproperties->getCv(17,1), tracksproperties->getCv(17,2));
+    QPalette pal = ui->widget1_18->palette();
+    pal.setColor(QPalette::Window, ct18);
+    ui->widget1_18->setPalette(pal);
+}
+
+void DockWidgetTracks::on_pushButton_19_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(tracksproperties->getCv(18,0),
+        tracksproperties->getCv(18,1),
+        tracksproperties->getCv(18,2));
+    if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
+    else
+        tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+
+    tracksproperties->setCv(18,0,tcolor.red());
+    tracksproperties->setCv(18,1,tcolor.green());
+    tracksproperties->setCv(18,2,tcolor.blue());
+    ct19.setRgb(tracksproperties->getCv(18,0), tracksproperties->getCv(18,1), tracksproperties->getCv(18,2));
+    QPalette pal = ui->widget1_19->palette();
+    pal.setColor(QPalette::Window, ct19);
+    ui->widget1_19->setPalette(pal);
+}
+
+void DockWidgetTracks::on_pushButton_20_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(tracksproperties->getCv(19,0),
+        tracksproperties->getCv(19,1),
+        tracksproperties->getCv(19,2));
+    if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
+    else
+        tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+
+    tracksproperties->setCv(19,0,tcolor.red());
+    tracksproperties->setCv(19,1,tcolor.green());
+    tracksproperties->setCv(19,2,tcolor.blue());
+    ct20.setRgb(tracksproperties->getCv(19,0), tracksproperties->getCv(19,1), tracksproperties->getCv(19,2));
+    QPalette pal = ui->widget1_20->palette();
+    pal.setColor(QPalette::Window, ct20);
+    ui->widget1_20->setPalette(pal);
+}
+
+void DockWidgetTracks::on_pushButton_21_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(tracksproperties->getCv(20,0),
+        tracksproperties->getCv(20,1),
+        tracksproperties->getCv(20,2));
+    if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
+    else
+        tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+
+    tracksproperties->setCv(20,0,tcolor.red());
+    tracksproperties->setCv(20,1,tcolor.green());
+    tracksproperties->setCv(20,2,tcolor.blue());
+    ct21.setRgb(tracksproperties->getCv(20,0), tracksproperties->getCv(20,1), tracksproperties->getCv(20,2));
+    QPalette pal = ui->widget1_21->palette();
+    pal.setColor(QPalette::Window, ct21);
+    ui->widget1_21->setPalette(pal);
+}
+
+void DockWidgetTracks::on_pushButton_22_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(tracksproperties->getCv(21,0),
+        tracksproperties->getCv(21,1),
+        tracksproperties->getCv(21,2));
+    if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
+    else
+        tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+
+    tracksproperties->setCv(21,0,tcolor.red());
+    tracksproperties->setCv(21,1,tcolor.green());
+    tracksproperties->setCv(21,2,tcolor.blue());
+    ct22.setRgb(tracksproperties->getCv(21,0), tracksproperties->getCv(21,1), tracksproperties->getCv(21,2));
+    QPalette pal = ui->widget1_22->palette();
+    pal.setColor(QPalette::Window, ct22);
+    ui->widget1_22->setPalette(pal);
+}
+
+void DockWidgetTracks::on_pushButton_23_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(tracksproperties->getCv(22,0),
+        tracksproperties->getCv(22,1),
+        tracksproperties->getCv(22,2));
+    if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
+    else
+        tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+
+    tracksproperties->setCv(22,0,tcolor.red());
+    tracksproperties->setCv(22,1,tcolor.green());
+    tracksproperties->setCv(22,2,tcolor.blue());
+    ct23.setRgb(tracksproperties->getCv(22,0), tracksproperties->getCv(22,1), tracksproperties->getCv(22,2));
+    QPalette pal = ui->widget1_23->palette();
+    pal.setColor(QPalette::Window, ct23);
+    ui->widget1_23->setPalette(pal);
+}
+
+void DockWidgetTracks::on_pushButton_24_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(tracksproperties->getCv(23,0),
+        tracksproperties->getCv(23,1),
+        tracksproperties->getCv(23,2));
+    if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
+    else
+        tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+
+    tracksproperties->setCv(23,0,tcolor.red());
+    tracksproperties->setCv(23,1,tcolor.green());
+    tracksproperties->setCv(23,2,tcolor.blue());
+    ct24.setRgb(tracksproperties->getCv(23,0), tracksproperties->getCv(23,1), tracksproperties->getCv(23,2));
+    QPalette pal = ui->widget1_24->palette();
+    pal.setColor(QPalette::Window, ct24);
+    ui->widget1_24->setPalette(pal);
+}
+
 
 
 //void DockWidgetTracks::on_pushButton_2_clicked()
@@ -609,6 +841,46 @@ void DockWidgetTracks::on_checkBox_16_toggled(bool checked)
     tracksproperties->active[15] = checked;
 }
 
+void DockWidgetTracks::on_checkBox_17_toggled(bool checked)
+{
+    tracksproperties->active[16] = checked;
+}
+
+void DockWidgetTracks::on_checkBox_18_toggled(bool checked)
+{
+    tracksproperties->active[17] = checked;
+}
+
+void DockWidgetTracks::on_checkBox_19_toggled(bool checked)
+{
+    tracksproperties->active[18] = checked;
+}
+
+void DockWidgetTracks::on_checkBox_20_toggled(bool checked)
+{
+    tracksproperties->active[19] = checked;
+}
+
+void DockWidgetTracks::on_checkBox_21_toggled(bool checked)
+{
+    tracksproperties->active[20] = checked;
+}
+
+void DockWidgetTracks::on_checkBox_22_toggled(bool checked)
+{
+    tracksproperties->active[21] = checked;
+}
+
+void DockWidgetTracks::on_checkBox_23_toggled(bool checked)
+{
+    tracksproperties->active[22] = checked;
+}
+
+void DockWidgetTracks::on_checkBox_24_toggled(bool checked)
+{
+    tracksproperties->active[23] = checked;
+}
+
 
 
 void DockWidgetTracks::on_notesAppear1_currentIndexChanged(int index)
@@ -691,6 +963,46 @@ void DockWidgetTracks::on_notesAppear1_16_currentIndexChanged(int index)
     tracksproperties->shape[15] = index;
 }
 
+void DockWidgetTracks::on_notesAppear1_17_currentIndexChanged(int index)
+{
+    tracksproperties->shape[16] = index;
+}
+
+void DockWidgetTracks::on_notesAppear1_18_currentIndexChanged(int index)
+{
+    tracksproperties->shape[17] = index;
+}
+
+void DockWidgetTracks::on_notesAppear1_19_currentIndexChanged(int index)
+{
+    tracksproperties->shape[18] = index;
+}
+
+void DockWidgetTracks::on_notesAppear1_20_currentIndexChanged(int index)
+{
+    tracksproperties->shape[19] = index;
+}
+
+void DockWidgetTracks::on_notesAppear1_21_currentIndexChanged(int index)
+{
+    tracksproperties->shape[20] = index;
+}
+
+void DockWidgetTracks::on_notesAppear1_22_currentIndexChanged(int index)
+{
+    tracksproperties->shape[21] = index;
+}
+
+void DockWidgetTracks::on_notesAppear1_23_currentIndexChanged(int index)
+{
+    tracksproperties->shape[22] = index;
+}
+
+void DockWidgetTracks::on_notesAppear1_24_currentIndexChanged(int index)
+{
+    tracksproperties->shape[23] = index;
+}
+
 
 
 void DockWidgetTracks::on_spinBox_valueChanged(int arg1)
@@ -771,6 +1083,46 @@ void DockWidgetTracks::on_spinBox_15_valueChanged(int arg1)
 void DockWidgetTracks::on_spinBox_16_valueChanged(int arg1)
 {
     tracksproperties->track_blur[15] = arg1;
+}
+
+void DockWidgetTracks::on_spinBox_17_valueChanged(int arg1)
+{
+    tracksproperties->track_blur[16] = arg1;
+}
+
+void DockWidgetTracks::on_spinBox_18_valueChanged(int arg1)
+{
+    tracksproperties->track_blur[17] = arg1;
+}
+
+void DockWidgetTracks::on_spinBox_19_valueChanged(int arg1)
+{
+    tracksproperties->track_blur[18] = arg1;
+}
+
+void DockWidgetTracks::on_spinBox_20_valueChanged(int arg1)
+{
+    tracksproperties->track_blur[19] = arg1;
+}
+
+void DockWidgetTracks::on_spinBox_21_valueChanged(int arg1)
+{
+    tracksproperties->track_blur[20] = arg1;
+}
+
+void DockWidgetTracks::on_spinBox_22_valueChanged(int arg1)
+{
+    tracksproperties->track_blur[21] = arg1;
+}
+
+void DockWidgetTracks::on_spinBox_23_valueChanged(int arg1)
+{
+    tracksproperties->track_blur[22] = arg1;
+}
+
+void DockWidgetTracks::on_spinBox_24_valueChanged(int arg1)
+{
+    tracksproperties->track_blur[23] = arg1;
 }
 
 
@@ -856,6 +1208,46 @@ void DockWidgetTracks::on_notesConnect1_16_currentIndexChanged(int index)
     tracksproperties->interconnect[15] = index;
 }
 
+void DockWidgetTracks::on_notesConnect1_17_currentIndexChanged(int index)
+{
+    tracksproperties->interconnect[16] = index;
+}
+
+void DockWidgetTracks::on_notesConnect1_18_currentIndexChanged(int index)
+{
+    tracksproperties->interconnect[17] = index;
+}
+
+void DockWidgetTracks::on_notesConnect1_19_currentIndexChanged(int index)
+{
+    tracksproperties->interconnect[18] = index;
+}
+
+void DockWidgetTracks::on_notesConnect1_20_currentIndexChanged(int index)
+{
+    tracksproperties->interconnect[19] = index;
+}
+
+void DockWidgetTracks::on_notesConnect1_21_currentIndexChanged(int index)
+{
+    tracksproperties->interconnect[20] = index;
+}
+
+void DockWidgetTracks::on_notesConnect1_22_currentIndexChanged(int index)
+{
+    tracksproperties->interconnect[21] = index;
+}
+
+void DockWidgetTracks::on_notesConnect1_23_currentIndexChanged(int index)
+{
+    tracksproperties->interconnect[22] = index;
+}
+
+void DockWidgetTracks::on_notesConnect1_24_currentIndexChanged(int index)
+{
+    tracksproperties->interconnect[23] = index;
+}
+
 
 
 void DockWidgetTracks::on_colorScheme1_currentIndexChanged(int index)
@@ -936,4 +1328,44 @@ void DockWidgetTracks::on_colorScheme1_15_currentIndexChanged(int index)
 void DockWidgetTracks::on_colorScheme1_16_currentIndexChanged(int index)
 {
     tracksproperties->colorScheme[15] = index;
+}
+
+void DockWidgetTracks::on_colorScheme1_17_currentIndexChanged(int index)
+{
+    tracksproperties->colorScheme[16] = index;
+}
+
+void DockWidgetTracks::on_colorScheme1_18_currentIndexChanged(int index)
+{
+    tracksproperties->colorScheme[16] = index;
+}
+
+void DockWidgetTracks::on_colorScheme1_19_currentIndexChanged(int index)
+{
+    tracksproperties->colorScheme[18] = index;
+}
+
+void DockWidgetTracks::on_colorScheme1_20_currentIndexChanged(int index)
+{
+    tracksproperties->colorScheme[19] = index;
+}
+
+void DockWidgetTracks::on_colorScheme1_21_currentIndexChanged(int index)
+{
+    tracksproperties->colorScheme[20] = index;
+}
+
+void DockWidgetTracks::on_colorScheme1_22_currentIndexChanged(int index)
+{
+    tracksproperties->colorScheme[21] = index;
+}
+
+void DockWidgetTracks::on_colorScheme1_23_currentIndexChanged(int index)
+{
+    tracksproperties->colorScheme[22] = index;
+}
+
+void DockWidgetTracks::on_colorScheme1_24_currentIndexChanged(int index)
+{
+    tracksproperties->colorScheme[23] = index;
 }

@@ -279,7 +279,7 @@ rgb getColorTrackP(int track, int pitch)
 
 }
 
-void AnimPainter::blocks_paint(cv::Mat image, int startMidiTime, int endMidiTime, int window_width, int window_height)
+void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height)
 {
     cv::Point pt1, pt2, pt3, pt4, pt5;// , pt6;
     cv::Point pt1_prev[tracks_count], pt2_prev[tracks_count], pt3_prev[tracks_count];
@@ -293,7 +293,13 @@ void AnimPainter::blocks_paint(cv::Mat image, int startMidiTime, int endMidiTime
     //std::cout << "Paint blocks! " << pitch_min << ' ' << pitch_max << endl;
     cv::Mat img_playing_notes = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     cv::Mat img_moving_notes = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    cv::Mat img_buffer_sep_tracks[tracks_count] = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    //cv::Mat img_buffer_sep_tracks[tracks_count] = cv::Mat::zeros( window_height, window_width, CV_8UC3 ); // Qt 5.7, OpenCV 2.4 (which uses C++98)
+    //cv::Mat img_buffer_sep_tracks[tracks_count] = {cv::Mat::zeros( window_height, window_width, CV_8UC3 )}; // this does not solve for Qt 5.9, OpenCV 4.0 (which uses C++11)
+    // http://answers.opencv.org/question/31665/creating-an-array-of-mats-of-size-n/ - Static arrays need the size for their construction at compile time. If you want to have the size controlled at run-time, you need to either create the mat-array via new or use std::vector (I'd prefer the latter one, since when using new you'll also need to call delete[] and it also prevents you from writing at non existent memory)
+    //std::vector <cv::Mat> img_buffer_sep_tracks(tracks_count, cv::Mat::zeros( window_height, window_width, CV_8UC3 ));// this does not solve for Qt 5.9, OpenCV 4.0 (which uses C++11), see comments below
+    // now, if you create a vector of cv::Mat objects, you are actually creating a vector of pointers to the SAME matrix. cv::Mat is not a matrix, but rather a pointer to one.
+    // Solving this on the generation of the animation window
+
     for (std::list<MidiNote>::iterator it=notes.begin() ; it != notes.end(); ++it) // Run the list forwards
     {
         if ((*it).is_note == 1 && startMidiTime -50 < (*it).t_off && endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
@@ -1262,8 +1268,12 @@ void AnimPainter::blocks_paint(cv::Mat image, int startMidiTime, int endMidiTime
             if (tracksproperties->track_blur[j] > 0)
                 cv::boxFilter(img_buffer_sep_tracks[j], img_buffer_sep_tracks[j], -1, cv::Size(tracksproperties->track_blur[j], tracksproperties->track_blur[j]));
             image = image + img_buffer_sep_tracks[j];
+            img_buffer_sep_tracks[j] = cv::Mat::zeros(window_height, window_width, CV_8UC3);
+            //cv::add(image, img_buffer_sep_tracks[j], image); // this should do the same job as image = image + img_buffer_sep_tracks[j];
+
         }
     }
+    //img_buffer_sep_tracks.clear();
     if (renderproperties->sep_render[2])
     {
         if (renderproperties->blur_size_movnotes[0] > 0 && renderproperties->blur_size_movnotes[1] > 0)
@@ -1627,8 +1637,20 @@ void MainWindow::on_pushButton_3_clicked()
 
     animwinP = new AnimwinP;
 
+    // now, if you create a vector of cv::Mat objects, you are actually creating a vector of pointers to the SAME matrix. cv::Mat is not a matrix, but rather a pointer to one.
+    // First of all, we need to declare the empty matrix:
+    cv::Mat mat_zeros = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    // then we declare the vector of the same type, but without declaring its size yet:
+    std::vector <cv::Mat> *img_buffer_sep_tracks = new std::vector <cv::Mat>;
+    // and now we use the std::vector.push_back method to insert elements at the end of the vector, doing it for every track (so, I use the for). Then, inside this funcion, I clone the matrix.
+    // the method clone() for cv::Mat creates a copy rather than an instance of the matrix. This is how I ensure I am giving having different matrices.
+    for (int kz = 0; kz < tracks_count; kz++)
+    {
+        img_buffer_sep_tracks->push_back(mat_zeros.clone());
+    }
+
     cv::namedWindow("Animation");
-    animbar = new AnimationBar(0, "Animation", image_win2, window_width, window_height, total_time, ui->doubleSpinBox->value(), tempos, renderproperties);
+    animbar = new AnimationBar(0, "Animation", image_win2, img_buffer_sep_tracks, window_width, window_height, total_time, ui->doubleSpinBox->value(), tempos, renderproperties);
     animbar->show();
 
     animPt = new AnimPainter;
@@ -1637,7 +1659,7 @@ void MainWindow::on_pushButton_3_clicked()
     {
         try
         {
-            video = new cv::VideoWriter(ui->lineEdit->text().toStdString(),CV_FOURCC(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->doubleSpinBox->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
+            video = new cv::VideoWriter(ui->lineEdit->text().toStdString(),cv::VideoWriter::fourcc(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->doubleSpinBox->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
             //throw video = new cv::VideoWriter(ui->lineEdit->text().toStdString(),CV_FOURCC(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->doubleSpinBox->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
         }
         catch (cv::Exception& e)

@@ -72,6 +72,23 @@ private slots:
 
     void on_pushButton_16_clicked();
 
+    void on_pushButton_17_clicked();
+
+    void on_pushButton_18_clicked();
+
+    void on_pushButton_19_clicked();
+
+    void on_pushButton_20_clicked();
+
+    void on_pushButton_21_clicked();
+
+    void on_pushButton_22_clicked();
+
+    void on_pushButton_23_clicked();
+
+    void on_pushButton_24_clicked();
+
+
 
 
     void on_checkBox_toggled(bool checked);
@@ -105,6 +122,22 @@ private slots:
     void on_checkBox_15_toggled(bool checked);
 
     void on_checkBox_16_toggled(bool checked);
+
+    void on_checkBox_17_toggled(bool checked);
+
+    void on_checkBox_18_toggled(bool checked);
+
+    void on_checkBox_19_toggled(bool checked);
+
+    void on_checkBox_20_toggled(bool checked);
+
+    void on_checkBox_21_toggled(bool checked);
+
+    void on_checkBox_22_toggled(bool checked);
+
+    void on_checkBox_23_toggled(bool checked);
+
+    void on_checkBox_24_toggled(bool checked);
 
 
 
@@ -141,6 +174,22 @@ private slots:
 
     void on_notesAppear1_16_currentIndexChanged(int index);
 
+    void on_notesAppear1_17_currentIndexChanged(int index);
+
+    void on_notesAppear1_18_currentIndexChanged(int index);
+
+    void on_notesAppear1_19_currentIndexChanged(int index);
+
+    void on_notesAppear1_20_currentIndexChanged(int index);
+
+    void on_notesAppear1_21_currentIndexChanged(int index);
+
+    void on_notesAppear1_22_currentIndexChanged(int index);
+
+    void on_notesAppear1_23_currentIndexChanged(int index);
+
+    void on_notesAppear1_24_currentIndexChanged(int index);
+
 
 
     void on_spinBox_valueChanged(int arg1);
@@ -174,6 +223,22 @@ private slots:
     void on_spinBox_15_valueChanged(int arg1);
 
     void on_spinBox_16_valueChanged(int arg1);
+
+    void on_spinBox_17_valueChanged(int arg1);
+
+    void on_spinBox_18_valueChanged(int arg1);
+
+    void on_spinBox_19_valueChanged(int arg1);
+
+    void on_spinBox_20_valueChanged(int arg1);
+
+    void on_spinBox_21_valueChanged(int arg1);
+
+    void on_spinBox_22_valueChanged(int arg1);
+
+    void on_spinBox_23_valueChanged(int arg1);
+
+    void on_spinBox_24_valueChanged(int arg1);
 
 
 
@@ -209,6 +274,22 @@ private slots:
 
     void on_notesConnect1_16_currentIndexChanged(int index);
 
+    void on_notesConnect1_17_currentIndexChanged(int index);
+
+    void on_notesConnect1_18_currentIndexChanged(int index);
+
+    void on_notesConnect1_19_currentIndexChanged(int index);
+
+    void on_notesConnect1_20_currentIndexChanged(int index);
+
+    void on_notesConnect1_21_currentIndexChanged(int index);
+
+    void on_notesConnect1_22_currentIndexChanged(int index);
+
+    void on_notesConnect1_23_currentIndexChanged(int index);
+
+    void on_notesConnect1_24_currentIndexChanged(int index);
+
 
 
     void on_colorScheme1_currentIndexChanged(int index);
@@ -243,6 +324,22 @@ private slots:
 
     void on_colorScheme1_16_currentIndexChanged(int index);
 
+    void on_colorScheme1_17_currentIndexChanged(int index);
+
+    void on_colorScheme1_18_currentIndexChanged(int index);
+
+    void on_colorScheme1_19_currentIndexChanged(int index);
+
+    void on_colorScheme1_20_currentIndexChanged(int index);
+
+    void on_colorScheme1_21_currentIndexChanged(int index);
+
+    void on_colorScheme1_22_currentIndexChanged(int index);
+
+    void on_colorScheme1_23_currentIndexChanged(int index);
+
+    void on_colorScheme1_24_currentIndexChanged(int index);
+
 private:
     Ui::DockWidgetTracks *ui;
     DialogColorPicker *dcolorpicker;
@@ -263,6 +360,14 @@ private:
     QColor ct14;
     QColor ct15;
     QColor ct16;
+    QColor ct17;
+    QColor ct18;
+    QColor ct19;
+    QColor ct20;
+    QColor ct21;
+    QColor ct22;
+    QColor ct23;
+    QColor ct24;
 };
 
 #endif // DOCKWIDGETTRACKS_H

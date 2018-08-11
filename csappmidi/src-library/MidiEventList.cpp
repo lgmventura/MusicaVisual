@@ -11,7 +11,7 @@
 //
 
 
-#include "MidiEventList.h"
+#include "csappmidi/include/MidiEventList.h"
 
 #include <vector>
 #include <iostream>

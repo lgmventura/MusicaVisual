@@ -36,7 +36,7 @@ class TracksP
 {
 public:
     TracksP();
-    int tColours[16][3]= {
+    int tColours[24][3]= {
         {0, 0, 200} ,   //1 (index 0)
         {0, 120, 120} ,   //2
         {0, 200, 0},    //3
@@ -52,14 +52,23 @@ public:
         {100, 0, 100},  //13
         {50, 100, 150}, //14
         {150, 100, 50}, //15
-        {100, 200, 100} //16 (index 15)
+        {100, 200, 100}, //16 (index 15)
+        // new tracks
+        {30, 60, 90},
+        {60, 30, 90},
+        {30, 90, 60},
+        {90, 30, 60},
+        {60, 90, 30},
+        {90, 60, 30},
+        {200, 100, 50},
+        {50, 100, 200}
     };
-    bool active[16] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
-    short shape[16] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-    short track_blur[16] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-    short interconnect[16] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+    bool active[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
+    short shape[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+    short track_blur[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+    short interconnect[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
     int max_connect_dist = 100;
-    short colorScheme[16] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+    short colorScheme[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
     //int getColour()
     int getCv(int a, int b) {return (tColours[a][b]);}
     void setCv(int a, int b, int v) {tColours[a][b] = v;}
@@ -80,11 +89,12 @@ class AnimPainter
 {
 public:
     cv::Mat *img;
+    std::vector <cv::Mat> img_buffer_sep_tracks;
     int zoom;
     int xpos;
     int win_width;
     int win_height;
-    void blocks_paint(cv::Mat, int, int, int, int);
+    void blocks_paint(cv::Mat, std::vector <cv::Mat>, int, int, int, int);
 };
 class RenderP
 {

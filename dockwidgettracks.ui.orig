@@ -1,0 +1,5176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DockWidgetTracks</class>
+ <widget class="QDockWidget" name="DockWidgetTracks">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>671</width>
+    <height>724</height>
+   </rect>
+  </property>
+  <property name="floating">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Tracks appearences</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Track:             Track color:                Color schematic:   Shape:                       Interconnect.:   BoxBlur*:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>*Only if tracks are set to be separately rendered</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+<<<<<<< HEAD
+         <y>0</y>
+         <width>971</width>
+         <height>908</height>
+=======
+         <y>-704</y>
+         <width>1003</width>
+         <height>1356</height>
+>>>>>>> origin/updateOpenCV4
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBox">
+          <property name="text">
+           <string>Track 1</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QWidget" name="widget1" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QComboBox" name="colorScheme1">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QComboBox" name="notesAppear1">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QComboBox" name="notesConnect1">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <widget class="QDial" name="dialHL1">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="7">
+         <widget class="QSpinBox" name="spinBox">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_2">
+          <property name="text">
+           <string>Track 2</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="1" column="1">
+         <widget class="QWidget" name="widget1_2" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="1" column="3">
+         <widget class="QComboBox" name="colorScheme1_2">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="1" column="1">
+         <widget class="QWidget" name="widget1_2" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="1" column="5">
+         <widget class="QComboBox" name="notesConnect1_2">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="1" column="2">
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="1" column="6">
+         <widget class="QDial" name="dialHL1_2">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="7">
+         <widget class="QSpinBox" name="spinBox_2">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="checkBox_3">
+          <property name="text">
+           <string>Track 3</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="2" column="1">
+         <widget class="QWidget" name="widget1_3" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="2" column="3">
+         <widget class="QComboBox" name="colorScheme1_3">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="2" column="1">
+         <widget class="QWidget" name="widget1_3" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="2" column="5">
+         <widget class="QComboBox" name="notesConnect1_3">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="2" column="2">
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="2" column="6">
+         <widget class="QDial" name="dialHL1_3">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="7">
+         <widget class="QSpinBox" name="spinBox_3">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="checkBox_4">
+          <property name="text">
+           <string>Track 4</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="3" column="1">
+         <widget class="QWidget" name="widget1_4" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QPushButton" name="pushButton_4">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="3" column="3">
+         <widget class="QComboBox" name="colorScheme1_4">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="3" column="1">
+         <widget class="QWidget" name="widget1_4" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="3" column="5">
+         <widget class="QComboBox" name="notesConnect1_4">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="3" column="6">
+         <widget class="QDial" name="dialHL1_4">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+=======
+        <item row="3" column="2">
+         <widget class="QPushButton" name="pushButton_4">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="3">
+         <widget class="QComboBox" name="colorScheme1_9">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="3" column="7">
+         <widget class="QSpinBox" name="spinBox_4">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="3" column="6">
+         <widget class="QDial" name="dialHL1_4">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="checkBox_5">
+          <property name="text">
+           <string>Track 5</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="4" column="1">
+         <widget class="QWidget" name="widget1_5" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QPushButton" name="pushButton_5">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="4" column="3">
+         <widget class="QComboBox" name="colorScheme1_5">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="4" column="1">
+         <widget class="QWidget" name="widget1_5" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="4" column="5">
+         <widget class="QComboBox" name="notesConnect1_5">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="4" column="2">
+         <widget class="QPushButton" name="pushButton_5">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="4" column="6">
+         <widget class="QDial" name="dialHL1_5">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="8" column="7">
+         <widget class="QSpinBox" name="spinBox_9">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="4" column="7">
+         <widget class="QSpinBox" name="spinBox_5">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QCheckBox" name="checkBox_6">
+          <property name="text">
+           <string>Track 6</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="5" column="1">
+         <widget class="QWidget" name="widget1_6" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QPushButton" name="pushButton_6">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="5" column="3">
+         <widget class="QComboBox" name="colorScheme1_6">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="5" column="1">
+         <widget class="QWidget" name="widget1_6" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="5" column="5">
+         <widget class="QComboBox" name="notesConnect1_6">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="5" column="2">
+         <widget class="QPushButton" name="pushButton_6">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="5" column="6">
+         <widget class="QDial" name="dialHL1_6">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="7">
+         <widget class="QSpinBox" name="spinBox_6">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QCheckBox" name="checkBox_7">
+          <property name="text">
+           <string>Track 7</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="6" column="1">
+         <widget class="QWidget" name="widget1_7" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="2">
+         <widget class="QPushButton" name="pushButton_7">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="6" column="3">
+         <widget class="QComboBox" name="colorScheme1_7">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="6" column="1">
+         <widget class="QWidget" name="widget1_7" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="6" column="5">
+         <widget class="QComboBox" name="notesConnect1_7">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="6" column="2">
+         <widget class="QPushButton" name="pushButton_7">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="6" column="6">
+         <widget class="QDial" name="dialHL1_7">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="7">
+         <widget class="QSpinBox" name="spinBox_7">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QCheckBox" name="checkBox_8">
+          <property name="text">
+           <string>Track 8</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="7" column="1">
+         <widget class="QWidget" name="widget1_8" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="2">
+         <widget class="QPushButton" name="pushButton_8">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="7" column="3">
+         <widget class="QComboBox" name="colorScheme1_8">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="7" column="1">
+         <widget class="QWidget" name="widget1_8" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="7" column="5">
+         <widget class="QComboBox" name="notesConnect1_8">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="7" column="2">
+         <widget class="QPushButton" name="pushButton_8">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="7" column="6">
+         <widget class="QDial" name="dialHL1_8">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="7">
+         <widget class="QSpinBox" name="spinBox_8">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QCheckBox" name="checkBox_9">
+          <property name="text">
+           <string>Track 9</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QWidget" name="widget1_9" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="2">
+         <widget class="QPushButton" name="pushButton_9">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="8" column="3">
+         <widget class="QComboBox" name="colorScheme1_9">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+=======
+        <item row="8" column="6">
+         <widget class="QDial" name="dialHL1_9">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+>>>>>>> origin/updateOpenCV4
+         </widget>
+        </item>
+        <item row="8" column="5">
+         <widget class="QComboBox" name="notesConnect1_9">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="8" column="6">
+         <widget class="QDial" name="dialHL1_9">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="7">
+         <widget class="QSpinBox" name="spinBox_9">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="9" column="0">
+         <widget class="QCheckBox" name="checkBox_10">
+          <property name="text">
+           <string>Track 10</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QWidget" name="widget1_10" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="2">
+         <widget class="QPushButton" name="pushButton_10">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="9" column="6">
+         <widget class="QDial" name="dialHL1_10">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="9" column="3">
+         <widget class="QComboBox" name="colorScheme1_10">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="9" column="7">
+         <widget class="QSpinBox" name="spinBox_10">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="9" column="5">
+         <widget class="QComboBox" name="notesConnect1_10">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="9" column="6">
+         <widget class="QDial" name="dialHL1_10">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="7">
+         <widget class="QSpinBox" name="spinBox_10">
+          <property name="maximum">
+           <number>20</number>
+=======
+        <item row="10" column="2">
+         <widget class="QPushButton" name="pushButton_11">
+          <property name="text">
+           <string>Set color...</string>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QCheckBox" name="checkBox_11">
+          <property name="text">
+           <string>Track 11</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QWidget" name="widget1_11" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="10" column="2">
+         <widget class="QPushButton" name="pushButton_11">
+          <property name="text">
+           <string>Set color...</string>
+=======
+        <item row="10" column="6">
+         <widget class="QDial" name="dialHL1_11">
+          <property name="maximum">
+           <number>20</number>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="3">
+         <widget class="QComboBox" name="colorScheme1_11">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="10" column="7">
+         <widget class="QSpinBox" name="spinBox_11">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="10" column="5">
+         <widget class="QComboBox" name="notesConnect1_11">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="10" column="6">
+         <widget class="QDial" name="dialHL1_11">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="7">
+         <widget class="QSpinBox" name="spinBox_11">
+          <property name="maximum">
+           <number>20</number>
+=======
+        <item row="11" column="2">
+         <widget class="QPushButton" name="pushButton_12">
+          <property name="text">
+           <string>Set color...</string>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QCheckBox" name="checkBox_12">
+          <property name="text">
+           <string>Track 12</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="QWidget" name="widget1_12" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="11" column="2">
+         <widget class="QPushButton" name="pushButton_12">
+          <property name="text">
+           <string>Set color...</string>
+=======
+        <item row="11" column="6">
+         <widget class="QDial" name="dialHL1_12">
+          <property name="maximum">
+           <number>20</number>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="3">
+         <widget class="QComboBox" name="colorScheme1_12">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="11" column="7">
+         <widget class="QSpinBox" name="spinBox_12">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="11" column="5">
+         <widget class="QComboBox" name="notesConnect1_12">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="11" column="6">
+         <widget class="QDial" name="dialHL1_12">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="7">
+         <widget class="QSpinBox" name="spinBox_12">
+          <property name="maximum">
+           <number>20</number>
+=======
+        <item row="12" column="2">
+         <widget class="QPushButton" name="pushButton_13">
+          <property name="text">
+           <string>Set color...</string>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="0">
+         <widget class="QCheckBox" name="checkBox_13">
+          <property name="text">
+           <string>Track 13</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="1">
+         <widget class="QWidget" name="widget1_13" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="12" column="2">
+         <widget class="QPushButton" name="pushButton_13">
+          <property name="text">
+           <string>Set color...</string>
+=======
+        <item row="12" column="6">
+         <widget class="QDial" name="dialHL1_13">
+          <property name="maximum">
+           <number>20</number>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="3">
+         <widget class="QComboBox" name="colorScheme1_13">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="12" column="7">
+         <widget class="QSpinBox" name="spinBox_13">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="12" column="5">
+         <widget class="QComboBox" name="notesConnect1_13">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="12" column="6">
+         <widget class="QDial" name="dialHL1_13">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="7">
+         <widget class="QSpinBox" name="spinBox_13">
+          <property name="maximum">
+           <number>20</number>
+=======
+        <item row="13" column="2">
+         <widget class="QPushButton" name="pushButton_14">
+          <property name="text">
+           <string>Set color...</string>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="0">
+         <widget class="QCheckBox" name="checkBox_14">
+          <property name="text">
+           <string>Track 14</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="1">
+         <widget class="QWidget" name="widget1_14" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="13" column="2">
+         <widget class="QPushButton" name="pushButton_14">
+          <property name="text">
+           <string>Set color...</string>
+=======
+        <item row="13" column="6">
+         <widget class="QDial" name="dialHL1_14">
+          <property name="maximum">
+           <number>20</number>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="3">
+         <widget class="QComboBox" name="colorScheme1_14">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="13" column="7">
+         <widget class="QSpinBox" name="spinBox_14">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="13" column="5">
+         <widget class="QComboBox" name="notesConnect1_14">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="13" column="6">
+         <widget class="QDial" name="dialHL1_14">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="7">
+         <widget class="QSpinBox" name="spinBox_14">
+          <property name="maximum">
+           <number>20</number>
+=======
+        <item row="14" column="2">
+         <widget class="QPushButton" name="pushButton_15">
+          <property name="text">
+           <string>Set color...</string>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="0">
+         <widget class="QCheckBox" name="checkBox_15">
+          <property name="text">
+           <string>Track 15</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="1">
+         <widget class="QWidget" name="widget1_15" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="14" column="2">
+         <widget class="QPushButton" name="pushButton_15">
+          <property name="text">
+           <string>Set color...</string>
+=======
+        <item row="14" column="6">
+         <widget class="QDial" name="dialHL1_15">
+          <property name="maximum">
+           <number>20</number>
+>>>>>>> origin/updateOpenCV4
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="3">
+         <widget class="QComboBox" name="colorScheme1_15">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="14" column="7">
+         <widget class="QSpinBox" name="spinBox_15">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="14" column="5">
+         <widget class="QComboBox" name="notesConnect1_15">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="14" column="6">
+         <widget class="QDial" name="dialHL1_15">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="7">
+         <widget class="QSpinBox" name="spinBox_15">
+=======
+        <item row="15" column="2">
+         <widget class="QPushButton" name="pushButton_16">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="6">
+         <widget class="QDial" name="dialHL1_16">
+>>>>>>> origin/updateOpenCV4
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="15" column="0">
+         <widget class="QCheckBox" name="checkBox_16">
+          <property name="text">
+           <string>Track 16</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="1">
+         <widget class="QWidget" name="widget1_16" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="2">
+         <widget class="QPushButton" name="pushButton_16">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="15" column="3">
+         <widget class="QComboBox" name="colorScheme1_16">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="15" column="7">
+         <widget class="QSpinBox" name="spinBox_16">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+        <item row="15" column="5">
+         <widget class="QComboBox" name="notesConnect1_16">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="15" column="6">
+         <widget class="QDial" name="dialHL1_16">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="7">
+         <widget class="QSpinBox" name="spinBox_16">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+=======
+>>>>>>> origin/updateOpenCV4
+        <item row="1" column="4">
+         <widget class="QComboBox" name="notesAppear1_2">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="4">
+         <widget class="QComboBox" name="notesAppear1_3">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="4">
+         <widget class="QComboBox" name="notesAppear1_4">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="4">
+         <widget class="QComboBox" name="notesAppear1_5">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="5" column="4">
+         <widget class="QComboBox" name="notesAppear1_6">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="6" column="4">
+         <widget class="QComboBox" name="notesAppear1_7">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="7" column="4">
+         <widget class="QComboBox" name="notesAppear1_8">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="8" column="4">
+         <widget class="QComboBox" name="notesAppear1_9">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="9" column="4">
+         <widget class="QComboBox" name="notesAppear1_10">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="10" column="4">
+         <widget class="QComboBox" name="notesAppear1_11">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="11" column="4">
+         <widget class="QComboBox" name="notesAppear1_12">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+=======
+        <item row="11" column="4">
+         <widget class="QComboBox" name="notesAppear1_12">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="12" column="4">
+         <widget class="QComboBox" name="notesAppear1_13">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="13" column="4">
+         <widget class="QComboBox" name="notesAppear1_14">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="14" column="4">
+         <widget class="QComboBox" name="notesAppear1_15">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="15" column="4">
+         <widget class="QComboBox" name="notesAppear1_16">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="15" column="1">
+         <widget class="QWidget" name="widget1_16" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="0">
+         <widget class="QCheckBox" name="checkBox_16">
+          <property name="text">
+           <string>Track 16</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="4">
+         <widget class="QComboBox" name="notesAppear1_17">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="16" column="6">
+         <widget class="QDial" name="dialHL1_17">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="1">
+         <widget class="QWidget" name="widget1_17" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="2">
+         <widget class="QPushButton" name="pushButton_17">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="3">
+         <widget class="QComboBox" name="colorScheme1_17">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="17" column="1">
+         <widget class="QWidget" name="widget1_18" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="0">
+         <widget class="QCheckBox" name="checkBox_17">
+          <property name="text">
+           <string>Track 17</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="5">
+         <widget class="QComboBox" name="notesConnect1_17">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="18" column="1">
+         <widget class="QWidget" name="widget1_19" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="7">
+         <widget class="QSpinBox" name="spinBox_17">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="17" column="3">
+         <widget class="QComboBox" name="colorScheme1_18">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="17" column="0">
+         <widget class="QCheckBox" name="checkBox_18">
+          <property name="text">
+           <string>Track 18</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="1">
+         <widget class="QWidget" name="widget1_20" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="17" column="2">
+         <widget class="QPushButton" name="pushButton_18">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="17" column="4">
+         <widget class="QComboBox" name="notesAppear1_18">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="17" column="6">
+         <widget class="QDial" name="dialHL1_18">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="17" column="5">
+         <widget class="QComboBox" name="notesConnect1_18">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="18" column="4">
+         <widget class="QComboBox" name="notesAppear1_19">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="17" column="7">
+         <widget class="QSpinBox" name="spinBox_18">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="18" column="3">
+         <widget class="QComboBox" name="colorScheme1_19">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="18" column="6">
+         <widget class="QDial" name="dialHL1_19">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="18" column="0">
+         <widget class="QCheckBox" name="checkBox_19">
+          <property name="text">
+           <string>Track 19</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="18" column="2">
+         <widget class="QPushButton" name="pushButton_19">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="18" column="5">
+         <widget class="QComboBox" name="notesConnect1_19">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="20" column="0">
+         <widget class="QCheckBox" name="checkBox_21">
+          <property name="text">
+           <string>Track 21</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="18" column="7">
+         <widget class="QSpinBox" name="spinBox_19">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="3">
+         <widget class="QComboBox" name="colorScheme1_20">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="20" column="1">
+         <widget class="QWidget" name="widget1_21" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="0">
+         <widget class="QCheckBox" name="checkBox_20">
+          <property name="text">
+           <string>Track 20</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="5">
+         <widget class="QComboBox" name="notesConnect1_20">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="19" column="2">
+         <widget class="QPushButton" name="pushButton_20">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="6">
+         <widget class="QDial" name="dialHL1_20">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="19" column="4">
+         <widget class="QComboBox" name="notesAppear1_20">
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="19" column="7">
+         <widget class="QSpinBox" name="spinBox_20">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="5">
+         <widget class="QComboBox" name="notesConnect1_21">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+>>>>>>> origin/updateOpenCV4
+           </property>
+          </item>
+          <item>
+           <property name="text">
+<<<<<<< HEAD
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+=======
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="20" column="6">
+         <widget class="QDial" name="dialHL1_21">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="3">
+         <widget class="QComboBox" name="colorScheme1_21">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+>>>>>>> origin/updateOpenCV4
+           </property>
+          </item>
+          <item>
+           <property name="text">
+<<<<<<< HEAD
+            <string>15 Rhombus with height prop to vel</string>
+=======
+            <string>1/12 hue shift per half note</string>
+>>>>>>> origin/updateOpenCV4
+           </property>
+          </item>
+          <item>
+           <property name="text">
+<<<<<<< HEAD
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+=======
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="20" column="2">
+         <widget class="QPushButton" name="pushButton_21">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="3">
+         <widget class="QComboBox" name="colorScheme1_22">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+>>>>>>> origin/updateOpenCV4
+           </property>
+          </item>
+          <item>
+           <property name="text">
+<<<<<<< HEAD
+            <string>18 Triangles &gt; (fp)</string>
+=======
+            <string>1/12 hue shift per half note</string>
+>>>>>>> origin/updateOpenCV4
+           </property>
+          </item>
+          <item>
+           <property name="text">
+<<<<<<< HEAD
+            <string>19 Triangles &lt; (pf)</string>
+=======
+            <string>1/12 hue shift per fifth</string>
+>>>>>>> origin/updateOpenCV4
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="12" column="4">
+         <widget class="QComboBox" name="notesAppear1_13">
+=======
+        <item row="20" column="7">
+         <widget class="QSpinBox" name="spinBox_21">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="20" column="4">
+         <widget class="QComboBox" name="notesAppear1_21">
+>>>>>>> origin/updateOpenCV4
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="13" column="4">
+         <widget class="QComboBox" name="notesAppear1_14">
+=======
+        <item row="21" column="1">
+         <widget class="QWidget" name="widget1_22" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="0">
+         <widget class="QCheckBox" name="checkBox_22">
+          <property name="text">
+           <string>Track 22</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="2">
+         <widget class="QPushButton" name="pushButton_22">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="6">
+         <widget class="QDial" name="dialHL1_22">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="4">
+         <widget class="QComboBox" name="notesAppear1_22">
+>>>>>>> origin/updateOpenCV4
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="14" column="4">
+         <widget class="QComboBox" name="notesAppear1_15">
+=======
+        <item row="22" column="1">
+         <widget class="QWidget" name="widget1_23" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="21" column="5">
+         <widget class="QComboBox" name="notesConnect1_22">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="21" column="7">
+         <widget class="QSpinBox" name="spinBox_22">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="22" column="7">
+         <widget class="QSpinBox" name="spinBox_23">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="22" column="3">
+         <widget class="QComboBox" name="colorScheme1_23">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="22" column="0">
+         <widget class="QCheckBox" name="checkBox_23">
+          <property name="text">
+           <string>Track 23</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="22" column="2">
+         <widget class="QPushButton" name="pushButton_23">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="22" column="5">
+         <widget class="QComboBox" name="notesConnect1_23">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="22" column="6">
+         <widget class="QDial" name="dialHL1_23">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="22" column="4">
+         <widget class="QComboBox" name="notesAppear1_23">
+>>>>>>> origin/updateOpenCV4
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+        <item row="15" column="4">
+         <widget class="QComboBox" name="notesAppear1_16">
+=======
+        <item row="23" column="0">
+         <widget class="QCheckBox" name="checkBox_24">
+          <property name="text">
+           <string>Track 24</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="23" column="1">
+         <widget class="QWidget" name="widget1_24" native="true">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="23" column="2">
+         <widget class="QPushButton" name="pushButton_24">
+          <property name="text">
+           <string>Set color...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="23" column="3">
+         <widget class="QComboBox" name="colorScheme1_24">
+          <item>
+           <property name="text">
+            <string>MonoColor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per half note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>1/12 hue shift per fifth</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="23" column="4">
+         <widget class="QComboBox" name="notesAppear1_24">
+>>>>>>> origin/updateOpenCV4
+          <item>
+           <property name="text">
+            <string>01 Rectangles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>02 Rhombus (Diamonds)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>03 Ellipses</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>04 Circles</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>05 Circles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>06 Circles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>07 Rectangles with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>08 Rectangles with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>09 Rhombus with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>10 Rhombus with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>11 Ellipses with tracker</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12 Ellipses with tracker and playing note</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>13 Circles sized by velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>14 Ellipses with height prop to velocity</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>15 Rhombus with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>16 Triangles Nabla with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>17 Triangles Delta with height prop to vel</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>18 Triangles &gt; (fp)</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>19 Triangles &lt; (pf)</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+<<<<<<< HEAD
+=======
+        <item row="23" column="5">
+         <widget class="QComboBox" name="notesConnect1_24">
+          <item>
+           <property name="text">
+            <string>No connections</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Straight line</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="23" column="6">
+         <widget class="QDial" name="dialHL1_24">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+        <item row="23" column="7">
+         <widget class="QSpinBox" name="spinBox_24">
+          <property name="maximum">
+           <number>20</number>
+          </property>
+         </widget>
+        </item>
+>>>>>>> origin/updateOpenCV4
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>dialHL1</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>577</x>
+     <y>-205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>601</x>
+     <y>-195</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>614</x>
+     <y>-198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>583</x>
+     <y>-192</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>557</x>
+     <y>-143</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>598</x>
+     <y>-145</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>-132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>584</x>
+     <y>-160</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>567</x>
+     <y>-88</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>611</x>
+     <y>-87</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>623</x>
+     <y>-75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>566</x>
+     <y>-75</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_4</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_4</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>563</x>
+     <y>-36</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>614</x>
+     <y>-31</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_4</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_4</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>603</x>
+     <y>-17</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>564</x>
+     <y>-15</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_5</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_5</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>564</x>
+     <y>21</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>613</x>
+     <y>29</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_5</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_5</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>600</x>
+     <y>39</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>544</x>
+     <y>48</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_6</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_6</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>575</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>596</x>
+     <y>80</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_6</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_6</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>609</x>
+     <y>94</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>570</x>
+     <y>94</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_7</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_7</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>572</x>
+     <y>134</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>595</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_7</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_7</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>605</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>567</x>
+     <y>158</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_8</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_8</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>567</x>
+     <y>200</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>608</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_8</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_8</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>600</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>569</x>
+     <y>214</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_9</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_9</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>559</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>606</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_9</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_9</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>602</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>569</x>
+     <y>271</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_10</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_10</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>569</x>
+     <y>302</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>599</x>
+     <y>305</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_10</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_10</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>601</x>
+     <y>318</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>570</x>
+     <y>328</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_11</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_11</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>569</x>
+     <y>357</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>600</x>
+     <y>365</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_11</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_11</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>601</x>
+     <y>375</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>564</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_12</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_12</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>572</x>
+     <y>412</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>606</x>
+     <y>419</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_12</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_12</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>598</x>
+     <y>430</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>565</x>
+     <y>443</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_13</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_13</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>573</x>
+     <y>470</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>604</x>
+     <y>471</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_13</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_13</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>599</x>
+     <y>486</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>563</x>
+     <y>499</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_14</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_14</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>568</x>
+     <y>524</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>602</x>
+     <y>532</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_14</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_14</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>603</x>
+     <y>542</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>561</x>
+     <y>554</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_15</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_15</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>576</x>
+     <y>585</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>610</x>
+     <y>589</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_15</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_15</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>598</x>
+     <y>596</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>571</x>
+     <y>611</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>dialHL1_16</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox_16</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>574</x>
+     <y>648</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>594</x>
+     <y>655</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_16</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>dialHL1_16</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>593</x>
+     <y>654</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>567</x>
+     <y>666</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

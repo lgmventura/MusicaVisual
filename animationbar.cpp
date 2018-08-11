@@ -61,12 +61,13 @@ AnimationBar::AnimationBar(QWidget *parent) :
     // This original contructor is currently not used nor called. Use the below!
 }
 
-AnimationBar::AnimationBar(QWidget *parent, char* winName, cv::Mat *image, int window_width, int window_height, int total_time, float fps, std::list <TempoChange> *tempos, RenderP *renderproperties):
+AnimationBar::AnimationBar(QWidget *parent, char* winName, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, int total_time, float fps, std::list <TempoChange> *tempos, RenderP *renderproperties):
     QWidget(parent),
     ui(new Ui::AnimationBar)
 {
     ui->setupUi(this);
     this->image = image;
+    this->img_buffer_sep_tracks = img_buffer_sep_tracks;
     this->window_width = window_width;
     this->window_height = window_height;
     this->winName = winName;
@@ -96,6 +97,8 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, cv::Mat *image, int w
 
 AnimationBar::~AnimationBar()
 {
+    // releasing memory before closing it in this destructor
+    img_buffer_sep_tracks->clear();
     delete ui;
 }
 
@@ -104,7 +107,7 @@ void AnimationBar::on_horizontalSlider_valueChanged(int value)
 {
     animwinP->setZoom(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    animPt->blocks_paint(*image, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height);
+    animPt->blocks_paint(*image, *img_buffer_sep_tracks, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height);
     cv::imshow(winName, *image);
 
     if (renderproperties->extra_time[0] == 1)
@@ -122,7 +125,7 @@ void AnimationBar::on_horizontalSlider_2_valueChanged(int value)
 {
     animwinP->setXpos(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    animPt->blocks_paint(*image, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height);
+    animPt->blocks_paint(*image, *img_buffer_sep_tracks, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height);
     cv::imshow(winName, *image);
 }
 

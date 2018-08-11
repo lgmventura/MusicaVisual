@@ -43,6 +43,7 @@ class AnimationBar : public QWidget
 public:
     explicit AnimationBar(QWidget *parent = 0);
     cv::Mat *image;
+    std::vector <cv::Mat> *img_buffer_sep_tracks;
     int window_height;
     int window_width;
     char *winName;
@@ -53,7 +54,7 @@ public:
 
     PlayThread *playThread;
 
-    AnimationBar(QWidget *parent, char* winName, cv::Mat *image, int window_width, int window_height, int total_time, float fps, std::list<TempoChange> *tempos, RenderP *renderproperties);
+    AnimationBar(QWidget *parent, char* winName, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, int total_time, float fps, std::list<TempoChange> *tempos, RenderP *renderproperties);
 
     ~AnimationBar();
 
