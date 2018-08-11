@@ -25,6 +25,7 @@
 #include "ui_mainwindow.h"
 #include <sstream>
 #include <array>
+#include <set>
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -85,6 +86,7 @@ bool *videoRecord = new bool(false);
 cv::VideoWriter *video;
 std::string *codec_fourcc = new std::string("X264");
 
+//std::vector <std::string> *track_names; // store the track names when the button Process is pressed. // Redefined in tracksproperties, mainwindow.h
 
 short short_max = std::numeric_limits<short>::max();// = 32767;
 short short_min = std::numeric_limits<short>::min();// = -32768;
@@ -277,6 +279,30 @@ rgb getColorTrackP(int track, int pitch)
         return (rgbcolor);
     }
 
+}
+
+unsigned char hexval(unsigned char c) // https://stackoverflow.com/questions/3790613/how-to-convert-a-string-of-hex-values-to-a-string
+{
+    if ('0' <= c && c <= '9')
+        return c - '0';
+    else if ('a' <= c && c <= 'f')
+        return c - 'a' + 10;
+    else if ('A' <= c && c <= 'F')
+        return c - 'A' + 10;
+    else abort();
+}
+void hex2ascii(const string& in, string& out) // https://stackoverflow.com/questions/3790613/how-to-convert-a-string-of-hex-values-to-a-string
+{
+    out.clear();
+    out.reserve(in.length() / 2);
+    for (string::const_iterator p = in.begin(); p != in.end(); p++)
+    {
+       unsigned char c = hexval(*p);
+       p++;
+       if (p == in.end()) break; // incomplete last digit - should report error
+       c = (c << 4) + hexval(*p); // + takes precedence over <<
+       out.push_back(c);
+    }
 }
 
 void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height)
@@ -1464,7 +1490,7 @@ void MainWindow::on_actionTracks_triggered()
     dwidtracks->repaint();
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_pushButton_clicked() // Process button
 {
     std::stringstream stream;
     string str;
@@ -1472,6 +1498,11 @@ void MainWindow::on_pushButton_clicked()
     unsigned int delta, track;
     unsigned long time;
     int messg;
+    // reset track names, since we are processing a new midi file, to avoid garbage (old names, if you load a new midi file):
+    for (int i = 0; i < 24; i++)
+    {
+        tracksproperties->track_names[i] = "Track " + std::to_string(i+1);
+    }
 
     notes.clear(); // Clear notes list before adding new elements.
     tempos->clear(); // Clear tempos list before adding new elements.
@@ -1485,26 +1516,26 @@ void MainWindow::on_pushButton_clicked()
 //        int messg;
         if (i == 0)
         {
-            tpq = stoi(str.substr(5));
+            tpq = stoi(str.substr(5)); // getting the tpq (ticks per quarter-note) on the first line
         }
 
         string messg_str;
         if (i >= 5 && i%4 == 0)
         {
-            time = stoi(str, nullptr, 10);
+            time = stoi(str, nullptr, 10); // getting the time in ticks
         }
         if (i >= 5 && i%4 == 1)
         {
-            delta = stoi(str, nullptr, 10);
+            delta = stoi(str, nullptr, 10); // getting the delta time in ticks
         }
         if (i >= 5 && i%4 == 2)
         {
-            track = stoi(str, nullptr, 10);
+            track = stoi(str, nullptr, 10); // getting the track number
         }
         if (i >= 5 && i%4 == 3)
         {
-            messg = stoi(str, nullptr, 16);
-            messg_str = str;
+            messg = stoi(str, nullptr, 16); // getting the midi message type
+            messg_str = str; // getting the midi message string
             //ui->plainTextEdit->appendPlainText(QString::fromStdString(messg_str)); // this line is only for verification
         }
         //ui->plainTextEdit->appendPlainText(QString::fromStdString(str)); // this line is only for verification
@@ -1566,6 +1597,18 @@ void MainWindow::on_pushButton_clicked()
                     temp_tempo_change.t_on = time;
                     //cout << temp_tempo_change.new_tempo << "\n";
                     tempos->push_back(temp_tempo_change); // Stores the tempo change in the list
+                }
+                // reading track names - Changing track names for easing instrument finding
+                else if (messg_str.substr(3,2) == "3 ")// && messg_str.size() > 4) // Check if it is a track name meta message. I don't know its size, I put 4 bytes to test.
+                {
+                    std::string t_name;
+                    std::string straux = messg_str.substr(9);
+                    straux.erase(remove_if(straux.begin(), straux.end(), ::isspace), straux.end()); // remove_if is declared in <algorithm>
+                    hex2ascii(straux, t_name);
+                    if (track < 24) // since we have a maximum of 24 tracks
+                    {
+                        tracksproperties->track_names[track] = t_name; // store the track names when the button Process is pressed.
+                    }
                 }
             }
 
@@ -1815,4 +1858,84 @@ void MainWindow::on_actionHow_does_it_work_triggered()
         helpDiag_1 = new Help1(this);
         helpDiag_1->show();
     }
+}
+
+//void print_set(aList) //only for debugging
+//{
+//    for (A const& a : aList)
+//    {
+//        std::cout << a << ' ';
+//    }
+//}
+
+void MainWindow::on_actionSqueeze_tracks_triggered()
+{
+    std::stringstream stream; // for the whole text in the edit area
+    string str; // one line
+    stream << ui->plainTextEdit->toPlainText().toUtf8().constData(); // Get the entire text from the plain text input box.
+    std::vector <unsigned int> tracks_list;
+
+    std::set <unsigned short> tracks_set;
+    std::set<unsigned short>::iterator it;
+    std::pair<std::set<unsigned short>::iterator,bool> ret;
+
+    unsigned short tnum_temp;
+    std::string messg_str;
+    //std::map <unsigned short, unsigned short> tracks_association;
+    for (int i = 0; getline(stream,str,'\t'); i++)
+    {
+        if (i >= 5 && i%4 == 2) // position (column) of a track number in the plain text
+        {
+            tnum_temp = stoi(str, nullptr, 10);
+        }
+        if (i >= 5 && i%4 == 3) // getting midi message
+        {
+            //messg = stoi(str, nullptr, 16); // getting the midi message type
+            messg_str = str; // getting the midi message string
+            //ui->plainTextEdit->appendPlainText(QString::fromStdString(messg_str)); // this line is only for verification
+        }
+        if (messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) > 0) // checking midi message. Consider the track not empty if there is at least one note_on message.
+        {
+            tracks_list.push_back(tnum_temp); // getting the track number and inserting into the list
+            ret = tracks_set.insert(tnum_temp); // getting the track number and inserting into the set. The set is like its mathematical definition, so it doesn't get repeated items
+            //if (ret.second==false) // if no element was inserted into the set because the element is already there
+            //    it=ret.first; // to improve inserting efficiency, see http://www.cplusplus.com/reference/set/set/insert/
+        }
+    }
+    stream.str(std::string());
+    stream.clear();
+    stream << ui->plainTextEdit->toPlainText().toUtf8().constData(); // Get the entire text from the plain text input box. Run it again for replacing track numbers.
+    std::stringstream stream2;
+    std::string str2;
+
+    ui->plainTextEdit->clear();
+    //ui->plainTextEdit->appendPlainText(QString::fromStdString(std::to_string(tracks_set.size()))); // only for debug
+    for (int i = 0; getline(stream,str,'\t'); i++)
+    {
+        if (i < 5) // for the first lines
+            str2.append(str); // nothing changes
+        else if (i >= 5 && i%4 != 2) // for the following changes, if it is not in the track column,
+            str2.append(str); // nothing changes
+        else //if (i >= 5 && i%4 == 2) // else
+        {
+            it = tracks_set.find(stoi(str, nullptr, 10)); // find position of the track in the new set containing only non-empty tracks
+            str2.append(std::to_string(std::distance(tracks_set.begin(), it))); // insert it to the auxiliar string str2
+        }
+        stream2 << str2;
+        stream2 << '\t';
+
+        str2.clear();
+    }
+    ui->plainTextEdit->appendPlainText(QString::fromStdString(stream2.str()));
+
+//    ui->plainTextEdit->appendPlainText(QString::fromStdString(std::to_string(tracks_set.size())));
+//    for(it = tracks_set.begin(); it != tracks_set.end(); it++)
+//        {
+//            ui->plainTextEdit->appendPlainText(QString::fromStdString(std::to_string(*it)));// << '\n';
+//            ui->plainTextEdit->appendPlainText(QString::fromStdString("  "));
+//            //outstream_1 << std::to_string(*it) << '\n';
+//            //str = std::to_string(*it);
+//        }
+    tracks_list.clear();
+    tracks_set.clear();
 }

@@ -25,6 +25,8 @@
 
 #include <QMainWindow>
 
+#include <algorithm>
+
 #include "dockwidgettracks.h"
 #include "dockwidrender.h"
 #include "about.h"
@@ -69,6 +71,7 @@ public:
     short interconnect[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
     int max_connect_dist = 100;
     short colorScheme[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+    std::string track_names[24] = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", "Track 17", "Track 18", "Track 19", "Track 20", "Track 21", "Track 22", "Track 23", "Track 24"};
     //int getColour()
     int getCv(int a, int b) {return (tColours[a][b]);}
     void setCv(int a, int b, int v) {tColours[a][b] = v;}
@@ -164,6 +167,8 @@ private slots:
     void on_actionAbout_triggered();
 
     void on_actionHow_does_it_work_triggered();
+
+    void on_actionSqueeze_tracks_triggered();
 
 private:
     Ui::MainWindow *ui;
