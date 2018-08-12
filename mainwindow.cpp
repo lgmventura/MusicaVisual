@@ -87,6 +87,7 @@ cv::VideoWriter *video;
 std::string *codec_fourcc = new std::string("X264");
 
 //std::vector <std::string> *track_names; // store the track names when the button Process is pressed. // Redefined in tracksproperties, mainwindow.h
+std::vector<std::string> *track_names = new std::vector<std::string>; // = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", "Track 17", "Track 18", "Track 19", "Track 20", "Track 21", "Track 22", "Track 23", "Track 24"}; // this works, but is variable in size. So save/load settings won't work if put in TracksP.
 
 short short_max = std::numeric_limits<short>::max();// = 32767;
 short short_min = std::numeric_limits<short>::min();// = -32768;
@@ -303,6 +304,11 @@ void hex2ascii(const string& in, string& out) // https://stackoverflow.com/quest
        c = (c << 4) + hexval(*p); // + takes precedence over <<
        out.push_back(c);
     }
+}
+void nameTracksReset()
+{
+    for (int i = 1; i <= 24; i++)
+        track_names->push_back("Track " + std::to_string(i));
 }
 
 void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height)
@@ -1329,6 +1335,8 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+//================================================================================================
+
 void MainWindow::ImportMidiFile(const char *midiFileName)
 {
     MidiFile midifile;
@@ -1483,6 +1491,8 @@ void MainWindow::on_actionSave_as_triggered()
 
 void MainWindow::on_actionTracks_triggered()
 {
+    if (track_names->size() < 24)
+        nameTracksReset();
     dwidtracks = new DockWidgetTracks(this);
     dwidtracks->show();
     dwidtracks->resize(300,600);
@@ -1499,10 +1509,7 @@ void MainWindow::on_pushButton_clicked() // Process button
     unsigned long time;
     int messg;
     // reset track names, since we are processing a new midi file, to avoid garbage (old names, if you load a new midi file):
-    for (int i = 0; i < 24; i++)
-    {
-        tracksproperties->track_names[i] = "Track " + std::to_string(i+1);
-    }
+    nameTracksReset();
 
     notes.clear(); // Clear notes list before adding new elements.
     tempos->clear(); // Clear tempos list before adding new elements.
@@ -1605,9 +1612,9 @@ void MainWindow::on_pushButton_clicked() // Process button
                     std::string straux = messg_str.substr(9);
                     straux.erase(remove_if(straux.begin(), straux.end(), ::isspace), straux.end()); // remove_if is declared in <algorithm>
                     hex2ascii(straux, t_name);
-                    if (track < 24) // since we have a maximum of 24 tracks
+                    if (track <= 24 && track > 0) // since we have a maximum of 24 tracks
                     {
-                        tracksproperties->track_names[track] = t_name; // store the track names when the button Process is pressed.
+                        track_names->at(track - 1) = t_name; // store the track names when the button Process is pressed.
                     }
                 }
             }
@@ -1825,8 +1832,22 @@ void MainWindow::on_actionLoad_settings_triggered()
     if (open_file_name != nullptr)
     {
         ifstream input_file(open_file_name.toStdString(),ios::binary);
-        input_file.read(reinterpret_cast<char*>(tracksproperties),sizeof(*tracksproperties));
-        input_file.read(reinterpret_cast<char*>(renderproperties),sizeof(*renderproperties));
+        try
+        {
+            input_file.read(reinterpret_cast<char*>(tracksproperties),sizeof(*tracksproperties));
+            input_file.read(reinterpret_cast<char*>(renderproperties),sizeof(*renderproperties));
+            cout << "Settings file could be correctly interpreted.";
+        }
+        catch (exception& e)
+        {
+            QString msg = QString::fromStdString(std::strcat("Error on interpreting data from the file. C++ function: input_file.read(reinterpret_cast<char*>(data),sizeof(*data)); Description", e.what()));
+            QMessageBox::critical(this, tr("Cannot load settings"), msg, QMessageBox::Ok );
+        }
+        catch (...)
+        {
+            QString msg = QString::fromStdString("Unexpected error on calling: input_file.read(reinterpret_cast<char*>(data),sizeof(*data));");
+            QMessageBox::critical(this, tr("Cannot load settings"), msg, QMessageBox::Ok );
+        }
         input_file.close();
         if (dwidtracks != nullptr)
         {
