@@ -313,12 +313,16 @@ void nameTracksReset()
 
 void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height)
 {
-    cv::Point pt1, pt2, pt3, pt4, pt5;// , pt6;
-    cv::Point pt1_prev[tracks_count], pt2_prev[tracks_count], pt3_prev[tracks_count];
+    cv::Point pt1, pt2, pt3, pt4;//, pt5;// , pt6;
+    cv::Point pt5[tracks_count]; // for the interconnected lines. It has to be a vector of tracks_count length to make lines be connected only with notes within the same track.
+    cv::Point pt1_prev[tracks_count], pt2_prev[tracks_count], pt3_prev[tracks_count]; // these points are used for storing the previous respective points to make "moving notes" possible averaging current position/size with last position/size. There must be one for each track so that they are kept independent, i.e., moving notes in one track don't influence mov. notes in another (same idea as for interconn. lines).
     cv::Point ptos_prev[tracks_count][4];
     int radius_prev[tracks_count];// = 0;
-    pt5.x = 0;
-    pt5.y = 0;
+    for (int i = 0; i < tracks_count; i++) // start lines at zero. If not set, a rubish value may appear.
+    {
+        pt5[i].x = 0;
+        pt5[i].y = 0;
+    }
     float x1, x2, y1, y2, x3, y3;
     int x_max = window_width + 5000, y_max = window_height + 50;
     //int max_duration = window_width + 1000;
@@ -348,28 +352,28 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
             //std::cout << pt1.x << ' ' << pt1.y << ": " << pt2.x << ' ' << pt2.y << '\n';
             if (true) //(std::abs(pt1.x) < x_max && std::abs(pt1.y) < y_max && std::abs(pt2.x) < x_max && std::abs(pt2.y) < y_max);// && (*it).duration < max_duration) // This "if" is just to bypass an issue (certainly about big doubles being coverted to int), what causes random boxes appearing on the screen when one zooms in very close.
             {
-                for (unsigned short tnum = 0; tnum < (tracks_count); tnum++)
+                for (unsigned short tnum = 0; tnum < (tracks_count + 1); tnum++)
                 {
                     // -------------------------- Draw Interconnected Lines -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->interconnect[tnum] == 1) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->interconnect[tnum] == 1) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
-                        if (abs(pt3.x - pt5.x) < tracksproperties->max_connect_dist && pt5 != cv::Point(0,0))
+                        if (abs(pt3.x - pt5[tnum].x) < tracksproperties->max_connect_dist && pt5[tnum] != cv::Point(0,0))
                             if ( ! renderproperties->sep_render[1])
-                                cv::line( image, pt3, pt5, {tracksproperties->getCv(tnum,2)/4,  tracksproperties->getCv(tnum,1)/4,  tracksproperties->getCv(tnum,0)/4}, 1, 8 );
+                                cv::line( image, pt3, pt5[tnum], {tracksproperties->getCv(tnum,2)/4,  tracksproperties->getCv(tnum,1)/4,  tracksproperties->getCv(tnum,0)/4}, 1, 8 );
                             else
-                                cv::line( img_buffer_sep_tracks[tnum], pt3, pt5, {tracksproperties->getCv(tnum,2)/4,  tracksproperties->getCv(tnum,1)/4,  tracksproperties->getCv(tnum,0)/4}, 1, 8 );
-                        pt5.x = f2int_safe(x3); // Center x of the previous note
-                        pt5.y = f2int_safe(y3); // Center y of the previous note
+                                cv::line( img_buffer_sep_tracks[tnum], pt3, pt5[tnum], {tracksproperties->getCv(tnum,2)/4,  tracksproperties->getCv(tnum,1)/4,  tracksproperties->getCv(tnum,0)/4}, 1, 8 );
+                        pt5[tnum].x = f2int_safe(x3); // Center x of the previous note
+                        pt5[tnum].y = f2int_safe(y3); // Center y of the previous note
                     }
 
 
 
                     // ------------------------- Draw Rectangles -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 0) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 0) // All tracks - rectangle
                     {
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
@@ -392,7 +396,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Rhombus -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 1) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 1) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -426,7 +430,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Ellipses -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 2) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 2) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -454,7 +458,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Circles -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 3) // All tracks
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 3) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -486,7 +490,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Circles with moving centred circle -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 4) // All tracks
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 4) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -508,6 +512,9 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                         if (pt1_prev[tnum].x <= window_width/2 && pt1.x > window_width/2 && pt2_prev[tnum].x + 5 > window_width/2) // The note block is inside the center line // no more else if
+                            // this section corresponds to the "moving notes", i.e., the notes being played morphing from the current to the last (or from the next to the current if you prefer to say).
+                            // In general, it works averaging current position and size with the last ones. A very important detail is to store the previous points p1_prev, pt2_prev, ... in the
+                            // corresponding track (so, pt1_prev[tnum], pt2_prev[tnum] etc.), because we don't want the very last note as previous note, but the previous note of the same track!
                         {
                             float deriv = (((float)window_width/2 - (float)pt1_prev[tnum].x)/((float)pt1.x - (float)pt1_prev[tnum].x));
                             int y_mov = (int) ((float)pt3_prev[tnum].y + deriv*((float)pt3.y - (float)pt3_prev[tnum].y));
@@ -536,7 +543,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Circles with moving centred circle and playing note highlight -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 5) // All tracks
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 5) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -592,7 +599,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Rectangles with moving centred rectangle -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 6) // All tracks
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 6) // All tracks
                     {
 //                        x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
 //                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -644,7 +651,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Rectangles with moving centred rectangle and highlighted borders -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 7) // All tracks
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 7) // All tracks
                     {
 //                        x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
 //                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -703,7 +710,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Rhombus with moving rhombus -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 8) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 8) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -777,7 +784,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Rhombus with moving rhombus and playing highlight (select sep playing notes render) -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 9) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 9) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -857,7 +864,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw ellipses with moving centred ellipse -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 10) // All tracks
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 10) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -919,7 +926,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw ellipses with moving centred ellipse and highlighted playing note -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 11) // All tracks
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 11) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -981,7 +988,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Circles with size proportional to the velocity -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 12) // All tracks
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 12) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -1011,7 +1018,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Ellipses with height proportional to the velocity -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 13) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 13) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -1039,7 +1046,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Rhombus with height proportional to the velocity -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 14) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 14) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -1074,7 +1081,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Triangles V with height proportional to the velocity -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 15) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 15) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -1107,7 +1114,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Triangles ^ with height proportional to the velocity -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 16) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 16) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -1141,7 +1148,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Triangles |> (forte-piano) -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 17) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 17) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -1175,7 +1182,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // -------------------------- Draw Triangles <| (piano-forte) -------------------------
-                    if ((*it).track == tnum+1 && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 18) // All tracks - rectangle
+                    if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 18) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
@@ -1612,9 +1619,9 @@ void MainWindow::on_pushButton_clicked() // Process button
                     std::string straux = messg_str.substr(9);
                     straux.erase(remove_if(straux.begin(), straux.end(), ::isspace), straux.end()); // remove_if is declared in <algorithm>
                     hex2ascii(straux, t_name);
-                    if (track <= 24 && track > 0) // since we have a maximum of 24 tracks
+                    if (track <= 24) // since we have a maximum of 24 tracks
                     {
-                        track_names->at(track - 1) = t_name; // store the track names when the button Process is pressed.
+                        track_names->at(track) = t_name; // store the track names when the button Process is pressed.
                     }
                 }
             }
