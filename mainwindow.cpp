@@ -352,7 +352,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
             //std::cout << pt1.x << ' ' << pt1.y << ": " << pt2.x << ' ' << pt2.y << '\n';
             if (true) //(std::abs(pt1.x) < x_max && std::abs(pt1.y) < y_max && std::abs(pt2.x) < x_max && std::abs(pt2.y) < y_max);// && (*it).duration < max_duration) // This "if" is just to bypass an issue (certainly about big doubles being coverted to int), what causes random boxes appearing on the screen when one zooms in very close.
             {
-                for (unsigned short tnum = 0; tnum < (tracks_count + 1); tnum++)
+                for (unsigned short tnum = 0; tnum < tracks_count; tnum++)
                 {
                     // -------------------------- Draw Interconnected Lines -------------------------
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->interconnect[tnum] == 1) // All tracks - rectangle
@@ -1334,7 +1334,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     //TracksP tracksproperties;
     setAcceptDrops(true); // accept file droppings to ease the file opening
-
+    dwidtracks = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
+    dwrenderprop = nullptr;
 }
 
 MainWindow::~MainWindow()
@@ -1496,7 +1497,7 @@ void MainWindow::on_actionSave_as_triggered()
     }
 }
 
-void MainWindow::on_actionTracks_triggered()
+void MainWindow::on_actionTracks_triggered() // open dockwidgettracks.
 {
     if (track_names->size() < 24)
         nameTracksReset();
@@ -1574,7 +1575,7 @@ void MainWindow::on_pushButton_clicked() // Process button
                 }
                 if (tempnote.pitch < pitch_min)
                         pitch_min = tempnote.pitch;
-                if (tempnote.track > tracks_count)
+                if (tempnote.track > tracks_count) // if there we see a track whose number is higher than the current number of tracks, we do number of tracks (aka tracks_count) = current track number
                         tracks_count = tempnote.track;
             }
             if ((messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) == 0) || messg_str[0] == '8') // Condition for Note off is messg_str[0] == '9' and velocity == 0 or messg_str[0] == '8'
@@ -1628,6 +1629,8 @@ void MainWindow::on_pushButton_clicked() // Process button
 
         }
     }
+    tracks_count = tracks_count + 1; // This defines the final number of tracks detected in the processed midi. It is the highest track + 1, since the tracks are numbered from 0 to n-1.
+
     total_time = time; // set the current time after processing as global variable total time from this midi processing.
     QMessageBox::information(this, tr("Processing completed"), "The midi data in the text input window was successfully completed.", QMessageBox::Ok );
     ui->pushButton_2->setEnabled(true);
