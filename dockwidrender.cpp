@@ -61,6 +61,9 @@ DockWidRender::DockWidRender(QWidget *parent) :
     ui->spinBox_9->setValue(renderproperties->hlines_offset);
     ui->checkBox_9->setChecked(renderproperties->half_shift);
 
+    ui->cb_vLineTrack->setChecked(renderproperties->lines[2]);
+    ui->sb_vLineTrack->setValue(renderproperties->vlines_track_n);
+
     hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
     vlines.setRgb(renderproperties->vlines_colour[0], renderproperties->vlines_colour[1], renderproperties->vlines_colour[2]);
     QPalette pal_h = ui->widget_hlcolour->palette();

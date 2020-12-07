@@ -1223,7 +1223,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
                     if ((*it).track == tnum && renderproperties->lines[2] && renderproperties->vlines_track_n == (int)tnum)
                     {
-                        cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {renderproperties->vlines_colour[2], renderproperties->vlines_colour[1], renderproperties->vlines_colour[0]});
+                        cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {renderproperties->vlines_colour[2]*(*it).vel/128, renderproperties->vlines_colour[1]*(*it).vel/128, renderproperties->vlines_colour[0]*(*it).vel/128});
                     }
                 }
             }
