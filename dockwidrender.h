@@ -73,8 +73,6 @@ private slots:
 
     void on_checkBox_7_toggled(bool checked);
 
-    void on_pushButton_clicked();
-
     void on_checkBox_8_toggled(bool checked);
 
     void on_comboBox_currentIndexChanged(int index);
@@ -85,10 +83,19 @@ private slots:
 
     void on_checkBox_9_toggled(bool checked);
 
+    void on_pb_setClr_vlines_clicked();
+
+    void on_pb_setClr_hlines_clicked();
+
+    void on_cb_vLineTrack_toggled(bool checked);
+
+    void on_sb_vLineTrack_valueChanged(int arg1);
+
 private:
     Ui::DockWidRender *ui;
 
     QColor hlines;
+    QColor vlines;
 };
 
 #endif // DOCKWIDRENDER_H

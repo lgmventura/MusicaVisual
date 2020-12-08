@@ -340,8 +340,8 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     {
         if ((*it).is_note == 1 && startMidiTime -50 < (*it).t_off && endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
         {
-            x1 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_on)/((float)endMidiTime - (float)startMidiTime));
-            x2 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_off)/((float)endMidiTime - (float)startMidiTime));
+            x1 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_on)/((float)endMidiTime - (float)startMidiTime)); // note_on time
+            x2 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_off)/((float)endMidiTime - (float)startMidiTime)); // note_off time
             y1 = (float)window_height/2 - (float)window_height*((float)((*it).pitch - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
             y2 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 1.0 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
             pt1.x = f2int_safe(x1); //window_width*((*it).t_on/(endMidiTime - startMidiTime));
@@ -1217,6 +1217,14 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
                     // End shape drawings ------------------------------------------------
+
+
+                    // ============= Vertical Lines from tracks =============
+
+                    if ((*it).track == tnum && renderproperties->lines[2] && renderproperties->vlines_track_n == (int)tnum)
+                    {
+                        cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {renderproperties->vlines_colour[2]*(*it).vel/128, renderproperties->vlines_colour[1]*(*it).vel/128, renderproperties->vlines_colour[0]*(*it).vel/128});
+                    }
                 }
             }
         }
@@ -1225,16 +1233,19 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 //    pt4.x = window_width/2;
 //    pt3.y = window_height;
 //    pt4.y = 0;
+// =================== Vertical Lines =============
     if (renderproperties->lines[0])
         cv::line(image, cv::Point(window_width/2, window_height), cv::Point(window_width/2, 0), {100,100,100});
     if (renderproperties->lines[1])
     {
         for (unsigned int i = 0; i < endMidiTime; i = i + 4*renderproperties->beat_measure_manual[0]*tpq/renderproperties->beat_measure_manual[1])
         {
-            cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {60,60,60});
+            cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {renderproperties->vlines_colour[2], renderproperties->vlines_colour[1], renderproperties->vlines_colour[0]});
         }
     }
 
+
+// ==================== Horizontal Lines =============
     if (renderproperties->hlines)
     {
         float note_height = (float)window_height*((float)(1.0)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0;// - renderproperties->vertShift;

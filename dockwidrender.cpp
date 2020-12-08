@@ -61,10 +61,17 @@ DockWidRender::DockWidRender(QWidget *parent) :
     ui->spinBox_9->setValue(renderproperties->hlines_offset);
     ui->checkBox_9->setChecked(renderproperties->half_shift);
 
+    ui->cb_vLineTrack->setChecked(renderproperties->lines[2]);
+    ui->sb_vLineTrack->setValue(renderproperties->vlines_track_n);
+
     hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
-    QPalette pal = ui->widget->palette();
-    pal.setColor(QPalette::Window, hlines);
-    ui->widget->setPalette(pal);
+    vlines.setRgb(renderproperties->vlines_colour[0], renderproperties->vlines_colour[1], renderproperties->vlines_colour[2]);
+    QPalette pal_h = ui->widget_hlcolour->palette();
+    QPalette pal_v = ui->widget_vlcolour->palette();
+    pal_h.setColor(QPalette::Window, hlines);
+    pal_v.setColor(QPalette::Window, vlines);
+    ui->widget_hlcolour->setPalette(pal_h);
+    ui->widget_vlcolour->setPalette(pal_v);
 }
 
 DockWidRender::~DockWidRender()
@@ -152,23 +159,6 @@ void DockWidRender::on_checkBox_7_toggled(bool checked)
     renderproperties->extra_time[1] = checked;
 }
 
-void DockWidRender::on_pushButton_clicked()
-{
-    QColor tcolor;
-    tcolor.setRgb(renderproperties->hlines_colour[0],
-        renderproperties->hlines_colour[1],
-        renderproperties->hlines_colour[2]);
-    tcolor = QColorDialog::getColor(tcolor, this);
-
-    renderproperties->hlines_colour[0] = tcolor.red();
-    renderproperties->hlines_colour[1] = tcolor.green();
-    renderproperties->hlines_colour[2] = tcolor.blue();
-    hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
-    QPalette pal = ui->widget->palette();
-    pal.setColor(QPalette::Window, hlines);
-    ui->widget->setPalette(pal);
-}
-
 void DockWidRender::on_checkBox_8_toggled(bool checked)
 {
     renderproperties->hlines = checked;
@@ -193,4 +183,48 @@ void DockWidRender::on_spinBox_9_valueChanged(int arg1)
 void DockWidRender::on_checkBox_9_toggled(bool checked)
 {
     renderproperties->half_shift = checked;
+}
+
+void DockWidRender::on_pb_setClr_vlines_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(renderproperties->vlines_colour[0],
+                  renderproperties->vlines_colour[1],
+                  renderproperties->vlines_colour[2]);
+    tcolor = QColorDialog::getColor(tcolor, this);
+
+    renderproperties->vlines_colour[0] = tcolor.red();
+    renderproperties->vlines_colour[1] = tcolor.green();
+    renderproperties->vlines_colour[2] = tcolor.blue();
+    vlines.setRgb(renderproperties->vlines_colour[0], renderproperties->vlines_colour[1], renderproperties->vlines_colour[2]);
+    QPalette pal_v = ui->widget_vlcolour->palette();
+    pal_v.setColor(QPalette::Window, vlines);
+    ui->widget_vlcolour->setPalette(pal_v);
+}
+
+void DockWidRender::on_pb_setClr_hlines_clicked()
+{
+    QColor tcolor;
+    tcolor.setRgb(renderproperties->hlines_colour[0],
+                  renderproperties->hlines_colour[1],
+                  renderproperties->hlines_colour[2]);
+    tcolor = QColorDialog::getColor(tcolor, this);
+
+    renderproperties->hlines_colour[0] = tcolor.red();
+    renderproperties->hlines_colour[1] = tcolor.green();
+    renderproperties->hlines_colour[2] = tcolor.blue();
+    hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
+    QPalette pal_h = ui->widget_hlcolour->palette();
+    pal_h.setColor(QPalette::Window, hlines);
+    ui->widget_hlcolour->setPalette(pal_h);
+}
+
+void DockWidRender::on_cb_vLineTrack_toggled(bool checked)
+{
+    renderproperties->lines[2] = checked;
+}
+
+void DockWidRender::on_sb_vLineTrack_valueChanged(int arg1)
+{
+    renderproperties->vlines_track_n = arg1;
 }

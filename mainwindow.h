@@ -104,7 +104,7 @@ public:
     RenderP();
     int vertRange = 40;
     int vertShift = 0;
-    bool lines[2] = {1,0};
+    bool lines[3] = {1,0,0};
     unsigned short beat_measure_manual[2] = {4,4};
     bool sep_render[3] = {0,0,0};
     short blur_size[2] = {0,0};
@@ -115,6 +115,8 @@ public:
     short hlines_colour[3] = {50,50,50};
     short hlines_n = 12;
     short hlines_offset = 0;
+    short vlines_colour[3] = {50,50,50};
+    int vlines_track_n = 0;
     bool half_shift;
 };
 
