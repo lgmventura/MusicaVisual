@@ -302,9 +302,10 @@ void DockWidgetTracks::on_pushButton_clicked()
         tracksproperties->getCv(0,1),
         tracksproperties->getCv(0,2));
     if (tcolor.red() == 0 && tcolor.green() == 0 && tcolor.blue() == 0) // If the current color is black,
-        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier for the user)
+        tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier for the user - upd20201208 - this is no longer valid for the new colour picker dialog, can be removed)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(0,0,tcolor.red());
     tracksproperties->setCv(0,1,tcolor.green());
@@ -325,6 +326,7 @@ void DockWidgetTracks::on_pushButton_2_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(1,0,tcolor.red());
     tracksproperties->setCv(1,1,tcolor.green());
@@ -345,6 +347,7 @@ void DockWidgetTracks::on_pushButton_3_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(2,0,tcolor.red());
     tracksproperties->setCv(2,1,tcolor.green());
@@ -365,6 +368,7 @@ void DockWidgetTracks::on_pushButton_4_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(3,0,tcolor.red());
     tracksproperties->setCv(3,1,tcolor.green());
@@ -385,6 +389,7 @@ void DockWidgetTracks::on_pushButton_5_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(4,0,tcolor.red());
     tracksproperties->setCv(4,1,tcolor.green());
@@ -405,6 +410,7 @@ void DockWidgetTracks::on_pushButton_6_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(5,0,tcolor.red());
     tracksproperties->setCv(5,1,tcolor.green());
@@ -425,6 +431,7 @@ void DockWidgetTracks::on_pushButton_7_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(6,0,tcolor.red());
     tracksproperties->setCv(6,1,tcolor.green());
@@ -445,6 +452,7 @@ void DockWidgetTracks::on_pushButton_8_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(7,0,tcolor.red());
     tracksproperties->setCv(7,1,tcolor.green());
@@ -465,6 +473,7 @@ void DockWidgetTracks::on_pushButton_9_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(8,0,tcolor.red());
     tracksproperties->setCv(8,1,tcolor.green());
@@ -485,6 +494,7 @@ void DockWidgetTracks::on_pushButton_10_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(9,0,tcolor.red());
     tracksproperties->setCv(9,1,tcolor.green());
@@ -505,6 +515,7 @@ void DockWidgetTracks::on_pushButton_11_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(10,0,tcolor.red());
     tracksproperties->setCv(10,1,tcolor.green());
@@ -525,6 +536,7 @@ void DockWidgetTracks::on_pushButton_12_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(11,0,tcolor.red());
     tracksproperties->setCv(11,1,tcolor.green());
@@ -545,6 +557,7 @@ void DockWidgetTracks::on_pushButton_13_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(12,0,tcolor.red());
     tracksproperties->setCv(12,1,tcolor.green());
@@ -565,6 +578,7 @@ void DockWidgetTracks::on_pushButton_14_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(13,0,tcolor.red());
     tracksproperties->setCv(13,1,tcolor.green());
@@ -585,6 +599,7 @@ void DockWidgetTracks::on_pushButton_15_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(14,0,tcolor.red());
     tracksproperties->setCv(14,1,tcolor.green());
@@ -605,6 +620,7 @@ void DockWidgetTracks::on_pushButton_16_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(15,0,tcolor.red());
     tracksproperties->setCv(15,1,tcolor.green());
@@ -625,6 +641,7 @@ void DockWidgetTracks::on_pushButton_17_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(16,0,tcolor.red());
     tracksproperties->setCv(16,1,tcolor.green());
@@ -645,6 +662,7 @@ void DockWidgetTracks::on_pushButton_18_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(17,0,tcolor.red());
     tracksproperties->setCv(17,1,tcolor.green());
@@ -665,6 +683,7 @@ void DockWidgetTracks::on_pushButton_19_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(18,0,tcolor.red());
     tracksproperties->setCv(18,1,tcolor.green());
@@ -685,6 +704,7 @@ void DockWidgetTracks::on_pushButton_20_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(19,0,tcolor.red());
     tracksproperties->setCv(19,1,tcolor.green());
@@ -705,6 +725,7 @@ void DockWidgetTracks::on_pushButton_21_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(20,0,tcolor.red());
     tracksproperties->setCv(20,1,tcolor.green());
@@ -725,6 +746,7 @@ void DockWidgetTracks::on_pushButton_22_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(21,0,tcolor.red());
     tracksproperties->setCv(21,1,tcolor.green());
@@ -745,6 +767,7 @@ void DockWidgetTracks::on_pushButton_23_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(22,0,tcolor.red());
     tracksproperties->setCv(22,1,tcolor.green());
@@ -765,6 +788,7 @@ void DockWidgetTracks::on_pushButton_24_clicked()
         tcolor = QColorDialog::getColor(Qt::white, this); //s tart color choosing from white (easier)
     else
         tcolor = QColorDialog::getColor(tcolor, this); // Otherwise, start from the current color
+    if (!tcolor.isValid()) return; // when the user cancels the dialog, it returns an invalid colour that will be interpreted as black
 
     tracksproperties->setCv(23,0,tcolor.red());
     tracksproperties->setCv(23,1,tcolor.green());

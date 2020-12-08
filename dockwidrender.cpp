@@ -192,6 +192,7 @@ void DockWidRender::on_pb_setClr_vlines_clicked()
                   renderproperties->vlines_colour[1],
                   renderproperties->vlines_colour[2]);
     tcolor = QColorDialog::getColor(tcolor, this);
+    if (!tcolor.isValid()) return;
 
     renderproperties->vlines_colour[0] = tcolor.red();
     renderproperties->vlines_colour[1] = tcolor.green();
@@ -209,6 +210,7 @@ void DockWidRender::on_pb_setClr_hlines_clicked()
                   renderproperties->hlines_colour[1],
                   renderproperties->hlines_colour[2]);
     tcolor = QColorDialog::getColor(tcolor, this);
+    if (!tcolor.isValid()) return;
 
     renderproperties->hlines_colour[0] = tcolor.red();
     renderproperties->hlines_colour[1] = tcolor.green();
