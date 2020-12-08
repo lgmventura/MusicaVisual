@@ -117,7 +117,7 @@ public:
     short hlines_offset = 0;
     short vlines_colour[3] = {50,50,50};
     int vlines_track_n = 0;
-    bool half_shift;
+    bool half_shift = 0;
 };
 
 namespace Ui {
