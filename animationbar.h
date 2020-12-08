@@ -76,6 +76,8 @@ private slots:
 public slots:
     void onNumberChanged(int num);
 
+    void setRecButtonEnabled(bool value);
+
 private:
     Ui::AnimationBar *ui;
 };

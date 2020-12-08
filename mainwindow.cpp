@@ -1729,6 +1729,7 @@ void MainWindow::on_pushButton_3_clicked()
         {
             video = new cv::VideoWriter(ui->lineEdit->text().toStdString(),cv::VideoWriter::fourcc(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->doubleSpinBox->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
             //throw video = new cv::VideoWriter(ui->lineEdit->text().toStdString(),CV_FOURCC(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->doubleSpinBox->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
+            animbar->setRecButtonEnabled(true); // video should be ready to be written, activating button
         }
         catch (cv::Exception& e)
         {

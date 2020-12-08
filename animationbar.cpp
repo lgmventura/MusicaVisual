@@ -186,3 +186,8 @@ void AnimationBar::on_pushButton_4_toggled(bool checked)
 {
     *videoRecord = checked;
 }
+
+void AnimationBar::setRecButtonEnabled(bool value)
+{
+    ui->pushButton_4->setEnabled(value);
+}
