@@ -55,6 +55,9 @@
 #include <QDragEnterEvent>
 #include <QMimeData>
 
+// Include chords
+#include "chords.h"
+
 using namespace std;
 
 TracksP::TracksP()
@@ -1225,6 +1228,23 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     {
                         cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {renderproperties->vlines_colour[2]*(*it).vel/128, renderproperties->vlines_colour[1]*(*it).vel/128, renderproperties->vlines_colour[0]*(*it).vel/128});
                     }
+
+                    // ============ Displaying chord names ==============
+                    if ((*it).track == tnum && renderproperties->chord_names && renderproperties->chord_analysis[tnum]) // ToDo: create a new class for chord analysis
+                    {
+                        if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
+                        {
+                            cv::putText(image,
+                                        "Here is some text",
+                                        cv::Point(10,30), // Coordinates
+                                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
+                                        1.0, // Scale. 2.0 = 2x bigger
+                                        cv::Scalar(255,255,255), // BGR Color
+                                        1, // Line Thickness (Optional)
+                                        cv::LINE_AA); // Anti-alias (Optional)
+                        }
+                    }
+
                 }
             }
         }

@@ -91,6 +91,10 @@ private slots:
 
     void on_sb_vLineTrack_valueChanged(int arg1);
 
+    void on_cb_dispChordNames_toggled(bool checked);
+
+    void on_pb_procChordNames_clicked();
+
 private:
     Ui::DockWidRender *ui;
 

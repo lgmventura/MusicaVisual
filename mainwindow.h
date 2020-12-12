@@ -118,6 +118,8 @@ public:
     short vlines_colour[3] = {50,50,50};
     int vlines_track_n = 0;
     bool half_shift = 0;
+    bool chord_names = 0;
+    bool chord_analysis[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}; // ToDo: transfer this to class chord analysis
 };
 
 namespace Ui {

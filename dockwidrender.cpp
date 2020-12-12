@@ -23,12 +23,14 @@
 #include "dockwidrender.h"
 #include "ui_dockwidrender.h"
 #include "mainwindow.h"
+#include "chords.h"
 
 #include <QColor>
 #include <QColorDialog>
 
 extern RenderP *renderproperties;
 extern std::string *codec_fourcc;
+std::list <MidiNote> notes; // List of processed notes. // all this has to be changed from global to oop
 
 DockWidRender::DockWidRender(QWidget *parent) :
     QDockWidget(parent),
@@ -229,4 +231,15 @@ void DockWidRender::on_cb_vLineTrack_toggled(bool checked)
 void DockWidRender::on_sb_vLineTrack_valueChanged(int arg1)
 {
     renderproperties->vlines_track_n = arg1;
+}
+
+void DockWidRender::on_cb_dispChordNames_toggled(bool checked)
+{
+    renderproperties->chord_names = checked;
+}
+
+void DockWidRender::on_pb_procChordNames_clicked()
+{
+    chords chords;
+    chords.process_chords(notes, renderproperties->chord_analysis);
 }
