@@ -317,6 +317,8 @@ void nameTracksReset()
 
 void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
 {
+    int zoom = endMidiTime - startMidiTime;
+    int curr_pos_middle = (startMidiTime + (zoom)/2);
     cv::Point pt1, pt2, pt3, pt4;//, pt5;// , pt6;
     cv::Point pt5[tracks_count]; // for the interconnected lines. It has to be a vector of tracks_count length to make lines be connected only with notes within the same track.
     cv::Point pt1_prev[tracks_count], pt2_prev[tracks_count], pt3_prev[tracks_count]; // these points are used for storing the previous respective points to make "moving notes" possible averaging current position/size with last position/size. There must be one for each track so that they are kept independent, i.e., moving notes in one track don't influence mov. notes in another (same idea as for interconn. lines).
@@ -1229,40 +1231,26 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     {
                         cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {renderproperties->vlines_colour[2]*(*it).vel/128, renderproperties->vlines_colour[1]*(*it).vel/128, renderproperties->vlines_colour[0]*(*it).vel/128});
                     }
-
-                    // ============ Displaying chord names ==============
-//                    if ((*it).track == tnum && renderproperties->chord_names && renderproperties->chord_analysis[tnum]) // ToDo: create a new class for chord analysis
-//                    {
-//                        if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
-//                        {
-
-//                            cv::putText(image,
-//                                        "Here is some text",
-//                                        cv::Point(10,30), // Coordinates
-//                                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
-//                                        1.0, // Scale. 2.0 = 2x bigger
-//                                        cv::Scalar(255,255,255), // BGR Color
-//                                        1, // Line Thickness (Optional)
-//                                        cv::LINE_AA); // Anti-alias (Optional)
-//                        }
-//                    }
-
                 }
             }
         }
     }
 
     // ============ Displaying chord names ==============
-    if (renderproperties->chord_names) // ToDo: create a new class for chord analysis
+    if (renderproperties->chord_names) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
     {
-        for (std::vector<long>::iterator it = G_chords.VStart_end_times.begin(); it!=(G_chords.VStart_end_times.end() - 1); ++it)
+        std::list<chordWithTime>::iterator it;
+        std::list<chordWithTime>::iterator it_next;
+        for (it = G_chords.Chords.begin(), it_next = ++G_chords.Chords.begin(); it_next!=(G_chords.Chords.end()); ++it, ++it_next)
         {
-            long chord_time = *it;
-            long chord_time_next = *(it+1);
-            if ((endMidiTime - startMidiTime)/2 > chord_time)// && (endMidiTime - startMidiTime)/2 < chord_time_next)
+            chordWithTime chordWT = *it;
+            chordWithTime chordWT_next = *it_next;
+            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=G_chords.Chords.begin() && it!=G_chords.Chords.end())
             {
+                std::string ptStr = "Pitches:";
+                ptStr = chordWT.Chord.getPitchesStr();
                 cv::putText(image,
-                        "Here is some text",
+                        ptStr,//"Here is some text",
                         cv::Point(10,30), // Coordinates
                         cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger
@@ -1270,6 +1258,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         1, // Line Thickness (Optional)
                         cv::LINE_AA); // Anti-alias (Optional)
             }
+
         }
 
     }

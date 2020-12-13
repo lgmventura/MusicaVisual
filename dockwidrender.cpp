@@ -245,3 +245,10 @@ void DockWidRender::on_pb_procChordNames_clicked()
     chords.process_chords(notes, renderproperties->chord_analysis);
     G_chords = chords;
 }
+
+void DockWidRender::on_lineEdit_excludeTracks_textEdited(const QString &arg1) // ToDo. Regex?
+{
+//    std::string str = arg1.toStdString();
+
+//    renderproperties->chord_analysis;
+}

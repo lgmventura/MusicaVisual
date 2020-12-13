@@ -95,6 +95,8 @@ private slots:
 
     void on_pb_procChordNames_clicked();
 
+    void on_lineEdit_excludeTracks_textEdited(const QString &arg1);
+
 private:
     Ui::DockWidRender *ui;
 

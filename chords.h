@@ -55,6 +55,7 @@ private:
     std::string SolfeggioFlat; // Do to Si
     std::string SolfeggioSharp;
 
+
 // get methods:
 public:
     int getOctave();
@@ -97,6 +98,14 @@ private:
     void calculateName();
 };
 
+class chordWithTime
+{
+public:
+    chordWithTime();
+
+    chord Chord;
+    long Start_time;
+};
 
 class chords
 {
@@ -104,7 +113,7 @@ public:
     chords();
 
     //std::list<std::string> Chordnamess = {};
-    std::list<chord> Chords = {};
+    std::list<chordWithTime> Chords = {};
     std::set<long> Start_end_times = {}; // every time a new note appears or ends we consider having a new chord. If 2 or more notes start or end at the same time, it is still the same chord, so we have a set
     std::vector<long> VStart_end_times = {}; // this will be sorted
 

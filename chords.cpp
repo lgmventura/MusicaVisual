@@ -1,4 +1,6 @@
 #include "chords.h"
+#include <iostream> // only for debugging
+
 
 const std::string pitchDict::LettersFlat[12]  =        {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
 const std::string pitchDict::LettersSharp[12] =        {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
@@ -14,12 +16,12 @@ pitch::pitch(int midi)
     pitch::Midi = midi;
     pitch::Octave = midi/12;
     pitch::DistanceFromLastC = midi%12;
-    pitch::LetterFlat = pitchDict::LettersFlat[pitch::DistanceFromLastC];
-    pitch::LetterSharp = pitchDict::LettersSharp[pitch::DistanceFromLastC];
-    pitch::GermanicFlat = pitchDict::GermanicNamesFlat[pitch::DistanceFromLastC];
-    pitch::GermanicSharp = pitchDict::GermanicNamesSharp[pitch::DistanceFromLastC];
-    pitch::SolfeggioFlat = pitchDict::SolfeggioNamesFlat[pitch::DistanceFromLastC];
-    pitch::SolfeggioSharp = pitchDict::SolfeggioNamesSharp[pitch::DistanceFromLastC];
+    pitch::LetterFlat = pitchDict::LettersFlat[midi%12];
+    pitch::LetterSharp = pitchDict::LettersSharp[midi%12];
+    pitch::GermanicFlat = pitchDict::GermanicNamesFlat[midi%12];
+    pitch::GermanicSharp = pitchDict::GermanicNamesSharp[midi%12];
+    pitch::SolfeggioFlat = pitchDict::SolfeggioNamesFlat[midi%12];
+    pitch::SolfeggioSharp = pitchDict::SolfeggioNamesSharp[midi%12]; // pitch::DistanceFromLastC
 }
 bool pitch::isValidPitch()
 {
@@ -80,12 +82,13 @@ std::set<pitch> chord::getPitches()
 }
 std::string chord::getPitchesStr()
 {
-    std::string pitchesStr = "";
+    std::string pitchesStr = "Pitches:";
     for (std::set<pitch>::iterator pt = chord::Pitches.begin(); pt!=chord::Pitches.end(); ++pt)
     {
         pitch p = *pt;
         pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::flat);
     }
+    return pitchesStr;
 }
 std::string chord::getName()
 {
@@ -120,6 +123,12 @@ std::set<float> chord::getAngles(circle type) // idea: implement other temperame
 }
 
 
+// Chord with time:
+chordWithTime::chordWithTime()
+{
+
+}
+
 // Chords:
 chords::chords() // nothing in the contructor
 {
@@ -147,7 +156,7 @@ int chords::process_chords(std::list <MidiNote> notes, bool* tracks) // basicall
     // for (std::set<int>::iterator it=chords::Start_end_times.begin(); it != chords::Start_end_times.end(); ++it) // for list, just replace set by list
     for (std::vector<long>::iterator start_end_time=std::begin(chords::VStart_end_times); start_end_time != std::end(chords::VStart_end_times); ++start_end_time)
     {
-        chord current_chord; // create a current chord
+        chordWithTime current_chord; // create a current chord
         for (std::list<MidiNote>::iterator it=notes.begin() ; it != notes.end(); ++it) // Run the list forwards
         {
             //bool in_track = (std::find(tracks.begin(), tracks.end(), (*it).track) != tracks.end()); // check if note is in the list of tracks to be considered
@@ -158,8 +167,9 @@ int chords::process_chords(std::list <MidiNote> notes, bool* tracks) // basicall
                 if ((*it).t_on <= *start_end_time && (*it).t_off > *start_end_time) // check if the current note pointed by it is in the chord
                 {
                     //current_chord.insertPitch((*it).pitch); // insert pitch in the current chord
-                    pitch p((*it).pitch);
-                    current_chord.insertPitch(p);
+                    pitch p = pitch((*it).pitch);
+                    current_chord.Chord.insertPitch(p);
+                    current_chord.Start_time = *(1+start_end_time); // actually it corresponds to the next start_end_time, so summing 1 to the pointer
                 }
             }
         }
