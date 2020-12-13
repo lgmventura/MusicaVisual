@@ -78,6 +78,15 @@ std::set<pitch> chord::getPitches()
 {
     return chord::Pitches;
 }
+std::string chord::getPitchesStr()
+{
+    std::string pitchesStr = "";
+    for (std::set<pitch>::iterator pt = chord::Pitches.begin(); pt!=chord::Pitches.end(); ++pt)
+    {
+        pitch p = *pt;
+        pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::flat);
+    }
+}
 std::string chord::getName()
 {
     return chord::Name;

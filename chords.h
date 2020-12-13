@@ -40,10 +40,11 @@ public:
     pitch(int midi = -1);
 
 // members:
-private:
-    int Midi; // 0 to 127
+public:
 //    enum Letters {C, D, E, F, G, A, B};
     enum Accidental {flat, sharp}; // bemol, sustenido
+private:
+    int Midi; // 0 to 127
 
     int Octave;
     int DistanceFromLastC; // 0 to 11
@@ -68,6 +69,9 @@ public:
 // operators:
     bool operator<(const pitch &other) const {return pitch::Midi < other.Midi;};
     bool operator>(const pitch &other) const {return pitch::Midi > other.Midi;};
+    bool operator<=(const pitch &other) const {return pitch::Midi <= other.Midi;};
+    bool operator>=(const pitch &other) const {return pitch::Midi >= other.Midi;};
+    bool operator==(const pitch &other) const {return pitch::Midi == other.Midi;};
 };
 
 
@@ -85,6 +89,7 @@ public:
     // methods:
     void insertPitch(pitch pitch);
     std::set<pitch> getPitches();
+    std::string getPitchesStr();
     std::string getName();
     std::set<float> getAngles(circle type); // for visual representation of chords
 

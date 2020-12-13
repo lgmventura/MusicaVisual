@@ -77,6 +77,7 @@ unsigned long total_time = 0; // Global variable to store the total time of the 
 unsigned int pitch_max = 1, pitch_min = 128;
 unsigned int tracks_count = 1;
 unsigned int tpq; // Ticks per Quarter-Note
+chords G_chords; // global var for chords - TODO: GET RID of global variables as much as possible, replace by oop
 
 AnimationBar *animbar;
 AnimwinP *animwinP;
@@ -314,7 +315,7 @@ void nameTracksReset()
         track_names->push_back("Track " + std::to_string(i));
 }
 
-void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height)
+void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
 {
     cv::Point pt1, pt2, pt3, pt4;//, pt5;// , pt6;
     cv::Point pt5[tracks_count]; // for the interconnected lines. It has to be a vector of tracks_count length to make lines be connected only with notes within the same track.
@@ -1230,25 +1231,49 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     }
 
                     // ============ Displaying chord names ==============
-                    if ((*it).track == tnum && renderproperties->chord_names && renderproperties->chord_analysis[tnum]) // ToDo: create a new class for chord analysis
-                    {
-                        if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
-                        {
-                            cv::putText(image,
-                                        "Here is some text",
-                                        cv::Point(10,30), // Coordinates
-                                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
-                                        1.0, // Scale. 2.0 = 2x bigger
-                                        cv::Scalar(255,255,255), // BGR Color
-                                        1, // Line Thickness (Optional)
-                                        cv::LINE_AA); // Anti-alias (Optional)
-                        }
-                    }
+//                    if ((*it).track == tnum && renderproperties->chord_names && renderproperties->chord_analysis[tnum]) // ToDo: create a new class for chord analysis
+//                    {
+//                        if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
+//                        {
+
+//                            cv::putText(image,
+//                                        "Here is some text",
+//                                        cv::Point(10,30), // Coordinates
+//                                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
+//                                        1.0, // Scale. 2.0 = 2x bigger
+//                                        cv::Scalar(255,255,255), // BGR Color
+//                                        1, // Line Thickness (Optional)
+//                                        cv::LINE_AA); // Anti-alias (Optional)
+//                        }
+//                    }
 
                 }
             }
         }
     }
+
+    // ============ Displaying chord names ==============
+    if (renderproperties->chord_names) // ToDo: create a new class for chord analysis
+    {
+        for (std::vector<long>::iterator it = G_chords.VStart_end_times.begin(); it!=(G_chords.VStart_end_times.end() - 1); ++it)
+        {
+            long chord_time = *it;
+            long chord_time_next = *(it+1);
+            if ((endMidiTime - startMidiTime)/2 > chord_time)// && (endMidiTime - startMidiTime)/2 < chord_time_next)
+            {
+                cv::putText(image,
+                        "Here is some text",
+                        cv::Point(10,30), // Coordinates
+                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        cv::Scalar(255,255,255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        cv::LINE_AA); // Anti-alias (Optional)
+            }
+        }
+
+    }
+
 //    pt3.x = window_width/2;
 //    pt4.x = window_width/2;
 //    pt3.y = window_height;
@@ -1322,6 +1347,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
         }
     }
 
+    // =========== Including separate layers ==========
     if (renderproperties->sep_render[0])
     {
         if (renderproperties->blur_size[0] > 0 && renderproperties->blur_size[1] > 0)

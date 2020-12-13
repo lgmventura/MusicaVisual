@@ -31,6 +31,7 @@
 extern RenderP *renderproperties;
 extern std::string *codec_fourcc;
 extern std::list <MidiNote> notes; // List of processed notes. // all this has to be changed from global to oop
+extern chords G_chords;
 
 DockWidRender::DockWidRender(QWidget *parent) :
     QDockWidget(parent),
@@ -242,4 +243,5 @@ void DockWidRender::on_pb_procChordNames_clicked()
 {
     chords chords;
     chords.process_chords(notes, renderproperties->chord_analysis);
+    G_chords = chords;
 }
