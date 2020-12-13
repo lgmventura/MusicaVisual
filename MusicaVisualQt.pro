@@ -27,8 +27,7 @@ SOURCES += main.cpp\
     playthread.cpp \
     dockwidrender.cpp \
     about.cpp \
-    help1.cpp \
-    python_caller.cpp
+    help1.cpp
 
 HEADERS  += mainwindow.h \
     chords.h \
@@ -50,8 +49,7 @@ HEADERS  += mainwindow.h \
     csappmidi/include/MidiEventList.h \
     csappmidi/include/MidiFile.h \
     csappmidi/include/MidiMessage.h \
-    csappmidi/include/Options.h \
-    python_caller.h
+    csappmidi/include/Options.h
 
 FORMS    += mainwindow.ui \
     dockwidgettracks.ui \
@@ -86,12 +84,13 @@ INCLUDEPATH += /usr/local/include/opencv2/contrib
 
 
 INCLUDEPATH += /usr/include/python3.8
+#INCLUDEPATH += /media/luiz/Volume/anaconda3/envs/dev/include/python3.8
 LIBS += `pkg-config opencv --cflags --libs`
 
 #LIBS += -L/usr/lib/x86_64-linux-gnu
 #LIBS += -Wl,-Bstatic -lpython3.8 -Wl,-Bdynamic
 #LIBS += -lz -lexpat -ldl -lutil
-LIBS += -I/usr/include/python3.8 -I/usr/include/python3.8  -Wno-unused-result -Wsign-compare -g -fdebug-prefix-map=/build/python3.8-xhc1jt/python3.8-3.8.5=. -specs=/usr/share/dpkg/no-pie-compile.specs -fstack-protector -Wformat -Werror=format-security  -DNDEBUG -g -fwrapv -O3 -Wall
+#LIBS += -I/usr/include/python3.8 -I/usr/include/python3.8  -Wno-unused-result -Wsign-compare -g -fdebug-prefix-map=/build/python3.8-xhc1jt/python3.8-3.8.5=. -specs=/usr/share/dpkg/no-pie-compile.specs -fstack-protector -Wformat -Werror=format-security  -DNDEBUG -g -fwrapv -O3 -Wall
 
 #QMAKE_CFLAGS += `-I/usr/include/python3.8 -I/usr/include/python3.8  -Wno-unused-result -Wsign-compare -g -fdebug-prefix-map=/build/python3.8-xhc1jt/python3.8-3.8.5=. -specs=/usr/share/dpkg/no-pie-compile.specs -fstack-protector -Wformat -Werror=format-security  -DNDEBUG -g -fwrapv -O3 -Wall`
 #QMAKE_LFLAGS += `-L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -lm`

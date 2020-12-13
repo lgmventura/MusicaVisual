@@ -30,7 +30,7 @@
 
 extern RenderP *renderproperties;
 extern std::string *codec_fourcc;
-std::list <MidiNote> notes; // List of processed notes. // all this has to be changed from global to oop
+extern std::list <MidiNote> notes; // List of processed notes. // all this has to be changed from global to oop
 
 DockWidRender::DockWidRender(QWidget *parent) :
     QDockWidget(parent),

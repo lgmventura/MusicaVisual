@@ -1,17 +1,80 @@
 #include "chords.h"
-#include <python_caller.h>
+
+const std::string pitchDict::LettersFlat[12]  =        {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
+const std::string pitchDict::LettersSharp[12] =        {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+const std::string pitchDict::GermanicNamesFlat[12]  =  {"C", "Des", "D", "Es", "E", "F", "Ges", "G", "Aes", "A", "B", "H"};
+const std::string pitchDict::GermanicNamesSharp[12] =  {"C", "Cis", "D", "Dis", "E", "F", "Fis", "G", "Gis", "A", "Ais", "B"};
+const std::string pitchDict::SolfeggioNamesFlat[12]  = {"Do", "Re bemol", "Re", "Mi bemol", "Mi", "Fa", "Sol bemol", "Sol", "La bemol", "La", "Si bemol", "Si"};
+const std::string pitchDict::SolfeggioNamesSharp[12] = {"Do", "Do sustenido", "Re", "Re sustenido", "Mi", "Fa", "Fa sustenido", "Sol", "Sol sustenido", "La", "La sustenido", "Si"};
 
 
+
+pitch::pitch(int midi)
+{
+    pitch::Midi = midi;
+    pitch::Octave = midi/12;
+    pitch::DistanceFromLastC = midi%12;
+    pitch::LetterFlat = pitchDict::LettersFlat[pitch::DistanceFromLastC];
+    pitch::LetterSharp = pitchDict::LettersSharp[pitch::DistanceFromLastC];
+    pitch::GermanicFlat = pitchDict::GermanicNamesFlat[pitch::DistanceFromLastC];
+    pitch::GermanicSharp = pitchDict::GermanicNamesSharp[pitch::DistanceFromLastC];
+    pitch::SolfeggioFlat = pitchDict::SolfeggioNamesFlat[pitch::DistanceFromLastC];
+    pitch::SolfeggioSharp = pitchDict::SolfeggioNamesSharp[pitch::DistanceFromLastC];
+}
+bool pitch::isValidPitch()
+{
+    if (pitch::Midi >= 0 && pitch::Midi <= 127)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+int pitch::getOctave()
+{
+    return pitch::Octave;
+}
+int pitch::getDistanceFromLastC()
+{
+    return pitch::DistanceFromLastC;
+}
+std::string pitch::getLetterName(Accidental type)
+{
+    if (type == flat)
+    {
+        return pitch::LetterFlat;
+    }
+    else// if (type == sharp)
+    {
+        return pitch::LetterSharp;
+    }
+}
+std::string pitch::getLetterNameWithOctave(Accidental type)
+{
+    if (type == flat)
+    {
+        return pitch::LetterFlat + "-" + std::to_string(pitch::getOctave());
+    }
+    else// if (type == sharp)
+    {
+        return pitch::LetterSharp + "-" + std::to_string(pitch::getOctave());
+    }
+}
+
+
+// Chord:
 chord::chord() // nothing in the constructor
 {
 
 }
-void chord::insertPitch(int pitch)
+void chord::insertPitch(pitch pitch)
 {
     chord::Pitches.insert(pitch);
-    chord::calculateName();
+    //chord::calculateName();
 }
-std::set<int> chord::getPitches()
+std::set<pitch> chord::getPitches()
 {
     return chord::Pitches;
 }
@@ -19,14 +82,36 @@ std::string chord::getName()
 {
     return chord::Name;
 }
-void chord::calculateName() // here it's where "the stick sings" - we have to use Python's library music21
+void chord::calculateName() // here it's where "the stick sings" - we have to use Python's library music21 or find another solution
 {
-    python_caller pyCaller;
-    char * argv[] = {(char*)"chordNames", (char*)"getChordName"};
-    pyCaller.callFuncFromModule(2, argv);
+
+}
+std::set<float> chord::getAngles(circle type) // idea: implement other temperaments
+{
+    std::set<float> angles;
+    if (type == circle::circleOfSemitones)
+    {
+        for (std::set<pitch>::iterator pt = chord::Pitches.begin(); pt != chord::Pitches.end(); ++pt)
+        {
+            pitch p = *pt;
+            float angle = p.getDistanceFromLastC()*360.0/12.0;
+            angles.insert(angle);
+        }
+    }
+    else if (type == circle::circleOfFifths)
+    {
+        for (std::set<pitch>::iterator pt = chord::Pitches.begin(); pt != chord::Pitches.end(); ++pt)
+        {
+            pitch p = *pt;
+            float angle = fmod(p.getDistanceFromLastC()*7*360.0/12.0, 360.0); // fmod = modulus with floats
+            angles.insert(angle);
+        }
+    }
+    return angles;
 }
 
 
+// Chords:
 chords::chords() // nothing in the contructor
 {
 
@@ -63,7 +148,9 @@ int chords::process_chords(std::list <MidiNote> notes, bool* tracks) // basicall
             {
                 if ((*it).t_on <= *start_end_time && (*it).t_off > *start_end_time) // check if the current note pointed by it is in the chord
                 {
-                    current_chord.insertPitch((*it).pitch); // insert pitch in the current chord
+                    //current_chord.insertPitch((*it).pitch); // insert pitch in the current chord
+                    pitch p((*it).pitch);
+                    current_chord.insertPitch(p);
                 }
             }
         }
