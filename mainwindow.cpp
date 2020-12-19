@@ -55,8 +55,8 @@
 #include <QDragEnterEvent>
 #include <QMimeData>
 
-// Include chords
-#include "chords.h"
+// include external functions
+#include "renderChordStar.h"
 
 using namespace std;
 
@@ -1236,33 +1236,6 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
         }
     }
 
-    // ============ Displaying chord names ==============
-    if (renderproperties->chord_names) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
-    {
-        std::list<chordWithTime>::iterator it;
-        std::list<chordWithTime>::iterator it_next;
-        for (it = G_chords.Chords.begin(), it_next = ++G_chords.Chords.begin(); it_next!=(G_chords.Chords.end()); ++it, ++it_next)
-        {
-            chordWithTime chordWT = *it;
-            chordWithTime chordWT_next = *it_next;
-            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=G_chords.Chords.begin() && it!=G_chords.Chords.end())
-            {
-                std::string ptStr = "Pitches:";
-                ptStr = chordWT.Chord.getPitchesStr();
-                cv::putText(image,
-                        ptStr,//"Here is some text",
-                        cv::Point(10,30), // Coordinates
-                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
-                        1.0, // Scale. 2.0 = 2x bigger
-                        cv::Scalar(255,255,255), // BGR Color
-                        1, // Line Thickness (Optional)
-                        cv::LINE_AA); // Anti-alias (Optional)
-            }
-
-        }
-
-    }
-
 //    pt3.x = window_width/2;
 //    pt4.x = window_width/2;
 //    pt3.y = window_height;
@@ -1334,6 +1307,58 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                 }
             }
         }
+    }
+
+
+
+    // ============ Displaying chord names ==============
+    if (renderproperties->note_names) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
+    {
+        std::list<chordWithTime>::iterator it;
+        std::list<chordWithTime>::iterator it_next;
+        for (it = G_chords.Chords.begin(), it_next = ++G_chords.Chords.begin(); it_next!=(G_chords.Chords.end()); ++it, ++it_next)
+        {
+            chordWithTime chordWT = *it;
+            chordWithTime chordWT_next = *it_next;
+            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=G_chords.Chords.begin() && it!=G_chords.Chords.end())
+            {
+                std::string ptStr = "Pitches:";
+                ptStr = chordWT.Chord.getPitchesStr();
+                cv::putText(image,
+                        ptStr,//"Here is some text",
+                        cv::Point(10,30), // Coordinates
+                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        cv::Scalar(255,255,255), // BGR Color
+                        1, // Line Thickness (Optional)
+                        cv::LINE_AA); // Anti-alias (Optional)
+            }
+
+        }
+
+    }
+
+    // ============ Displaying circle / star ==============
+    if (renderproperties->chord_star)
+    {
+        std::list<chordWithTime>::iterator it;
+        std::list<chordWithTime>::iterator it_next;
+        for (it = G_chords.Chords.begin(), it_next = ++G_chords.Chords.begin(); it_next!=(G_chords.Chords.end()); ++it, ++it_next) // run through all chords
+        {
+            chordWithTime chordWT = *it;
+            chordWithTime chordWT_next = *it_next;
+            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=G_chords.Chords.begin() && it!=G_chords.Chords.end()) // if it is the chord currently being played
+            {
+                int diam = 100;
+                cv::Point centre = cv::Point(window_width/4, window_height/4);
+                dispChordDisc(renderproperties->chord_star_type, image, centre, diam);
+                chord currChord = chordWT.Chord;
+                chord::circle type = renderproperties->chord_star_type;
+                renderChordStar(currChord, type, image, centre, diam);
+            }
+
+        }
+
     }
 
     // =========== Including separate layers ==========

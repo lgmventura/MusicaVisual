@@ -98,7 +98,7 @@ void chord::calculateName() // here it's where "the stick sings" - we have to us
 {
 
 }
-std::set<float> chord::getAngles(circle type) // idea: implement other temperaments
+std::set<float> chord::getAnglesDeg(circle type) // idea: implement other temperaments
 {
     std::set<float> angles;
     if (type == circle::circleOfSemitones)

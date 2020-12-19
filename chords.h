@@ -80,7 +80,7 @@ class chord
 {
 public:
     chord();
-    enum circle {circleOfFifths, circleOfSemitones};
+    enum circle {circleOfSemitones, circleOfFifths};
 
 private:
     std::set<pitch> Pitches = {}; // midi pitch 0 to 127.
@@ -92,7 +92,7 @@ public:
     std::set<pitch> getPitches();
     std::string getPitchesStr();
     std::string getName();
-    std::set<float> getAngles(circle type); // for visual representation of chords
+    std::set<float> getAnglesDeg(circle type); // for visual representation of chords
 
 private:
     void calculateName();

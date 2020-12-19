@@ -464,27 +464,55 @@
         <string>Chord analysis</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0" colspan="2">
-         <widget class="QCheckBox" name="cb_dispChordNames">
+        <item row="8" column="1">
+         <widget class="QPushButton" name="pb_procChordNames">
           <property name="text">
-           <string>Display chord names</string>
+           <string>Process</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_excludeTracks"/>
-        </item>
-        <item row="1" column="0">
+        <item row="7" column="0">
          <widget class="QLabel" name="label_excludeTracks">
           <property name="text">
            <string>Exlude tracks:</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="pb_procChordNames">
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="lineEdit_excludeTracks"/>
+        </item>
+        <item row="4" column="1">
+         <widget class="QComboBox" name="combox_chordStar">
+          <item>
+           <property name="text">
+            <string>Circle of semitones</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Circle of fifths</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="cb_dispChordStar">
           <property name="text">
-           <string>Process</string>
+           <string>Display chord star</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="cb_dispNoteNames">
+          <property name="text">
+           <string>Display names of notes</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="cb_dispChordNames">
+          <property name="text">
+           <string>Display chord names</string>
           </property>
          </widget>
         </item>

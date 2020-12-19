@@ -32,6 +32,9 @@
 #include "about.h"
 #include "help1.h"
 
+// Include chords
+#include "chords.h"
+
 #include "opencv2/core.hpp"
 
 class TracksP // ATTENTION: TracksP (class) or tracksproperties (objects) and RenderP (class) and renderproperties (object) have to be of a fixed static size. Otherwise, edit -> save/load settings won't work!
@@ -118,8 +121,11 @@ public:
     short vlines_colour[3] = {50,50,50};
     int vlines_track_n = 0;
     bool half_shift = 0;
+    bool note_names = 0;
     bool chord_names = 0;
     bool chord_analysis[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}; // ToDo: transfer this to class chord analysis
+    bool chord_star = 0;
+    chord::circle chord_star_type = chord::circleOfSemitones;
 };
 
 namespace Ui {

@@ -97,6 +97,12 @@ private slots:
 
     void on_lineEdit_excludeTracks_textEdited(const QString &arg1);
 
+    void on_cb_dispNoteNames_toggled(bool checked);
+
+    void on_cb_dispChordStar_toggled(bool checked);
+
+    void on_combox_chordStar_currentIndexChanged(int index);
+
 private:
     Ui::DockWidRender *ui;
 

@@ -252,3 +252,25 @@ void DockWidRender::on_lineEdit_excludeTracks_textEdited(const QString &arg1) //
 
 //    renderproperties->chord_analysis;
 }
+
+void DockWidRender::on_cb_dispNoteNames_toggled(bool checked)
+{
+    renderproperties->note_names = checked;
+}
+
+void DockWidRender::on_cb_dispChordStar_toggled(bool checked)
+{
+    renderproperties->chord_star = checked;
+}
+
+void DockWidRender::on_combox_chordStar_currentIndexChanged(int index)
+{
+    if (index == 0)
+    {
+        renderproperties->chord_star_type = chord::circleOfSemitones;
+    }
+    else if (index == 1)
+    {
+        renderproperties->chord_star_type = chord::circleOfFifths;
+    }
+}
