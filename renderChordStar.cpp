@@ -25,29 +25,29 @@ void renderChordStar(chord chord, chord::circle type, cv::Mat mat, cv::Point cen
 void dispChordDisc(chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool dispPitchNames, int turn)
 {
     cv::circle(mat, centre, diameter + 10, cv::Scalar(0, 0, 0), -1);
-    std::set<pitch> allPitches = {pitch(0), pitch(1), pitch(2), pitch(3), pitch(4), pitch(5), pitch(6), pitch(7), pitch(8), pitch(9), pitch(10), pitch(11)};//{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-    if (type == chord::circleOfSemitones)
+    std::list<pitch> allPitches = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}; // init
+    int i = turn;
+    for (std::list<pitch>::iterator ptr = allPitches.begin(); ptr != allPitches.end(); ++ptr)
     {
-        int i = turn;
-        for (std::set<pitch>::iterator ptr = allPitches.begin(); ptr != allPitches.end(); ++ptr)
+        pitch p = (*ptr);
+        float currAngleRad = i*30 * M_PI/180;
+        cv::Point pointRel = cv::Point((float)diameter*cos(currAngleRad), (float)diameter*sin(currAngleRad));
+        cv::Point pointAbs = centre + pointRel;
+        cv::circle(mat, pointAbs, 5, cv::Scalar(80, 80, 80));
+        if (dispPitchNames)
         {
-            pitch p = (*ptr);
-            float currAngleRad = i*30 * M_PI/180;
-            cv::Point pointRel = cv::Point((float)diameter*cos(currAngleRad), (float)diameter*sin(currAngleRad));
-            cv::Point pointAbs = centre + pointRel;
-            cv::circle(mat, pointAbs, 5, cv::Scalar(80, 80, 80));
-            if (dispPitchNames)
-            {
-                cv::putText(mat,
-                            p.getLetterName(pitch::Accidental::flat),//"Here is some text",
-                            pointAbs, // Coordinates
-                            cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
-                            1.0, // Scale. 2.0 = 2x bigger
-                            cv::Scalar(200,200,200), // BGR Color
-                            1, // Line Thickness (Optional)
-                            cv::LINE_AA); // Anti-alias (Optional)
-            }
-            i++;
+            cv::putText(mat,
+                        p.getLetterName(pitch::Accidental::flat),//"Here is some text",
+                        pointAbs, // Coordinates
+                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        cv::Scalar(200,200,200), // BGR Color
+                        1, // Line Thickness (Optional)
+                        cv::LINE_AA); // Anti-alias (Optional)
         }
+        if (type == chord::circleOfSemitones)
+            {i++;}
+        else if (type == chord::circleOfFifths)
+            {i = i + 7;}
     }
 }

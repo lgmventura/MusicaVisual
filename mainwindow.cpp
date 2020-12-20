@@ -1350,17 +1350,17 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=G_chords.Chords.begin() && it!=G_chords.Chords.end()) // if it is the chord currently being played
             {
                 int diam = 100;
+                chord::circle type = renderproperties->chord_star_type;
                 cv::Point centre = cv::Point(window_width/4, window_height/4);
-                if (renderproperties->note_names_where == 0)
+                if ( ! (renderproperties->note_names_where == 1 && renderproperties->note_names))
                 {
-                    dispChordDisc(renderproperties->chord_star_type, image, centre, diam, false, renderproperties->turn_chord_circle);
+                    dispChordDisc(type, image, centre, diam, false, renderproperties->turn_chord_circle);
                 }
                 else if (renderproperties->note_names_where == 1 && renderproperties->note_names)
                 {
-                    dispChordDisc(renderproperties->chord_star_type, image, centre, diam, true, renderproperties->turn_chord_circle);
+                    dispChordDisc(type, image, centre, diam, true, renderproperties->turn_chord_circle);
                 }
                 chord currChord = chordWT.Chord;
-                chord::circle type = renderproperties->chord_star_type;
                 renderChordStar(currChord, type, image, centre, diam, renderproperties->turn_chord_circle);
             }
 
