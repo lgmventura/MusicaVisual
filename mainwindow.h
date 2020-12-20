@@ -122,6 +122,8 @@ public:
     int vlines_track_n = 0;
     bool half_shift = 0;
     bool note_names = 0;
+    int note_names_where = 0;
+    int turn_chord_circle = 0;
     bool chord_names = 0;
     bool chord_analysis[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}; // ToDo: transfer this to class chord analysis
     bool chord_star = 0;

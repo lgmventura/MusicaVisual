@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     playthread.cpp \
     dockwidrender.cpp \
     about.cpp \
-    help1.cpp
+    help1.cpp \
+    renderChordStar.cpp
 
 HEADERS  += mainwindow.h \
     chords.h \
@@ -49,7 +50,8 @@ HEADERS  += mainwindow.h \
     csappmidi/include/MidiEventList.h \
     csappmidi/include/MidiFile.h \
     csappmidi/include/MidiMessage.h \
-    csappmidi/include/Options.h
+    csappmidi/include/Options.h \
+    renderChordStar.h
 
 FORMS    += mainwindow.ui \
     dockwidgettracks.ui \

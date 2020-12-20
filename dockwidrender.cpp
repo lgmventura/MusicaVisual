@@ -274,3 +274,13 @@ void DockWidRender::on_combox_chordStar_currentIndexChanged(int index)
         renderproperties->chord_star_type = chord::circleOfFifths;
     }
 }
+
+void DockWidRender::on_comboBox_3_currentIndexChanged(int index)
+{
+    renderproperties->note_names_where = index;
+}
+
+void DockWidRender::on_spinBox_10_valueChanged(int arg1)
+{
+    renderproperties->turn_chord_circle = arg1;
+}

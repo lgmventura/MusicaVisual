@@ -1312,7 +1312,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
     // ============ Displaying chord names ==============
-    if (renderproperties->note_names) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
+    if (renderproperties->note_names && renderproperties->note_names_where == 0) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
     {
         std::list<chordWithTime>::iterator it;
         std::list<chordWithTime>::iterator it_next;
@@ -1351,10 +1351,17 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
             {
                 int diam = 100;
                 cv::Point centre = cv::Point(window_width/4, window_height/4);
-                dispChordDisc(renderproperties->chord_star_type, image, centre, diam);
+                if (renderproperties->note_names_where == 0)
+                {
+                    dispChordDisc(renderproperties->chord_star_type, image, centre, diam, false, renderproperties->turn_chord_circle);
+                }
+                else if (renderproperties->note_names_where == 1 && renderproperties->note_names)
+                {
+                    dispChordDisc(renderproperties->chord_star_type, image, centre, diam, true, renderproperties->turn_chord_circle);
+                }
                 chord currChord = chordWT.Chord;
                 chord::circle type = renderproperties->chord_star_type;
-                renderChordStar(currChord, type, image, centre, diam);
+                renderChordStar(currChord, type, image, centre, diam, renderproperties->turn_chord_circle);
             }
 
         }

@@ -103,6 +103,10 @@ private slots:
 
     void on_combox_chordStar_currentIndexChanged(int index);
 
+    void on_comboBox_3_currentIndexChanged(int index);
+
+    void on_spinBox_10_valueChanged(int arg1);
+
 private:
     Ui::DockWidRender *ui;
 
