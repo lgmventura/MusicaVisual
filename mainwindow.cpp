@@ -1246,13 +1246,20 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
         cv::line(image, cv::Point(window_width/2, window_height), cv::Point(window_width/2, 0), {100,100,100});
     if (renderproperties->lines[1]) // vertical lines from time signatures saved in the midi file
     {
-        TimeSignature tsig_next = *tsignatures.end(); // next physically, previous with reference to the backward loop:
-        for (std::list<TimeSignature>::iterator ptsig = tsignatures.end(); ptsig != tsignatures.begin(); --ptsig) // run from last time signature to first
+        std::list<TimeSignature> tsigs = tsignatures; // for debugging
+        TimeSignature tsig_next = TimeSignature(); // next physically, previous with reference to the backward loop:
+        tsig_next.t_on = total_time; // since TimeSignatures don't have a t_off time, we associate the total_time from the midi file to the very last time signature
+        for (std::list<TimeSignature>::reverse_iterator ptsig = tsignatures.rbegin(); ptsig != tsignatures.rend(); ++ptsig) // run from last time signature to first
         {
             TimeSignature tsig = *ptsig;
-            for (int i = tsig.t_on; i < tsig_next.t_on; i = i + tsig.numerator*tpq/tsig.denominator)
+            int k = 0; // for counting sub-beats and beats
+            for (int i = tsig.t_on; i < tsig_next.t_on; i = i + 4*tpq/tsig.denominator) // a sub-beat is 4*ticks_per_quarter_note/denominator
             {
-                cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {renderproperties->vlines_colour[2], renderproperties->vlines_colour[1], renderproperties->vlines_colour[0]});
+                if (k % tsig.numerator == 0) // for a whole beat, we consider the numerator
+                    cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {renderproperties->vlines_colour[2], renderproperties->vlines_colour[1], renderproperties->vlines_colour[0]});
+                else
+                    cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {0.6*renderproperties->vlines_colour[2], 0.6*renderproperties->vlines_colour[1], 0.6*renderproperties->vlines_colour[0]});
+                k++;
             }
             tsig_next = tsig;
         }
@@ -1603,7 +1610,7 @@ void MainWindow::on_pushButton_clicked() // Process button
     string str;
     stream << ui->plainTextEdit->toPlainText().toUtf8().constData(); // Get the entire text from the plain text input box.
     unsigned int delta, track;
-    unsigned long time;
+    unsigned long time = 0;
     int messg;
     // reset track names, since we are processing a new midi file, to avoid garbage (old names, if you load a new midi file):
     nameTracksReset();
@@ -1614,7 +1621,7 @@ void MainWindow::on_pushButton_clicked() // Process button
 //    pitch_min = 100;
 
 
-    for (int i = 0; getline(stream,str,'\t'); i++)
+    for (int i = 0; getline(stream,str,'\t'); i++) // this loops horizontally and vertically through substrings. Tabs and new-lines will be a new get line, look at '\t'
     {
 //        int time, delta, track;
 //        int messg;
@@ -1624,19 +1631,19 @@ void MainWindow::on_pushButton_clicked() // Process button
         }
 
         string messg_str;
-        if (i >= 5 && i%4 == 0)
+        if (i >= 5 && i%4 == 0) // first column
         {
-            time = stoi(str, nullptr, 10); // getting the time in ticks
+            time = stoi(str, nullptr, 10); // getting the absolute time in ticks
         }
-        if (i >= 5 && i%4 == 1)
+        if (i >= 5 && i%4 == 1) // second column
         {
-            delta = stoi(str, nullptr, 10); // getting the delta time in ticks
+            delta = stoi(str, nullptr, 10); // getting the delta time in ticks (relative time from last message)
         }
-        if (i >= 5 && i%4 == 2)
+        if (i >= 5 && i%4 == 2) // third column
         {
             track = stoi(str, nullptr, 10); // getting the track number
         }
-        if (i >= 5 && i%4 == 3)
+        if (i >= 5 && i%4 == 3) // fourth column - the hexadecimal midi message itself
         {
             messg = stoi(str, nullptr, 16); // getting the midi message type
             messg_str = str; // getting the midi message string
@@ -1733,7 +1740,6 @@ void MainWindow::on_pushButton_clicked() // Process button
     QMessageBox::information(this, tr("Processing completed"), "The midi data in the text input window was successfully completed.", QMessageBox::Ok );
     ui->pushButton_2->setEnabled(true);
     ui->pushButton_3->setEnabled(true);
-
 
 //    for (std::list<TempoChange>::iterator it=tempos.begin(); it != tempos.end(); ++it) // Run the  tempo change list forwards
 //    {
