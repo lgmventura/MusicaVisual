@@ -21,7 +21,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -229,6 +229,23 @@
            <string>Vertical lines</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="sb_vLineTrack">
+             <property name="minimum">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <number>127</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="4">
+            <widget class="QPushButton" name="pb_setClr_vlines">
+             <property name="text">
+              <string>Set color...</string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="0">
             <widget class="QCheckBox" name="checkBox">
              <property name="text">
@@ -239,14 +256,35 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="checkBox_2">
+           <item row="3" column="0">
+            <widget class="QCheckBox" name="cb_vLineTrack">
              <property name="text">
-              <string>Beat lines; measure:</string>
+              <string>From metronome track:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QWidget" name="widget_vlcolour" native="true">
+             <property name="autoFillBackground">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="cb_vLineTSig">
+             <property name="text">
+              <string>Beat lines from time signatures</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
+            <widget class="QCheckBox" name="checkBox_2">
+             <property name="text">
+              <string>Manual, measure:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
             <widget class="QSpinBox" name="spinBox">
              <property name="minimum">
               <number>1</number>
@@ -259,7 +297,7 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
+           <item row="1" column="3">
             <widget class="QComboBox" name="comboBox_2">
              <property name="currentText">
               <string>1</string>
@@ -299,37 +337,6 @@
                <string>64</string>
               </property>
              </item>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QCheckBox" name="cb_vLineTrack">
-             <property name="text">
-              <string>From track</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QSpinBox" name="sb_vLineTrack">
-             <property name="minimum">
-              <number>0</number>
-             </property>
-             <property name="maximum">
-              <number>127</number>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="3">
-            <widget class="QWidget" name="widget_vlcolour" native="true">
-             <property name="autoFillBackground">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="4">
-            <widget class="QPushButton" name="pb_setClr_vlines">
-             <property name="text">
-              <string>Set color...</string>
-             </property>
             </widget>
            </item>
           </layout>

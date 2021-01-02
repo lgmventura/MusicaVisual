@@ -36,3 +36,8 @@ TempoChange::TempoChange()
 {
 
 }
+
+TimeSignature::TimeSignature()
+{
+
+}

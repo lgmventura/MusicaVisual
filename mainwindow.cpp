@@ -73,6 +73,7 @@ TracksP *tracksproperties = new TracksP(); // Global variable with tracks parame
 int n_events; // Global var to store number of events
 std::list <MidiNote> notes; // List of processed notes.
 std::list <TempoChange> *tempos = new std::list <TempoChange>;
+std::list <TimeSignature> tsignatures; // list of time signatures (being used for vertical lines)
 unsigned long total_time = 0; // Global variable to store the total time of the current processed midi file.
 unsigned int pitch_max = 1, pitch_min = 128;
 unsigned int tracks_count = 1;
@@ -1227,7 +1228,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
                     // ============= Vertical Lines from tracks =============
 
-                    if ((*it).track == tnum && renderproperties->lines[2] && renderproperties->vlines_track_n == (int)tnum)
+                    if ((*it).track == tnum && renderproperties->lines[3] && renderproperties->vlines_track_n == (int)tnum)
                     {
                         cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {renderproperties->vlines_colour[2]*(*it).vel/128, renderproperties->vlines_colour[1]*(*it).vel/128, renderproperties->vlines_colour[0]*(*it).vel/128});
                     }
@@ -1241,9 +1242,22 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 //    pt3.y = window_height;
 //    pt4.y = 0;
 // =================== Vertical Lines =============
-    if (renderproperties->lines[0])
+    if (renderproperties->lines[0]) // cetered line
         cv::line(image, cv::Point(window_width/2, window_height), cv::Point(window_width/2, 0), {100,100,100});
-    if (renderproperties->lines[1])
+    if (renderproperties->lines[1]) // vertical lines from time signatures saved in the midi file
+    {
+        TimeSignature tsig_next = *tsignatures.end(); // next physically, previous with reference to the backward loop:
+        for (std::list<TimeSignature>::iterator ptsig = tsignatures.end(); ptsig != tsignatures.begin(); --ptsig) // run from last time signature to first
+        {
+            TimeSignature tsig = *ptsig;
+            for (int i = tsig.t_on; i < tsig_next.t_on; i = i + tsig.numerator*tpq/tsig.denominator)
+            {
+                cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {renderproperties->vlines_colour[2], renderproperties->vlines_colour[1], renderproperties->vlines_colour[0]});
+            }
+            tsig_next = tsig;
+        }
+    }
+    if (renderproperties->lines[2]) // manual time signature, given measure
     {
         for (unsigned int i = 0; i < endMidiTime; i = i + 4*renderproperties->beat_measure_manual[0]*tpq/renderproperties->beat_measure_manual[1])
         {
@@ -1699,6 +1713,15 @@ void MainWindow::on_pushButton_clicked() // Process button
                     {
                         track_names->at(track) = t_name; // store the track names when the button Process is pressed.
                     }
+                }
+                else if (messg_str.substr(3,5) == "58 04" || messg_str.substr(3,4) == "58 4") // time signature messages start with this substring "FF 58 04"
+                {
+                    TimeSignature temp_tsig;
+                    temp_tsig.numerator = stoi(messg_str.substr(9,2));
+                    int denominator_exponent = stoi(messg_str.substr(12,2));
+                    temp_tsig.denominator = std::pow(2, denominator_exponent);
+                    temp_tsig.t_on = time;
+                    tsignatures.push_back(temp_tsig);
                 }
             }
 

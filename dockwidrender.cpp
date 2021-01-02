@@ -87,9 +87,19 @@ void DockWidRender::on_checkBox_toggled(bool checked)
     renderproperties->lines[0] = checked;
 }
 
-void DockWidRender::on_checkBox_2_toggled(bool checked)
+void DockWidRender::on_cb_vLineTSig_toggled(bool checked)
 {
     renderproperties->lines[1] = checked;
+}
+
+void DockWidRender::on_checkBox_2_toggled(bool checked)
+{
+    renderproperties->lines[2] = checked;
+}
+
+void DockWidRender::on_cb_vLineTrack_toggled(bool checked)
+{
+    renderproperties->lines[3] = checked;
 }
 
 void DockWidRender::on_spinBox_valueChanged(int arg1)
@@ -222,11 +232,6 @@ void DockWidRender::on_pb_setClr_hlines_clicked()
     QPalette pal_h = ui->widget_hlcolour->palette();
     pal_h.setColor(QPalette::Window, hlines);
     ui->widget_hlcolour->setPalette(pal_h);
-}
-
-void DockWidRender::on_cb_vLineTrack_toggled(bool checked)
-{
-    renderproperties->lines[2] = checked;
 }
 
 void DockWidRender::on_sb_vLineTrack_valueChanged(int arg1)

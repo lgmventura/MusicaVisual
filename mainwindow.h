@@ -107,7 +107,7 @@ public:
     RenderP();
     int vertRange = 40;
     int vertShift = 0;
-    bool lines[3] = {1,0,0};
+    bool lines[4] = {1,0,0,0};
     unsigned short beat_measure_manual[2] = {4,4};
     bool sep_render[3] = {0,0,0};
     short blur_size[2] = {0,0};

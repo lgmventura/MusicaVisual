@@ -107,6 +107,8 @@ private slots:
 
     void on_spinBox_10_valueChanged(int arg1);
 
+    void on_cb_vLineTSig_toggled(bool checked);
+
 private:
     Ui::DockWidRender *ui;
 

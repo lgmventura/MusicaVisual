@@ -53,5 +53,13 @@ public:
     TempoChange();
 };
 
+class TimeSignature: public MidiMessages
+{
+public:
+    int numerator;
+    int denominator;
+    TimeSignature();
+};
+
 //
 #endif // MIDIMESSAGES_H
