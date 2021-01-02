@@ -1248,7 +1248,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     {
         std::list<TimeSignature> tsigs = tsignatures; // for debugging
         TimeSignature tsig_next = TimeSignature(); // next physically, previous with reference to the backward loop:
-        tsig_next.t_on = total_time; // since TimeSignatures don't have a t_off time, we associate the total_time from the midi file to the very last time signature
+        tsig_next.t_on = total_time + 100; // since TimeSignatures don't have a t_off time, we associate the total_time from the midi file to the very last time signature. The +100 is to force a last line t appear. +1 should already work, but this is still a mystery
         for (std::list<TimeSignature>::reverse_iterator ptsig = tsignatures.rbegin(); ptsig != tsignatures.rend(); ++ptsig) // run from last time signature to first
         {
             TimeSignature tsig = *ptsig;
