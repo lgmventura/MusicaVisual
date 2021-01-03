@@ -40,6 +40,7 @@ extern AnimPainter *animPt;
 //extern std::list <TempoChange> *tempos;
 extern int tpq;
 extern bool *videoRecord;
+extern cv::VideoWriter *video;
 
 cv::Mat *image;
 int window_width;
@@ -99,6 +100,10 @@ AnimationBar::~AnimationBar()
 {
     // releasing memory before closing it in this destructor
     img_buffer_sep_tracks->clear();
+    if (*videoRecord == true)
+    {
+        video->release();
+    }
     delete ui;
 }
 
