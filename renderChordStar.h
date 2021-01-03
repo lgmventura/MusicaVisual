@@ -9,6 +9,6 @@
 
 void renderChordStar(chord chord, chord::circle type, cv::Mat mat, cv::Point centre, int diameter, int turn = 0);
 
-void dispChordDisc(chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool dispPitchNames, int turn = 0);
+void dispChordDisc(chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool dispPitchNames, int turn = 0, bool accidentalSharp = 0);
 
 #endif // RENDERCHORDSTAR_H

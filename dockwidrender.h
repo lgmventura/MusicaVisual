@@ -109,6 +109,8 @@ private slots:
 
     void on_cb_vLineTSig_toggled(bool checked);
 
+    void on_cb_sharpFlat_currentIndexChanged(int index);
+
 private:
     Ui::DockWidRender *ui;
 

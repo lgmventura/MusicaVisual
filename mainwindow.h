@@ -127,6 +127,7 @@ public:
     bool chord_names = 0;
     bool chord_analysis[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}; // ToDo: transfer this to class chord analysis
     bool chord_star = 0;
+    bool accidentalSharp = 0; // 0 for flat, 1 for sharp
     chord::circle chord_star_type = chord::circleOfSemitones;
 };
 

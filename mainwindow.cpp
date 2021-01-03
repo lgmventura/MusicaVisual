@@ -1332,7 +1332,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 
 
 
-    // ============ Displaying chord names ==============
+    // ============ Displaying note names ==============
     if (renderproperties->note_names && renderproperties->note_names_where == 0) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
     {
         std::list<chordWithTime>::iterator it;
@@ -1344,7 +1344,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=G_chords.Chords.begin() && it!=G_chords.Chords.end())
             {
                 std::string ptStr = "Pitches:";
-                ptStr = chordWT.Chord.getPitchesStr();
+                ptStr = chordWT.Chord.getPitchesStr(renderproperties->accidentalSharp);
                 cv::putText(image,
                         ptStr,//"Here is some text",
                         cv::Point(10,30), // Coordinates
@@ -1358,6 +1358,8 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
         }
 
     }
+
+    // ============ Displaying chord names ============== ToDo
 
     // ============ Displaying circle / star ==============
     if (renderproperties->chord_star)
@@ -1375,11 +1377,11 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                 cv::Point centre = cv::Point(window_width/4, window_height/4);
                 if ( ! (renderproperties->note_names_where == 1 && renderproperties->note_names))
                 {
-                    dispChordDisc(type, image, centre, diam, false, renderproperties->turn_chord_circle);
+                    dispChordDisc(type, image, centre, diam, false, renderproperties->turn_chord_circle, renderproperties->accidentalSharp);
                 }
                 else if (renderproperties->note_names_where == 1 && renderproperties->note_names)
                 {
-                    dispChordDisc(type, image, centre, diam, true, renderproperties->turn_chord_circle);
+                    dispChordDisc(type, image, centre, diam, true, renderproperties->turn_chord_circle, renderproperties->accidentalSharp);
                 }
                 chord currChord = chordWT.Chord;
                 renderChordStar(currChord, type, image, centre, diam, renderproperties->turn_chord_circle);

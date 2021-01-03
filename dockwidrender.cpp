@@ -289,3 +289,11 @@ void DockWidRender::on_spinBox_10_valueChanged(int arg1)
 {
     renderproperties->turn_chord_circle = arg1;
 }
+
+void DockWidRender::on_cb_sharpFlat_currentIndexChanged(int index)
+{
+    if (index == 0)
+        renderproperties->accidentalSharp = false;
+    else if (index == 1)
+        renderproperties->accidentalSharp = true;
+}

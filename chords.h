@@ -90,7 +90,7 @@ public:
     // methods:
     void insertPitch(pitch pitch);
     std::set<pitch> getPitches();
-    std::string getPitchesStr();
+    std::string getPitchesStr(bool accidentalSharp = false);
     std::string getName();
     std::set<float> getAnglesDeg(circle type); // for visual representation of chords
 

@@ -22,7 +22,7 @@ void renderChordStar(chord chord, chord::circle type, cv::Mat mat, cv::Point cen
     }
 }
 
-void dispChordDisc(chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool dispPitchNames, int turn)
+void dispChordDisc(chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool dispPitchNames, int turn, bool accidentalSharp)
 {
     cv::circle(mat, centre, diameter + 10, cv::Scalar(0, 0, 0), -1);
     std::list<pitch> allPitches = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}; // init
@@ -36,8 +36,18 @@ void dispChordDisc(chord::circle type, cv::Mat mat, cv::Point centre, int diamet
         cv::circle(mat, pointAbs, 5, cv::Scalar(80, 80, 80));
         if (dispPitchNames)
         {
-            cv::putText(mat,
+            if (accidentalSharp == false)
+                cv::putText(mat,
                         p.getLetterName(pitch::Accidental::flat),//"Here is some text",
+                        pointAbs, // Coordinates
+                        cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
+                        1.0, // Scale. 2.0 = 2x bigger
+                        cv::Scalar(200,200,200), // BGR Color
+                        1, // Line Thickness (Optional)
+                        cv::LINE_AA); // Anti-alias (Optional)
+            else
+                cv::putText(mat,
+                        p.getLetterName(pitch::Accidental::sharp),//"Here is some text",
                         pointAbs, // Coordinates
                         cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger

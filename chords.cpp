@@ -80,13 +80,16 @@ std::set<pitch> chord::getPitches()
 {
     return chord::Pitches;
 }
-std::string chord::getPitchesStr()
+std::string chord::getPitchesStr(bool accidentalSharp)
 {
     std::string pitchesStr = "Pitches:";
     for (std::set<pitch>::iterator pt = chord::Pitches.begin(); pt!=chord::Pitches.end(); ++pt)
     {
         pitch p = *pt;
-        pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::flat);
+        if (accidentalSharp)
+            pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::sharp);
+        else
+            pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::flat);
     }
     return pitchesStr;
 }
