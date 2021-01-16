@@ -13,7 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    chords.cpp \
+    musiclib/chords.cpp \
+    musiclib/midimessages.cpp \
+    musiclib/musicdata.cpp \
+    utils/cnum.cpp \
         mainwindow.cpp \
     csappmidi/src-library/MidiFile.cpp \
     csappmidi/src-library/MidiEvent.cpp \
@@ -22,16 +25,19 @@ SOURCES += main.cpp\
     csappmidi/src-library/Binasc.cpp \
     dockwidgettracks.cpp \
     dialogcolorpicker.cpp \
-    midimessages.cpp \
     animationbar.cpp \
     playthread.cpp \
     dockwidrender.cpp \
     about.cpp \
     help1.cpp \
-    renderChordStar.cpp
+    renderChordStar.cpp \
+    utils/colour.cpp
 
 HEADERS  += mainwindow.h \
-    chords.h \
+    musiclib/chords.h \
+    musiclib/midimessages.h \
+    musiclib/musicdata.h \
+    utils/cnum.h \
     csappmidi/include/MidiFile.h \
     csappmidi/include/MidiEventList.h \
     csappmidi/include/MidiEvent.h \
@@ -39,7 +45,6 @@ HEADERS  += mainwindow.h \
     csappmidi/include/Binasc.h \
     dockwidgettracks.h \
     dialogcolorpicker.h \
-    midimessages.h \
     animationbar.h \
     playthread.h \
     dockwidrender.h \
@@ -51,7 +56,8 @@ HEADERS  += mainwindow.h \
     csappmidi/include/MidiFile.h \
     csappmidi/include/MidiMessage.h \
     csappmidi/include/Options.h \
-    renderChordStar.h
+    renderChordStar.h \
+    utils/colour.h
 
 FORMS    += mainwindow.ui \
     dockwidgettracks.ui \
@@ -68,6 +74,7 @@ INCLUDEPATH += csappmidi/include
 INCLUDEPATH += csappmidi/src-library
 INCLUDEPATH += csappmidi/lib
 INCLUDEPATH += csappmidi/obj
+INCLUDEPATH += musiclib/
 
 INCLUDEPATH += /usr/local/include
 INCLUDEPATH += /usr/local/include/opencv
