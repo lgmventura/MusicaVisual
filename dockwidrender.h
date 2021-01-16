@@ -111,6 +111,8 @@ private slots:
 
     void on_cb_sharpFlat_currentIndexChanged(int index);
 
+    void on_cb_AA_toggled(bool checked);
+
 private:
     Ui::DockWidRender *ui;
 

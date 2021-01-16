@@ -129,6 +129,7 @@ public:
     bool chord_star = 0;
     bool accidentalSharp = 0; // 0 for flat, 1 for sharp
     chord::circle chord_star_type = chord::circleOfSemitones;
+    cv::LineTypes shapeLineType = cv::LINE_8;
 };
 
 namespace Ui {

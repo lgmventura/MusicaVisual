@@ -342,6 +342,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     //std::vector <cv::Mat> img_buffer_sep_tracks(tracks_count, cv::Mat::zeros( window_height, window_width, CV_8UC3 ));// this does not solve for Qt 5.9, OpenCV 4.0 (which uses C++11), see comments below
     // now, if you create a vector of cv::Mat objects, you are actually creating a vector of pointers to the SAME matrix. cv::Mat is not a matrix, but rather a pointer to one.
     // Solving this on the generation of the animation window
+    cv::LineTypes lineType = renderproperties->shapeLineType;
 
     for (std::list<MidiNote>::iterator it=notes.begin() ; it != notes.end(); ++it) // Run the list forwards
     {
@@ -370,9 +371,9 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         pt3.y = f2int_safe(y3); // Center y
                         if (abs(pt3.x - pt5[tnum].x) < tracksproperties->max_connect_dist && pt5[tnum] != cv::Point(0,0))
                             if ( ! renderproperties->sep_render[1])
-                                cv::line( image, pt3, pt5[tnum], {tracksproperties->getCv(tnum,2)/4,  tracksproperties->getCv(tnum,1)/4,  tracksproperties->getCv(tnum,0)/4}, 1, 8 );
+                                cv::line( image, pt3, pt5[tnum], {tracksproperties->getCv(tnum,2)/4,  tracksproperties->getCv(tnum,1)/4,  tracksproperties->getCv(tnum,0)/4}, 1, lineType );
                             else
-                                cv::line( img_buffer_sep_tracks[tnum], pt3, pt5[tnum], {tracksproperties->getCv(tnum,2)/4,  tracksproperties->getCv(tnum,1)/4,  tracksproperties->getCv(tnum,0)/4}, 1, 8 );
+                                cv::line( img_buffer_sep_tracks[tnum], pt3, pt5[tnum], {tracksproperties->getCv(tnum,2)/4,  tracksproperties->getCv(tnum,1)/4,  tracksproperties->getCv(tnum,0)/4}, 1, lineType );
                         pt5[tnum].x = f2int_safe(x3); // Center x of the previous note
                         pt5[tnum].y = f2int_safe(y3); // Center y of the previous note
                     }
@@ -384,21 +385,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     {
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::rectangle( image, pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::rectangle( image, pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
                             else
-                                cv::rectangle( img_buffer_sep_tracks[tnum], pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::rectangle( img_buffer_sep_tracks[tnum], pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::rectangle( image, pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::rectangle( image, pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
                             else
-                                cv::rectangle( img_playing_notes, pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::rectangle( img_playing_notes, pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::rectangle( image, pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::rectangle( image, pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
                             else
-                                cv::rectangle( img_buffer_sep_tracks[tnum], pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::rectangle( img_buffer_sep_tracks[tnum], pt1, pt2, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
                     }
 
 
@@ -418,21 +419,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType );
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType );
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType );
                             else
-                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType );
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType );
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType );
                     }
 
 
@@ -446,21 +447,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                             else
-                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                             else
-                                cv::ellipse( img_playing_notes, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::ellipse( img_playing_notes, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                             else
-                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                     }
 
 
@@ -475,21 +476,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
                             else
-                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::circle( image, pt3, (x2-window_width/2+3), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::circle( image, pt3, (x2-window_width/2+3), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
                             else
-                                cv::circle( img_playing_notes, pt3, (x2-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::circle( img_playing_notes, pt3, (x2-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
                             else
-                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
                     }
 
 
@@ -507,15 +508,15 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                             else
-                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
 
                         if (pt1.x < window_width/2) // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                             else
-                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
 
 
                         if (pt1_prev[tnum].x <= window_width/2 && pt1.x > window_width/2 && pt2_prev[tnum].x + 5 > window_width/2) // The note block is inside the center line // no more else if
@@ -529,15 +530,15 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                             // Case 1: the distance to the next note is big (not a legato) -> note just fall off
                             if (pt1.x - pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::circle( image, pt3_prev[tnum], floor1(pt2_prev[tnum].x-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                    cv::circle( image, pt3_prev[tnum], floor1(pt2_prev[tnum].x-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                                 else
-                                    cv::circle( img_moving_notes, pt3_prev[tnum], floor1(pt2_prev[tnum].x-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                    cv::circle( img_moving_notes, pt3_prev[tnum], floor1(pt2_prev[tnum].x-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                             // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
                             else
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::circle( image, cv::Point(x_mov, y_mov), floor1(radius_prev[tnum] + deriv*((float)radius - (float)radius_prev[tnum])), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                    cv::circle( image, cv::Point(x_mov, y_mov), floor1(radius_prev[tnum] + deriv*((float)radius - (float)radius_prev[tnum])), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                                 else
-                                    cv::circle( img_moving_notes, cv::Point(x_mov, y_mov), floor1(radius_prev[tnum] + deriv*((float)radius - (float)radius_prev[tnum])), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                    cv::circle( img_moving_notes, cv::Point(x_mov, y_mov), floor1(radius_prev[tnum] + deriv*((float)radius - (float)radius_prev[tnum])), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
 
                         }
 
@@ -560,21 +561,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                             else
-                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 1, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
                             else
-                                cv::circle( img_playing_notes, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 2, 8 );
+                                cv::circle( img_playing_notes, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 2, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                             else
-                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
 
 
                         if (pt1_prev[tnum].x <= window_width/2 && pt1.x > window_width/2 && pt2_prev[tnum].x + 5 > window_width/2) // The note block is inside the center line // no more else if
@@ -585,15 +586,15 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                             // Case 1: the distance to the next note is big (not a legato) -> note just fall off
                             if (pt1.x - pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::circle( image, pt3_prev[tnum], floor1(pt2_prev[tnum].x-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                    cv::circle( image, pt3_prev[tnum], floor1(pt2_prev[tnum].x-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                                 else
-                                    cv::circle( img_moving_notes, pt3_prev[tnum], floor1(pt2_prev[tnum].x-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                    cv::circle( img_moving_notes, pt3_prev[tnum], floor1(pt2_prev[tnum].x-window_width/2+1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                             // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
                             else
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::circle( image, cv::Point(x_mov, y_mov), floor1(radius_prev[tnum] + deriv*((float)radius - (float)radius_prev[tnum])), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                    cv::circle( image, cv::Point(x_mov, y_mov), floor1(radius_prev[tnum] + deriv*((float)radius - (float)radius_prev[tnum])), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                                 else
-                                    cv::circle( img_moving_notes, cv::Point(x_mov, y_mov), floor1(radius_prev[tnum] + deriv*((float)radius - (float)radius_prev[tnum])), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                    cv::circle( img_moving_notes, cv::Point(x_mov, y_mov), floor1(radius_prev[tnum] + deriv*((float)radius - (float)radius_prev[tnum])), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
 
                         }
 
@@ -732,14 +733,14 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
 //                        else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
 //                        {
 //                            if ( ! renderproperties->sep_render[0])
@@ -767,15 +768,15 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                             // Case 1: the distance to the next note is big (not a legato) -> note just fall off
                             if (pt1.x - pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::fillConvexPoly( image, ptos_prev[tnum], 4, {(0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, (0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, (0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, 8 );
+                                    cv::fillConvexPoly( image, ptos_prev[tnum], 4, {(0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, (0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, (0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
                                 else
-                                    cv::fillConvexPoly( img_moving_notes, ptos_prev[tnum], 4, {(1 - deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, (1 - deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, (1 - deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, 8 );
+                                    cv::fillConvexPoly( img_moving_notes, ptos_prev[tnum], 4, {(1 - deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, (1 - deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, (1 - deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
                             // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
                             else
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::fillConvexPoly( image, ptos_mov, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                    cv::fillConvexPoly( image, ptos_mov, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                                 else
-                                    cv::fillConvexPoly( img_moving_notes, ptos_mov, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                    cv::fillConvexPoly( img_moving_notes, ptos_mov, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
 
                         }
                         pt3_prev[tnum] = pt3; // Next centre point = previous
@@ -806,21 +807,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                             else
-                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                         }
                         if (pt1.x <= window_width/2) // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
 //                        else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
 //                        {
 //                            if ( ! renderproperties->sep_render[0])
@@ -848,15 +849,15 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                             // Case 1: the distance to the next note is big (not a legato) -> note just fall off
                             if (pt1.x - pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::fillConvexPoly( image, ptos_prev[tnum], 4, {(0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, (0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, (0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, 8 );
+                                    cv::fillConvexPoly( image, ptos_prev[tnum], 4, {(0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, (0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, (0.5 - deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
                                 else
-                                    cv::fillConvexPoly( img_moving_notes, ptos_prev[tnum], 4, {(1 - deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, (1 - deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, (1 - deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, 8 );
+                                    cv::fillConvexPoly( img_moving_notes, ptos_prev[tnum], 4, {(1 - deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, (1 - deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, (1 - deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
                             // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
                             else
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::fillConvexPoly( image, ptos_mov, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                    cv::fillConvexPoly( image, ptos_mov, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                                 else
-                                    cv::fillConvexPoly( img_moving_notes, ptos_mov, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                    cv::fillConvexPoly( img_moving_notes, ptos_mov, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
 
                         }
                         pt3_prev[tnum] = pt3; // Next centre point = previous
@@ -881,9 +882,9 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                             else
-                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
 //                        else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
 //                        {
 //                            if ( ! renderproperties->sep_render[0])
@@ -893,9 +894,9 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 //                        }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                             else
-                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
 
 
                         if (pt1_prev[tnum].x <= window_width/2 && pt1.x > window_width/2 && pt2_prev[tnum].x + 5 > window_width/2) // The note block is inside the center line // no more else if
@@ -911,15 +912,15 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                             // Case 1: the distance to the next note is big (not a legato) -> note just fall off
                             if (pt1.x - pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::ellipse( image, pt3_prev[tnum], cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {(0.5-deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, 8 );
+                                    cv::ellipse( image, pt3_prev[tnum], cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {(0.5-deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
                                 else
-                                    cv::ellipse( img_moving_notes, pt3_prev[tnum], cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {(0.5-deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, 8 );
+                                    cv::ellipse( img_moving_notes, pt3_prev[tnum], cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {(0.5-deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
                             // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
                             else
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::ellipse( image, cv::Point(x3_mov, y3_mov), cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, 8 );
+                                    cv::ellipse( image, cv::Point(x3_mov, y3_mov), cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
                                 else
-                                    cv::ellipse( img_moving_notes, cv::Point(x3_mov, y3_mov), cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, 8 );
+                                    cv::ellipse( img_moving_notes, cv::Point(x3_mov, y3_mov), cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
 
                         }
 
@@ -943,21 +944,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                             else
-                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 1, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
                             else
-                                cv::ellipse( img_playing_notes, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 1, 8 );
+                                cv::ellipse( img_playing_notes, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                             else
-                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
 
 
                         if (pt1_prev[tnum].x <= window_width/2 && pt1.x > window_width/2 && pt2_prev[tnum].x + 5 > window_width/2) // The note block is inside the center line // no more else if
@@ -973,15 +974,15 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                             // Case 1: the distance to the next note is big (not a legato) -> note just fall off
                             if (pt1.x - pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::ellipse( image, pt3_prev[tnum], cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {(0.5-deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, 8 );
+                                    cv::ellipse( image, pt3_prev[tnum], cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {(0.5-deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
                                 else
-                                    cv::ellipse( img_moving_notes, pt3_prev[tnum], cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {(0.5-deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, 8 );
+                                    cv::ellipse( img_moving_notes, pt3_prev[tnum], cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {(0.5-deriv)*getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
                             // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
                             else
                                 if ( ! renderproperties->sep_render[2])
-                                    cv::ellipse( image, cv::Point(x3_mov, y3_mov), cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, 8 );
+                                    cv::ellipse( image, cv::Point(x3_mov, y3_mov), cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
                                 else
-                                    cv::ellipse( img_moving_notes, cv::Point(x3_mov, y3_mov), cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, 8 );
+                                    cv::ellipse( img_moving_notes, cv::Point(x3_mov, y3_mov), cv::Size(x3_mov-x1_mov, y3-y2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
 
                         }
 
@@ -1005,21 +1006,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                             else
-                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::circle( image, pt3, 1.1*radius*(x2-window_width/2)/(x2-x1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::circle( image, pt3, 1.1*radius*(x2-window_width/2)/(x2-x1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                             else
-                                cv::circle( img_playing_notes, pt3, 1.1*radius*(x2-window_width/2)/(x2-x1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::circle( img_playing_notes, pt3, 1.1*radius*(x2-window_width/2)/(x2-x1), {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::circle( image, pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                             else
-                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::circle( img_buffer_sep_tracks[tnum], pt3, radius, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                     }
 
 
@@ -1034,21 +1035,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                             else
-                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, 1 + (*it).vel/2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, 1 + (*it).vel/2), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                             else
-                                cv::ellipse( img_playing_notes, pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                cv::ellipse( img_playing_notes, pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::ellipse( image, pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::ellipse( image, pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                             else
-                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                                cv::ellipse( img_buffer_sep_tracks[tnum], pt3, cv::Size(x3-x1, 1 + (*it).vel/2 ), 0, 0, 360, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
                     }
 
 
@@ -1068,21 +1069,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                             else
-                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                     }
 
 
@@ -1101,21 +1102,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                             else
-                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                     }
 
 
@@ -1134,21 +1135,21 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             if ( ! renderproperties->sep_render[0])
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                             else
-                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                     }
 
 
@@ -1168,22 +1169,22 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             float nprogress = (float)(x2-window_width/2)/(x2-x1);
                             if ( ! renderproperties->sep_render[0])
-                                cv::fillConvexPoly( image, ptos, 3, {nprogress*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, nprogress*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, nprogress*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {nprogress*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, nprogress*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, nprogress*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                             else
-                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {nprogress*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, nprogress*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, nprogress*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, 8 );
+                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {nprogress*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, nprogress*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, nprogress*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                     }
 
 
@@ -1202,22 +1203,22 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
                             if ( ! renderproperties->sep_render[1])
                                 //cv::fillPoly( image, pts, );
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel*3/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
                         else if (pt1.x <= window_width/2 && pt2.x > window_width/2) // The note block is inside the center line
                         {
                             float nprogress = 1.5 - (float)(x2-window_width/2)/(x2-x1);
                             if ( ! renderproperties->sep_render[0])
-                                cv::fillConvexPoly( image, ptos, 3, {nprogress*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, nprogress*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, nprogress*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {nprogress*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/64, nprogress*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/64, nprogress*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
                             else
-                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {nprogress*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, nprogress*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, nprogress*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, 8 );
+                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {nprogress*getColorTrackP(tnum, (*it).pitch).b*(*it).vel/32, nprogress*getColorTrackP(tnum, (*it).pitch).g*(*it).vel/32, nprogress*getColorTrackP(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
                         }
                         else // The note block is after (to the left of) the center line
                             if ( ! renderproperties->sep_render[1])
-                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( image, ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                             else
-                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, 8 );
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {getColorTrackP(tnum, (*it).pitch).b*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).g*(*it).vel/512, getColorTrackP(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
                     }
 
 

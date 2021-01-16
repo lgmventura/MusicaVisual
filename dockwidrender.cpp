@@ -297,3 +297,15 @@ void DockWidRender::on_cb_sharpFlat_currentIndexChanged(int index)
     else if (index == 1)
         renderproperties->accidentalSharp = true;
 }
+
+void DockWidRender::on_cb_AA_toggled(bool checked)
+{
+    if (checked == true)
+    {
+        renderproperties->shapeLineType = cv::LINE_AA;
+    }
+    else
+    {
+        renderproperties->shapeLineType = cv::LINE_8;
+    }
+}
