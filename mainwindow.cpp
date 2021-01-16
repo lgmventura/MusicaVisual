@@ -44,6 +44,10 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 
+//Include utils:
+#include "utils/cnum.h"
+#include "utils/colour.h"
+
 // Iostream (just to help on debugging)
 #include <iostream>
 
@@ -94,155 +98,6 @@ std::string *codec_fourcc = new std::string("X264");
 //std::vector <std::string> *track_names; // store the track names when the button Process is pressed. // Redefined in tracksproperties, mainwindow.h
 std::vector<std::string> *track_names = new std::vector<std::string>; // = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", "Track 17", "Track 18", "Track 19", "Track 20", "Track 21", "Track 22", "Track 23", "Track 24"}; // this works, but is variable in size. So save/load settings won't work if put in TracksP.
 
-short short_max = std::numeric_limits<short>::max();// = 32767;
-short short_min = std::numeric_limits<short>::min();// = -32768;
-short f2short_safe(float a)
-{
-    if (a > short_max)
-        return short_max;
-    else if ( a < short_min)
-        return short_min;
-    else
-        return (short)(a + 0.5);
-}
-int int_max = std::numeric_limits<int>::max();// =  2147483647;
-int int_min = std::numeric_limits<int>::min();// = -2147483648;
-int f2int_safe(float a)
-{
-    if (a > int_max)
-        return int_max;
-    else if ( a < int_min)
-        return int_min;
-    else
-        return (int)(a + 0.5);
-}
-
-int floor1(int a)
-{
-    if (a < 1)
-        return 1;
-    else
-        return a;
-}
-
-
-typedef struct {
-    double r;       // percent
-    double g;       // percent
-    double b;       // percent
-} rgb;
-
-typedef struct {
-    double h;       // angle in degrees
-    double s;       // percent
-    double v;       // percent
-} hsv;
-
-static hsv   rgb2hsv(rgb in);
-static rgb   hsv2rgb(hsv in);
-
-hsv rgb2hsv(rgb in)
-{
-    hsv         out;
-    double      min, max, delta;
-
-    min = in.r < in.g ? in.r : in.g;
-    min = min  < in.b ? min  : in.b;
-
-    max = in.r > in.g ? in.r : in.g;
-    max = max  > in.b ? max  : in.b;
-
-    out.v = max;                                // v
-    delta = max - min;
-    if (delta < 0.00001)
-    {
-        out.s = 0;
-        out.h = 0; // undefined, maybe nan?
-        return out;
-    }
-    if( max > 0.0 ) { // NOTE: if Max is == 0, this divide would cause a crash
-        out.s = (delta / max);                  // s
-    } else {
-        // if max is 0, then r = g = b = 0
-            // s = 0, v is undefined
-        out.s = 0.0;
-        out.h = NAN;                            // its now undefined
-        return out;
-    }
-    if( in.r >= max )                           // > is bogus, just keeps compilor happy
-        out.h = ( in.g - in.b ) / delta;        // between yellow & magenta
-    else
-    if( in.g >= max )
-        out.h = 2.0 + ( in.b - in.r ) / delta;  // between cyan & yellow
-    else
-        out.h = 4.0 + ( in.r - in.g ) / delta;  // between magenta & cyan
-
-    out.h *= 60.0;                              // degrees
-
-    if( out.h < 0.0 )
-        out.h += 360.0;
-
-    return out;
-}
-
-
-rgb hsv2rgb(hsv in)
-{
-    double      hh, p, q, t, ff;
-    long        i;
-    rgb         out;
-
-    if(in.s <= 0.0) {       // < is bogus, just shuts up warnings
-        out.r = in.v;
-        out.g = in.v;
-        out.b = in.v;
-        return out;
-    }
-    hh = in.h;
-    if(hh >= 360.0) hh = 0.0;
-    hh /= 60.0;
-    i = (long)hh;
-    ff = hh - i;
-    p = in.v * (1.0 - in.s);
-    q = in.v * (1.0 - (in.s * ff));
-    t = in.v * (1.0 - (in.s * (1.0 - ff)));
-
-    switch(i) {
-    case 0:
-        out.r = in.v;
-        out.g = t;
-        out.b = p;
-        break;
-    case 1:
-        out.r = q;
-        out.g = in.v;
-        out.b = p;
-        break;
-    case 2:
-        out.r = p;
-        out.g = in.v;
-        out.b = t;
-        break;
-
-    case 3:
-        out.r = p;
-        out.g = q;
-        out.b = in.v;
-        break;
-    case 4:
-        out.r = t;
-        out.g = p;
-        out.b = in.v;
-        break;
-    case 5:
-    default:
-        out.r = in.v;
-        out.g = p;
-        out.b = q;
-        break;
-    }
-    return out;
-}
 
 rgb getColorTrackP(int track, int pitch)
 {
