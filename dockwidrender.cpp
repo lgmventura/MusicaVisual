@@ -30,14 +30,14 @@
 
 extern RenderP *renderproperties;
 extern std::string *codec_fourcc;
-extern std::list <MidiNote> notes; // List of processed notes. // all this has to be changed from global to oop
-extern chords G_chords;
+//extern chords mdt->GChords;
 
-DockWidRender::DockWidRender(QWidget *parent) :
+DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt) :
     QDockWidget(parent),
     ui(new Ui::DockWidRender)
 {
     ui->setupUi(this);
+    this->Mdt = mdt;
     ui->lineEdit->setText(QString::fromStdString(*codec_fourcc));
     ui->checkBox->setChecked(renderproperties->lines[0]);
     ui->checkBox_2->setChecked(renderproperties->lines[1]);
@@ -247,8 +247,8 @@ void DockWidRender::on_cb_dispChordNames_toggled(bool checked)
 void DockWidRender::on_pb_procChordNames_clicked()
 {
     chords chords;
-    chords.process_chords(notes, renderproperties->chord_analysis);
-    G_chords = chords;
+    chords.process_chords(this->Mdt->Notes, renderproperties->chord_analysis);
+    Mdt->GChords = chords;
 }
 
 void DockWidRender::on_lineEdit_excludeTracks_textEdited(const QString &arg1) // ToDo. Regex?

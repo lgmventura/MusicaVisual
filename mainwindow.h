@@ -32,6 +32,10 @@
 #include "about.h"
 #include "help1.h"
 
+// Include lib classes
+#include "midimessages.h"
+#include "musicdata.h"
+
 // Include chords
 #include "chords.h"
 
@@ -99,7 +103,7 @@ public:
     int xpos;
     int win_width;
     int win_height;
-    void blocks_paint(cv::Mat, std::vector <cv::Mat>, int, int, int, int);
+    void blocks_paint(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int);
 };
 class RenderP
 {
@@ -161,12 +165,6 @@ private slots:
 
     void on_actionTracks_triggered();
 
-    void on_pushButton_clicked();
-
-    void on_pushButton_2_clicked();
-
-    void on_pushButton_3_clicked();
-
     void on_actionRendering_Properties_triggered();
 
     void on_toolButton_clicked();
@@ -183,12 +181,19 @@ private slots:
 
     void on_actionSqueeze_tracks_triggered();
 
+    void on_pb_process_clicked();
+
+    void on_pb_noteBlocks_clicked();
+
+    void on_pb_animation_clicked();
+
 private:
     Ui::MainWindow *ui;
     DockWidgetTracks *dwidtracks;
     DockWidRender *dwrenderprop = nullptr;
     About *aboutDiag = nullptr;
     Help1 *helpDiag_1 = nullptr;
+    MusicData *Mdt = nullptr;
 };
 
 #endif // MAINWINDOW_H

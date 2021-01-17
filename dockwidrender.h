@@ -28,6 +28,8 @@
 #include <QDialog>
 #include <QColor>
 
+#include "musicdata.h"
+
 namespace Ui {
 class DockWidRender;
 }
@@ -37,7 +39,7 @@ class DockWidRender : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit DockWidRender(QWidget *parent = 0);
+    explicit DockWidRender(QWidget *parent = 0, MusicData *mdt = nullptr);
     ~DockWidRender();
 
 private slots:
@@ -118,6 +120,7 @@ private:
 
     QColor hlines;
     QColor vlines;
+    MusicData *Mdt;
 };
 
 #endif // DOCKWIDRENDER_H

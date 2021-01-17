@@ -35,8 +35,8 @@
 #include "MidiFile.h"
 #include "Options.h"
 
+// Include UI classes
 #include "dockwidgettracks.h"
-#include "midimessages.h"
 #include "animationbar.h"
 
 //Include OpenCV image processing libraries
@@ -74,15 +74,15 @@ RenderP::RenderP()
 }
 
 TracksP *tracksproperties = new TracksP(); // Global variable with tracks parameters for exhibition.
-int n_events; // Global var to store number of events
-std::list <MidiNote> notes; // List of processed notes.
-std::list <TempoChange> *tempos = new std::list <TempoChange>;
-std::list <TimeSignature> tsignatures; // list of time signatures (being used for vertical lines)
-unsigned long total_time = 0; // Global variable to store the total time of the current processed midi file.
-unsigned int pitch_max = 1, pitch_min = 128;
-unsigned int tracks_count = 1;
-unsigned int tpq; // Ticks per Quarter-Note
-chords G_chords; // global var for chords - TODO: GET RID of global variables as much as possible, replace by oop
+//int Mdt->NEvents; // Global var to store number of events
+//std::list <MidiNote> Mdt->Notes; // List of processed notes.
+//std::list <TempoChange> *Mdt->Tempos = new std::list <TempoChange>;
+//std::list <TimeSignature> Mdt->TSignatures; // list of time signatures (being used for vertical lines)
+//unsigned long mdt.TotalTime = 0; // Global variable to store the total time of the current processed midi file.
+//unsigned int Mdt->PitchMax = 1, Mdt->PitchMin = 128;
+//unsigned int Mdt->NTracks = 1;
+//unsigned int Mdt->Tpq; // Ticks per Quarter-Note
+//chords Mdt->GChords; // global var for chords
 
 AnimationBar *animbar;
 AnimwinP *animwinP;
@@ -96,7 +96,7 @@ cv::VideoWriter *video;
 std::string *codec_fourcc = new std::string("X264");
 
 //std::vector <std::string> *track_names; // store the track names when the button Process is pressed. // Redefined in tracksproperties, mainwindow.h
-std::vector<std::string> *track_names = new std::vector<std::string>; // = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", "Track 17", "Track 18", "Track 19", "Track 20", "Track 21", "Track 22", "Track 23", "Track 24"}; // this works, but is variable in size. So save/load settings won't work if put in TracksP.
+//std::vector<std::string> *Mdt->TrackNames = new std::vector<std::string>; // = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", "Track 17", "Track 18", "Track 19", "Track 20", "Track 21", "Track 22", "Track 23", "Track 24"}; // this works, but is variable in size. So save/load settings won't work if put in TracksP.
 
 
 rgb getColorTrackP(int track, int pitch)
@@ -142,45 +142,22 @@ rgb getColorTrackP(int track, int pitch)
 
 }
 
-unsigned char hexval(unsigned char c) // https://stackoverflow.com/questions/3790613/how-to-convert-a-string-of-hex-values-to-a-string
-{
-    if ('0' <= c && c <= '9')
-        return c - '0';
-    else if ('a' <= c && c <= 'f')
-        return c - 'a' + 10;
-    else if ('A' <= c && c <= 'F')
-        return c - 'A' + 10;
-    else abort();
-}
-void hex2ascii(const string& in, string& out) // https://stackoverflow.com/questions/3790613/how-to-convert-a-string-of-hex-values-to-a-string
-{
-    out.clear();
-    out.reserve(in.length() / 2);
-    for (string::const_iterator p = in.begin(); p != in.end(); p++)
-    {
-       unsigned char c = hexval(*p);
-       p++;
-       if (p == in.end()) break; // incomplete last digit - should report error
-       c = (c << 4) + hexval(*p); // + takes precedence over <<
-       out.push_back(c);
-    }
-}
-void nameTracksReset()
+void nameTracksReset(MusicData *mdt)
 {
     for (int i = 1; i <= 24; i++)
-        track_names->push_back("Track " + std::to_string(i));
+        mdt->TrackNames.push_back("Track " + std::to_string(i));
 }
 
-void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
+void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
 {
     int zoom = endMidiTime - startMidiTime;
     int curr_pos_middle = (startMidiTime + (zoom)/2);
     cv::Point pt1, pt2, pt3, pt4;//, pt5;// , pt6;
-    cv::Point pt5[tracks_count]; // for the interconnected lines. It has to be a vector of tracks_count length to make lines be connected only with notes within the same track.
-    cv::Point pt1_prev[tracks_count], pt2_prev[tracks_count], pt3_prev[tracks_count]; // these points are used for storing the previous respective points to make "moving notes" possible averaging current position/size with last position/size. There must be one for each track so that they are kept independent, i.e., moving notes in one track don't influence mov. notes in another (same idea as for interconn. lines).
-    cv::Point ptos_prev[tracks_count][4];
-    int radius_prev[tracks_count];// = 0;
-    for (int i = 0; i < tracks_count; i++) // start lines at zero. If not set, a rubish value may appear.
+    cv::Point pt5[mdt.NTracks]; // for the interconnected lines. It has to be a vector of tracks_count length to make lines be connected only with notes within the same track.
+    cv::Point pt1_prev[mdt.NTracks], pt2_prev[mdt.NTracks], pt3_prev[mdt.NTracks]; // these points are used for storing the previous respective points to make "moving notes" possible averaging current position/size with last position/size. There must be one for each track so that they are kept independent, i.e., moving notes in one track don't influence mov. notes in another (same idea as for interconn. lines).
+    cv::Point ptos_prev[mdt.NTracks][4];
+    int radius_prev[mdt.NTracks];// = 0;
+    for (int i = 0; i < mdt.NTracks; i++) // start lines at zero. If not set, a rubish value may appear.
     {
         pt5[i].x = 0;
         pt5[i].y = 0;
@@ -188,7 +165,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     float x1, x2, y1, y2, x3, y3;
     int x_max = window_width + 5000, y_max = window_height + 50;
     //int max_duration = window_width + 1000;
-    //std::cout << "Paint blocks! " << pitch_min << ' ' << pitch_max << endl;
+    //std::cout << "Paint blocks! " << Mdt->PitchMin << ' ' << pitch_max << endl;
     cv::Mat img_playing_notes = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     cv::Mat img_moving_notes = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     //cv::Mat img_buffer_sep_tracks[tracks_count] = cv::Mat::zeros( window_height, window_width, CV_8UC3 ); // Qt 5.7, OpenCV 2.4 (which uses C++98)
@@ -199,14 +176,14 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     // Solving this on the generation of the animation window
     cv::LineTypes lineType = renderproperties->shapeLineType;
 
-    for (std::list<MidiNote>::iterator it=notes.begin() ; it != notes.end(); ++it) // Run the list forwards
+    for (std::list<MidiNote>::iterator it=mdt.Notes.begin() ; it != mdt.Notes.end(); ++it) // Run the list forwards
     {
         if ((*it).is_note == 1 && startMidiTime -50 < (*it).t_off && endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
         {
             x1 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_on)/((float)endMidiTime - (float)startMidiTime)); // note_on time
             x2 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_off)/((float)endMidiTime - (float)startMidiTime)); // note_off time
-            y1 = (float)window_height/2 - (float)window_height*((float)((*it).pitch - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
-            y2 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 1.0 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+            y1 = (float)window_height/2 - (float)window_height*((float)((*it).pitch - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+            y2 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 1.0 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
             pt1.x = f2int_safe(x1); //window_width*((*it).t_on/(endMidiTime - startMidiTime));
             pt2.x = f2int_safe(x2); //window_width*((*it).t_off/(endMidiTime - startMidiTime));
             pt1.y = f2int_safe(y1); //window_height*((*it).pitch/(50));
@@ -215,13 +192,13 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
             //std::cout << pt1.x << ' ' << pt1.y << ": " << pt2.x << ' ' << pt2.y << '\n';
             if (true) //(std::abs(pt1.x) < x_max && std::abs(pt1.y) < y_max && std::abs(pt2.x) < x_max && std::abs(pt2.y) < y_max);// && (*it).duration < max_duration) // This "if" is just to bypass an issue (certainly about big doubles being coverted to int), what causes random boxes appearing on the screen when one zooms in very close.
             {
-                for (unsigned short tnum = 0; tnum < tracks_count; tnum++)
+                for (unsigned short tnum = 0; tnum < mdt.NTracks; tnum++)
                 {
                     // -------------------------- Draw Interconnected Lines -------------------------
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->interconnect[tnum] == 1) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         if (abs(pt3.x - pt5[tnum].x) < tracksproperties->max_connect_dist && pt5[tnum] != cv::Point(0,0))
@@ -262,7 +239,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 1) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt1.y = f2int_safe(y3);
                         pt2.y = f2int_safe(y3);
                         pt3.x = f2int_safe(x3);
@@ -296,7 +273,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 2) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
@@ -324,7 +301,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 3) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         int radius = (x3-x1) < 80 ? (x3-x1) : 80;
@@ -356,7 +333,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 4) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         int radius = (x3-x1) < 80 ? (x3-x1) : 80;
@@ -409,7 +386,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 5) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         int radius = (x3-x1) < 80 ? (x3-x1) : 80;
@@ -465,7 +442,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 6) // All tracks
                     {
 //                        x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-//                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+//                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + pitch_max)/2)/((float)pitch_max - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
 //                        pt3.x = f2int_safe(x3); // Center x
 //                        pt3.y = f2int_safe(y3); // Center y
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
@@ -517,7 +494,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 7) // All tracks
                     {
 //                        x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-//                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+//                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + pitch_max)/2)/((float)pitch_max - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
 //                        pt3.x = f2int_safe(x3); // Center x
 //                        pt3.y = f2int_safe(y3); // Center y
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
@@ -576,7 +553,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 8) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt1.y = f2int_safe(y3);
                         pt2.y = f2int_safe(y3);
                         pt3.x = f2int_safe(x3);
@@ -650,7 +627,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 9) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt1.y = f2int_safe(y3);
                         pt2.y = f2int_safe(y3);
                         pt3.x = f2int_safe(x3);
@@ -730,7 +707,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 10) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         int radius = (x3-x1) < 80 ? (x3-x1) : 80;
@@ -792,7 +769,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 11) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         int radius = (x3-x1) < 80 ? (x3-x1) : 80;
@@ -854,7 +831,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 12) // All tracks
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         int radius = (*it).vel/2; // size proportion
@@ -884,7 +861,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 13) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
                         if (pt1.x > window_width/2) // The note block is before (to the right of) the center line
@@ -912,7 +889,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 14) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt1.y = f2int_safe(y3);
                         pt2.y = f2int_safe(y3);
                         pt3.x = f2int_safe(x3);
@@ -947,7 +924,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 15) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt1.y = f2int_safe(y3);
                         pt2.y = f2int_safe(y3);
                         pt3.x = f2int_safe(x3);
@@ -980,7 +957,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 16) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt1.y = f2int_safe(y3);
                         pt2.y = f2int_safe(y3);
                         pt3.x = f2int_safe(x3);
@@ -1014,7 +991,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 17) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt1.y = f2int_safe(y1);
                         pt2.y = f2int_safe(y2);
                         pt3.x = f2int_safe(x2);
@@ -1048,7 +1025,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
                     if ((*it).track == tnum && tracksproperties->active[tnum] == true && tracksproperties->shape[tnum] == 18) // All tracks - rectangle
                     {
                         x3 = (float)window_width*((-(float)startMidiTime + (float)(*it).t_middle)/((float)endMidiTime - (float)startMidiTime));
-                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)pitch_min + pitch_max)/2)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
+                        y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0 - renderproperties->vertShift;
                         pt1.y = f2int_safe(y1);
                         pt2.y = f2int_safe(y2);
                         pt3.x = f2int_safe(x2);
@@ -1102,14 +1079,14 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
         cv::line(image, cv::Point(window_width/2, window_height), cv::Point(window_width/2, 0), {100,100,100});
     if (renderproperties->lines[1]) // vertical lines from time signatures saved in the midi file
     {
-        std::list<TimeSignature> tsigs = tsignatures; // for debugging
+        std::list<TimeSignature> tsigs = mdt.TSignatures; // for debugging
         TimeSignature tsig_next = TimeSignature(); // next physically, previous with reference to the backward loop:
-        tsig_next.t_on = total_time + 100; // since TimeSignatures don't have a t_off time, we associate the total_time from the midi file to the very last time signature. The +100 is to force a last line t appear. +1 should already work, but this is still a mystery
-        for (std::list<TimeSignature>::reverse_iterator ptsig = tsignatures.rbegin(); ptsig != tsignatures.rend(); ++ptsig) // run from last time signature to first
+        tsig_next.t_on = mdt.TotalTime + 100; // since TimeSignatures don't have a t_off time, we associate the total_time from the midi file to the very last time signature. The +100 is to force a last line t appear. +1 should already work, but this is still a mystery
+        for (std::list<TimeSignature>::reverse_iterator ptsig = mdt.TSignatures.rbegin(); ptsig != mdt.TSignatures.rend(); ++ptsig) // run from last time signature to first
         {
             TimeSignature tsig = *ptsig;
             int k = 0; // for counting sub-beats and beats
-            for (int i = tsig.t_on; i < tsig_next.t_on; i = i + 4*tpq/tsig.denominator) // a sub-beat is 4*ticks_per_quarter_note/denominator
+            for (int i = tsig.t_on; i < tsig_next.t_on; i = i + 4*mdt.Tpq/tsig.denominator) // a sub-beat is 4*ticks_per_quarter_note/denominator
             {
                 if (k % tsig.numerator == 0) // for a whole beat, we consider the numerator
                     cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {renderproperties->vlines_colour[2], renderproperties->vlines_colour[1], renderproperties->vlines_colour[0]});
@@ -1122,7 +1099,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     }
     if (renderproperties->lines[2]) // manual time signature, given measure
     {
-        for (unsigned int i = 0; i < endMidiTime; i = i + 4*renderproperties->beat_measure_manual[0]*tpq/renderproperties->beat_measure_manual[1])
+        for (unsigned int i = 0; i < endMidiTime; i = i + 4*renderproperties->beat_measure_manual[0]*mdt.Tpq/renderproperties->beat_measure_manual[1])
         {
             cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {renderproperties->vlines_colour[2], renderproperties->vlines_colour[1], renderproperties->vlines_colour[0]});
         }
@@ -1132,9 +1109,9 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
 // ==================== Horizontal Lines =============
     if (renderproperties->hlines)
     {
-        float note_height = (float)window_height*((float)(1.0)/((float)pitch_max - (float)pitch_min))*renderproperties->vertRange/50.0; // this is the height of a note in pixels, i.e. the vertical space between 2 midi notes in the image
-        int basePitchRef = pitch_max%12; // this is the reference for the pitch
-        int pitch_span = pitch_max - pitch_min; // this is the whole pitch extent from the midi file
+        float note_height = (float)window_height*((float)(1.0)/((float)mdt.PitchMax - (float)mdt.PitchMin))*renderproperties->vertRange/50.0; // this is the height of a note in pixels, i.e. the vertical space between 2 midi notes in the image
+        int basePitchRef = mdt.PitchMax%12; // this is the reference for the pitch
+        int pitch_span = mdt.PitchMax - mdt.PitchMin; // this is the whole pitch extent from the midi file
         if(renderproperties->hlines_type == 0) // One line every n semitones + half shift
         {
             for (int i = 0; i < pitch_span/renderproperties->hlines_n + 1; i++)
@@ -1193,11 +1170,11 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     {
         std::list<chordWithTime>::iterator it;
         std::list<chordWithTime>::iterator it_next;
-        for (it = G_chords.Chords.begin(), it_next = ++G_chords.Chords.begin(); it_next!=(G_chords.Chords.end()); ++it, ++it_next)
+        for (it = mdt.GChords.Chords.begin(), it_next = ++mdt.GChords.Chords.begin(); it_next!=(mdt.GChords.Chords.end()); ++it, ++it_next)
         {
             chordWithTime chordWT = *it;
             chordWithTime chordWT_next = *it_next;
-            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=G_chords.Chords.begin() && it!=G_chords.Chords.end())
+            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end())
             {
                 std::string ptStr = "Pitches:";
                 ptStr = chordWT.Chord.getPitchesStr(renderproperties->accidentalSharp);
@@ -1222,11 +1199,11 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     {
         std::list<chordWithTime>::iterator it;
         std::list<chordWithTime>::iterator it_next;
-        for (it = G_chords.Chords.begin(), it_next = ++G_chords.Chords.begin(); it_next!=(G_chords.Chords.end()); ++it, ++it_next) // run through all chords
+        for (it = mdt.GChords.Chords.begin(), it_next = ++mdt.GChords.Chords.begin(); it_next!=(mdt.GChords.Chords.end()); ++it, ++it_next) // run through all chords
         {
             chordWithTime chordWT = *it;
             chordWithTime chordWT_next = *it_next;
-            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=G_chords.Chords.begin() && it!=G_chords.Chords.end()) // if it is the chord currently being played
+            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end()) // if it is the chord currently being played
             {
                 int diam = 100;
                 chord::circle type = renderproperties->chord_star_type;
@@ -1256,7 +1233,7 @@ void AnimPainter::blocks_paint(cv::Mat image, std::vector <cv::Mat> img_buffer_s
     }
     if (renderproperties->sep_render[1])
     {
-        for (short j = 0; j < (tracks_count); j++)
+        for (short j = 0; j < (mdt.NTracks); j++)
         {
             if (tracksproperties->track_blur[j] > 0)
                 cv::boxFilter(img_buffer_sep_tracks[j], img_buffer_sep_tracks[j], -1, cv::Size(tracksproperties->track_blur[j], tracksproperties->track_blur[j]));
@@ -1290,6 +1267,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setAcceptDrops(true); // accept file droppings to ease the file opening
     dwidtracks = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
     dwrenderprop = nullptr;
+    this->Mdt = new MusicData(); // create object MusicData
 }
 
 MainWindow::~MainWindow()
@@ -1357,7 +1335,7 @@ void MainWindow::ImportMidiFile(const char *midiFileName)
           buffer << '\t'; // Places a '\t' after each line.
           ui->plainTextEdit->appendPlainText(QString::fromStdString(buffer.str()));
 //          cout << endl;
-          n_events = event; // number of events in file opened. Calculated after file importing.
+          Mdt->NEvents = event; // number of events in file opened. Calculated after file importing.
        }
 }
 
@@ -1453,16 +1431,16 @@ void MainWindow::on_actionSave_as_triggered()
 
 void MainWindow::on_actionTracks_triggered() // open dockwidgettracks.
 {
-    if (track_names->size() < 24)
-        nameTracksReset();
-    dwidtracks = new DockWidgetTracks(this);
+    if (Mdt->TrackNames.size() < 24)
+        nameTracksReset(Mdt);
+    dwidtracks = new DockWidgetTracks(this, Mdt);
     dwidtracks->show();
     dwidtracks->resize(300,600);
     dwidtracks->pos();
     dwidtracks->repaint();
 }
 
-void MainWindow::on_pushButton_clicked() // Process button
+void MainWindow::on_pb_process_clicked() // Process button
 {
     std::stringstream stream;
     string str;
@@ -1471,12 +1449,12 @@ void MainWindow::on_pushButton_clicked() // Process button
     unsigned long time = 0;
     int messg;
     // reset track names, since we are processing a new midi file, to avoid garbage (old names, if you load a new midi file):
-    nameTracksReset();
+    nameTracksReset(Mdt);
 
-    notes.clear(); // Clear notes list before adding new elements.
-    tempos->clear(); // Clear tempos list before adding new elements.
-    pitch_max = 1;
-//    pitch_min = 100;
+    this->Mdt->Notes.clear(); // Clear notes list before adding new elements.
+    Mdt->Tempos.clear(); // Clear tempos list before adding new elements.
+    Mdt->PitchMax = 1;
+//    Mdt->PitchMin = 100;
 
 
     for (int i = 0; getline(stream,str,'\t'); i++) // this loops horizontally and vertically through substrings. Tabs and new-lines will be a new get line, look at '\t'
@@ -1485,7 +1463,7 @@ void MainWindow::on_pushButton_clicked() // Process button
 //        int messg;
         if (i == 0)
         {
-            tpq = stoi(str.substr(5)); // getting the tpq (ticks per quarter-note) on the first line
+            Mdt->Tpq = stoi(str.substr(5)); // getting the tpq (ticks per quarter-note) on the first line
         }
 
         string messg_str;
@@ -1521,20 +1499,20 @@ void MainWindow::on_pushButton_clicked() // Process button
                 tempnote.pitch = stoi(messg_str.substr(3,2), nullptr, 16); // get the pitch from the midi message string
                 tempnote.track = track;
                 tempnote.vel = stoi(messg_str.substr(6,2), nullptr, 16); // get velocity from the midi message string
-                notes.push_back(tempnote); // Insert the tempnote into the list "notes"
-                if (tempnote.pitch > pitch_max)
+                this->Mdt->Notes.push_back(tempnote); // Insert the tempnote into the list "notes"
+                if (tempnote.pitch > Mdt->PitchMax)
                 {
-                        pitch_max = tempnote.pitch;
+                        Mdt->PitchMax = tempnote.pitch;
                         //cout << pitch_max << endl;
                 }
-                if (tempnote.pitch < pitch_min)
-                        pitch_min = tempnote.pitch;
-                if (tempnote.track > tracks_count) // if there we see a track whose number is higher than the current number of tracks, we do number of tracks (aka tracks_count) = current track number
-                        tracks_count = tempnote.track;
+                if (tempnote.pitch < Mdt->PitchMin)
+                        Mdt->PitchMin = tempnote.pitch;
+                if (tempnote.track > Mdt->NTracks) // if there we see a track whose number is higher than the current number of tracks, we do number of tracks (aka tracks_count) = current track number
+                        Mdt->NTracks = tempnote.track;
             }
             if ((messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) == 0) || messg_str[0] == '8') // Condition for Note off is messg_str[0] == '9' and velocity == 0 or messg_str[0] == '8'
             {
-                for (std::list<MidiNote>::iterator it=notes.end() ; it != notes.begin(); ) // note_off found: run the list backwards
+                for (std::list<MidiNote>::iterator it=this->Mdt->Notes.end() ; it != this->Mdt->Notes.begin(); ) // note_off found: run the list backwards
                 {
                     --it; // The pointer regress one position at the beginning, since the same message won't be on and off together.
                     if ((*it).track == track && (*it).pitch == (unsigned int)stoi(messg_str.substr(3,2), nullptr, 16)) // find the first note in the list with the same pitch and in the same track
@@ -1565,7 +1543,7 @@ void MainWindow::on_pushButton_clicked() // Process button
                     temp_tempo_change.new_tempo = ((stol(messg_str.substr(9,2), nullptr, 16) << 16) + (stol(messg_str.substr(12,2), nullptr, 16) << 8) + stol(messg_str.substr(15,2), nullptr, 16)); // equivalent to: return ((*this)[3] << 16) + ((*this)[4] << 8) + (*this)[5];
                     temp_tempo_change.t_on = time;
                     //cout << temp_tempo_change.new_tempo << "\n";
-                    tempos->push_back(temp_tempo_change); // Stores the tempo change in the list
+                    Mdt->Tempos.push_back(temp_tempo_change); // Stores the tempo change in the list
                 }
                 // reading track names - Changing track names for easing instrument finding
                 else if (messg_str.substr(3,2) == "3 ")// && messg_str.size() > 4) // Check if it is a track name meta message. I don't know its size, I put 4 bytes to test.
@@ -1576,7 +1554,7 @@ void MainWindow::on_pushButton_clicked() // Process button
                     hex2ascii(straux, t_name);
                     if (track <= 24) // since we have a maximum of 24 tracks
                     {
-                        track_names->at(track) = t_name; // store the track names when the button Process is pressed.
+                        Mdt->TrackNames.at(track) = t_name; // store the track names when the button Process is pressed.
                     }
                 }
                 else if (messg_str.substr(3,5) == "58 04" || messg_str.substr(3,4) == "58 4") // time signature messages start with this substring "FF 58 04"
@@ -1586,18 +1564,18 @@ void MainWindow::on_pushButton_clicked() // Process button
                     int denominator_exponent = stoi(messg_str.substr(12,2));
                     temp_tsig.denominator = std::pow(2, denominator_exponent);
                     temp_tsig.t_on = time;
-                    tsignatures.push_back(temp_tsig);
+                    Mdt->TSignatures.push_back(temp_tsig);
                 }
             }
 
         }
     }
-    tracks_count = tracks_count + 1; // This defines the final number of tracks detected in the processed midi. It is the highest track + 1, since the tracks are numbered from 0 to n-1.
+    Mdt->NTracks = Mdt->NTracks + 1; // This defines the final number of tracks detected in the processed midi. It is the highest track + 1, since the tracks are numbered from 0 to n-1.
 
-    total_time = time; // set the current time after processing as global variable total time from this midi processing.
+    Mdt->TotalTime = time; // set the current time after processing as global variable total time from this midi processing.
     QMessageBox::information(this, tr("Processing completed"), "The midi data in the text input window was successfully completed.", QMessageBox::Ok );
-    ui->pushButton_2->setEnabled(true);
-    ui->pushButton_3->setEnabled(true);
+    ui->pb_noteBlocks->setEnabled(true);
+    ui->pb_animation->setEnabled(true);
 
 //    for (std::list<TempoChange>::iterator it=tempos.begin(); it != tempos.end(); ++it) // Run the  tempo change list forwards
 //    {
@@ -1607,17 +1585,17 @@ void MainWindow::on_pushButton_clicked() // Process button
 }
 
 
-void note_blocks_paint( cv::Mat image, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height)
+void note_blocks_paint( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height)
 {
     cv::Point pt1, pt2;
     double x1, x2, y1, y2;
-    //std::cout << "Paint blocks! " << pitch_min << ' ' << pitch_max << endl;
-    for (std::list<MidiNote>::iterator it=notes.begin() ; it != notes.end(); ++it) // Run the list forwards
+    //std::cout << "Paint blocks! " << Mdt->PitchMin << ' ' << pitch_max << endl;
+    for (std::list<MidiNote>::iterator it=mdt.Notes.begin() ; it != mdt.Notes.end(); ++it) // Run the list forwards
     {
         x1 = (double)window_width*((double)(*it).t_on/((double)endMidiTime - (double)startMidiTime));
         x2 = (double)window_width*((double)(*it).t_off/((double)endMidiTime - (double)startMidiTime));
-        y1 = (double)window_height - (double)window_height*((double)(*it).pitch/((double)pitch_max - (double)pitch_min + 20.0));
-        y2 = (double)window_height - (double)window_height*(((double)(*it).pitch + 1.0)/((double)pitch_max - (double)pitch_min + 20.0));
+        y1 = (double)window_height - (double)window_height*((double)(*it).pitch/((double)mdt.PitchMax - (double)mdt.PitchMin + 20.0));
+        y2 = (double)window_height - (double)window_height*(((double)(*it).pitch + 1.0)/((double)mdt.PitchMax - (double)mdt.PitchMin + 20.0));
         pt1.x = (int)(x1); //window_width*((*it).t_on/(endMidiTime - startMidiTime));
         pt2.x = (int)(x2); //window_width*((*it).t_off/(endMidiTime - startMidiTime));
         pt1.y = (int)(y1); //window_height*((*it).pitch/(50));
@@ -1628,15 +1606,15 @@ void note_blocks_paint( cv::Mat image, char* window_name, int startMidiTime, int
     }
 }
 
-void MainWindow::on_pushButton_2_clicked()
+void MainWindow::on_pb_noteBlocks_clicked()
 {
-    int window_height = ui->spinBox_2->value();
-    int window_width = ui->spinBox->value();
+    int window_width = ui->spb_res_x->value();
+    int window_height = ui->spb_res_y->value();
 
     cv::Mat *image_win1 = new cv::Mat;
     *image_win1 = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
 
-    note_blocks_paint(*image_win1, "Note blocks", 0, total_time, window_width, window_height);
+    note_blocks_paint(*image_win1, *Mdt, "Note blocks", 0, Mdt->TotalTime, window_width, window_height);
 
     cv::namedWindow("Note blocks");
     cv::imshow("Note blocks", *image_win1);
@@ -1648,10 +1626,10 @@ void MainWindow::on_pushButton_2_clicked()
 
 // Animation
 
-void MainWindow::on_pushButton_3_clicked()
+void MainWindow::on_pb_animation_clicked()
 {
-    int window_height = ui->spinBox_2->value();
-    int window_width = ui->spinBox->value();
+    int window_width = ui->spb_res_x->value();
+    int window_height = ui->spb_res_y->value();
 
 
     cv::Mat *image_win2 = new cv::Mat;
@@ -1666,22 +1644,22 @@ void MainWindow::on_pushButton_3_clicked()
     std::vector <cv::Mat> *img_buffer_sep_tracks = new std::vector <cv::Mat>;
     // and now we use the std::vector.push_back method to insert elements at the end of the vector, doing it for every track (so, I use the for). Then, inside this funcion, I clone the matrix.
     // the method clone() for cv::Mat creates a copy rather than an instance of the matrix. This is how I ensure I am giving having different matrices.
-    for (int kz = 0; kz < tracks_count; kz++)
+    for (int kz = 0; kz < Mdt->NTracks; kz++)
     {
         img_buffer_sep_tracks->push_back(mat_zeros.clone());
     }
 
     cv::namedWindow("Animation");
-    animbar = new AnimationBar(0, "Animation", image_win2, img_buffer_sep_tracks, window_width, window_height, total_time, ui->doubleSpinBox->value(), tempos, renderproperties);
+    animbar = new AnimationBar(0, "Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), renderproperties);
     animbar->show();
 
     animPt = new AnimPainter;
 
-    if(ui->lineEdit->text().toStdString().size() > 0)
+    if(ui->edt_videoOutput->text().toStdString().size() > 0)
     {
         try
         {
-            video = new cv::VideoWriter(ui->lineEdit->text().toStdString(),cv::VideoWriter::fourcc(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->doubleSpinBox->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
+            video = new cv::VideoWriter(ui->edt_videoOutput->text().toStdString(),cv::VideoWriter::fourcc(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->dsb_fps->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
             //throw video = new cv::VideoWriter(ui->lineEdit->text().toStdString(),CV_FOURCC(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->doubleSpinBox->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
             animbar->setRecButtonEnabled(true); // video should be ready to be written, activating button
         }
@@ -1739,14 +1717,14 @@ void MainWindow::on_pushButton_3_clicked()
 
 void MainWindow::on_actionRendering_Properties_triggered()
 {
-    dwrenderprop = new DockWidRender(this);
+    dwrenderprop = new DockWidRender(this, Mdt);
     dwrenderprop->show();
 }
 
 void MainWindow::on_toolButton_clicked()
 {
     QFileDialog *qvfsd = new QFileDialog; // qvfsd == Qt Video File Save Dialog
-    ui->lineEdit->setText(qvfsd->getSaveFileName(this,
+    ui->edt_videoOutput->setText(qvfsd->getSaveFileName(this,
                                                  tr("Save video file"),
                                                  "//home//",
                                                  "Audio and Video Files (*.avi);;Moving Pictures Experts Group 4 (*.mp4 *.mpeg4);;Matroska Video File (*.mkv);;All Files (*.*)"));

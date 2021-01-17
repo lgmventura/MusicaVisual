@@ -42,6 +42,7 @@ class AnimationBar : public QWidget
 
 public:
     explicit AnimationBar(QWidget *parent = 0);
+    MusicData *Mdt;
     cv::Mat *image;
     std::vector <cv::Mat> *img_buffer_sep_tracks;
     int window_height;
@@ -49,12 +50,11 @@ public:
     char *winName;
     int total_time;
     float fps;
-    std::list<TempoChange> *tempos;
     RenderP *renderproperties;
 
     PlayThread *playThread;
 
-    AnimationBar(QWidget *parent, char* winName, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, int total_time, float fps, std::list<TempoChange> *tempos, RenderP *renderproperties);
+    AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *renderproperties);
 
     ~AnimationBar();
 

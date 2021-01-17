@@ -23,7 +23,7 @@
      </widget>
     </item>
     <item row="5" column="5">
-     <widget class="QSpinBox" name="spinBox_2">
+     <widget class="QSpinBox" name="spb_res_y">
       <property name="maximum">
        <number>4096</number>
       </property>
@@ -33,7 +33,7 @@
      </widget>
     </item>
     <item row="7" column="3" colspan="2">
-     <widget class="QDoubleSpinBox" name="doubleSpinBox">
+     <widget class="QDoubleSpinBox" name="dsb_fps">
       <property name="maximum">
        <double>60.000000000000000</double>
       </property>
@@ -56,7 +56,7 @@
      </spacer>
     </item>
     <item row="5" column="3">
-     <widget class="QSpinBox" name="spinBox">
+     <widget class="QSpinBox" name="spb_res_x">
       <property name="maximum">
        <number>4096</number>
       </property>
@@ -66,7 +66,7 @@
      </widget>
     </item>
     <item row="2" column="3" colspan="3">
-     <widget class="QPushButton" name="pushButton_3">
+     <widget class="QPushButton" name="pb_animation">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -83,7 +83,7 @@
      </widget>
     </item>
     <item row="0" column="3" colspan="3">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="pb_process">
       <property name="text">
        <string>Process</string>
       </property>
@@ -93,7 +93,7 @@
      </widget>
     </item>
     <item row="1" column="3" colspan="3">
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="pb_noteBlocks">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -117,7 +117,7 @@
      </widget>
     </item>
     <item row="8" column="1">
-     <widget class="QLineEdit" name="lineEdit"/>
+     <widget class="QLineEdit" name="edt_videoOutput"/>
     </item>
     <item row="8" column="0">
      <widget class="QLabel" name="label_4">
@@ -137,7 +137,7 @@
          <x>0</x>
          <y>0</y>
          <width>516</width>
-         <height>206</height>
+         <height>210</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -174,7 +174,7 @@
      <x>0</x>
      <y>0</y>
      <width>692</width>
-     <height>29</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

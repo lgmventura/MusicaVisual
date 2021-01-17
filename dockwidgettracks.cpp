@@ -31,13 +31,14 @@
 
 //TracksP *tracksproperties = new TracksP();
 extern TracksP *tracksproperties;
-extern std::vector <std::string> *track_names;
+//extern std::vector <std::string> *Mdt->TrackNames;
 
-DockWidgetTracks::DockWidgetTracks(QWidget *parent) :
+DockWidgetTracks::DockWidgetTracks(QWidget *parent, MusicData *mdt) :
     QDockWidget(parent),
     ui(new Ui::DockWidgetTracks)
 {
     ui->setupUi(this);
+    this->Mdt = mdt;
 
     ct1.setRgb(tracksproperties->getCv(0,0), tracksproperties->getCv(0,1), tracksproperties->getCv(0,2));
     QPalette pal = ui->widget1->palette();
@@ -262,32 +263,32 @@ DockWidgetTracks::DockWidgetTracks(QWidget *parent) :
     ui->colorScheme1_24->setCurrentIndex(tracksproperties->colorScheme[23]);
 
 
-    ui->checkBox->setText(QString::fromStdString(track_names->at(0)));
-    ui->checkBox_2->setText(QString::fromStdString(track_names->at(1)));
-    ui->checkBox_3->setText(QString::fromStdString(track_names->at(2)));
-    ui->checkBox_2->setText(QString::fromStdString(track_names->at(1)));
-    ui->checkBox_3->setText(QString::fromStdString(track_names->at(2)));
-    ui->checkBox_4->setText(QString::fromStdString(track_names->at(3)));
-    ui->checkBox_5->setText(QString::fromStdString(track_names->at(4)));
-    ui->checkBox_6->setText(QString::fromStdString(track_names->at(5)));
-    ui->checkBox_7->setText(QString::fromStdString(track_names->at(6)));
-    ui->checkBox_8->setText(QString::fromStdString(track_names->at(7)));
-    ui->checkBox_9->setText(QString::fromStdString(track_names->at(8)));
-    ui->checkBox_10->setText(QString::fromStdString(track_names->at(9)));
-    ui->checkBox_11->setText(QString::fromStdString(track_names->at(10)));
-    ui->checkBox_12->setText(QString::fromStdString(track_names->at(11)));
-    ui->checkBox_13->setText(QString::fromStdString(track_names->at(12)));
-    ui->checkBox_14->setText(QString::fromStdString(track_names->at(13)));
-    ui->checkBox_15->setText(QString::fromStdString(track_names->at(14)));
-    ui->checkBox_16->setText(QString::fromStdString(track_names->at(15)));
-    ui->checkBox_17->setText(QString::fromStdString(track_names->at(16)));
-    ui->checkBox_18->setText(QString::fromStdString(track_names->at(17)));
-    ui->checkBox_19->setText(QString::fromStdString(track_names->at(18)));
-    ui->checkBox_20->setText(QString::fromStdString(track_names->at(19)));
-    ui->checkBox_21->setText(QString::fromStdString(track_names->at(20)));
-    ui->checkBox_22->setText(QString::fromStdString(track_names->at(21)));
-    ui->checkBox_23->setText(QString::fromStdString(track_names->at(22)));
-    ui->checkBox_24->setText(QString::fromStdString(track_names->at(23)));
+    ui->checkBox->setText(QString::fromStdString(Mdt->TrackNames.at(0)));
+    ui->checkBox_2->setText(QString::fromStdString(Mdt->TrackNames.at(1)));
+    ui->checkBox_3->setText(QString::fromStdString(Mdt->TrackNames.at(2)));
+    ui->checkBox_2->setText(QString::fromStdString(Mdt->TrackNames.at(1)));
+    ui->checkBox_3->setText(QString::fromStdString(Mdt->TrackNames.at(2)));
+    ui->checkBox_4->setText(QString::fromStdString(Mdt->TrackNames.at(3)));
+    ui->checkBox_5->setText(QString::fromStdString(Mdt->TrackNames.at(4)));
+    ui->checkBox_6->setText(QString::fromStdString(Mdt->TrackNames.at(5)));
+    ui->checkBox_7->setText(QString::fromStdString(Mdt->TrackNames.at(6)));
+    ui->checkBox_8->setText(QString::fromStdString(Mdt->TrackNames.at(7)));
+    ui->checkBox_9->setText(QString::fromStdString(Mdt->TrackNames.at(8)));
+    ui->checkBox_10->setText(QString::fromStdString(Mdt->TrackNames.at(9)));
+    ui->checkBox_11->setText(QString::fromStdString(Mdt->TrackNames.at(10)));
+    ui->checkBox_12->setText(QString::fromStdString(Mdt->TrackNames.at(11)));
+    ui->checkBox_13->setText(QString::fromStdString(Mdt->TrackNames.at(12)));
+    ui->checkBox_14->setText(QString::fromStdString(Mdt->TrackNames.at(13)));
+    ui->checkBox_15->setText(QString::fromStdString(Mdt->TrackNames.at(14)));
+    ui->checkBox_16->setText(QString::fromStdString(Mdt->TrackNames.at(15)));
+    ui->checkBox_17->setText(QString::fromStdString(Mdt->TrackNames.at(16)));
+    ui->checkBox_18->setText(QString::fromStdString(Mdt->TrackNames.at(17)));
+    ui->checkBox_19->setText(QString::fromStdString(Mdt->TrackNames.at(18)));
+    ui->checkBox_20->setText(QString::fromStdString(Mdt->TrackNames.at(19)));
+    ui->checkBox_21->setText(QString::fromStdString(Mdt->TrackNames.at(20)));
+    ui->checkBox_22->setText(QString::fromStdString(Mdt->TrackNames.at(21)));
+    ui->checkBox_23->setText(QString::fromStdString(Mdt->TrackNames.at(22)));
+    ui->checkBox_24->setText(QString::fromStdString(Mdt->TrackNames.at(23)));
 }
 
 DockWidgetTracks::~DockWidgetTracks()
