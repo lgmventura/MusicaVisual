@@ -32,7 +32,7 @@
 #include <QTextStream>
 
 //Include library for midi files
-#include "MidiFile.h"
+#include "importmidi.h"
 #include "Options.h"
 
 // Include UI classes
@@ -140,12 +140,6 @@ rgb getColorTrackP(int track, int pitch)
         return (rgbcolor);
     }
 
-}
-
-void nameTracksReset(MusicData *mdt)
-{
-    for (int i = 1; i <= 24; i++)
-        mdt->TrackNames.push_back("Track " + std::to_string(i));
 }
 
 void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
@@ -1279,64 +1273,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::ImportMidiFile(const char *midiFileName)
 {
-    MidiFile midifile;
-    midifile.read(midiFileName);
+    ImportMidi impMid;
+    impMid.importMidiMessagesText(midiFileName);
 
-    ui->plainTextEdit->clear(); // unless you know the editor is empty
-    //ui->plainTextEdit->appendPlainText(midiFileName);
-
-
-//        ui->plainTextEdit->appendPlainText("TPQ: ");
-//        ui->plainTextEdit->appendPlainText(QString::number(midifile.getTicksPerQuarterNote()));
-//        ui->plainTextEdit->appendPlainText("TRACKS: ");
-//        ui->plainTextEdit->appendPlainText(QString::number(midifile.getTrackCount()));
-       std::stringstream buffer;
-       buffer << "TPQ: " << midifile.getTicksPerQuarterNote() << endl; // Get the Ticks Per QarterNote (TPQ), necessary for setting the tempo
-       buffer << "TRACKS: " << midifile.getTrackCount() << endl;
-
-       midifile.joinTracks();
-       // midifile.getTrackCount() will now return "1", but original
-       // track assignments can be seen in .track field of MidiEvent.
-
-//       ui->plainTextEdit->appendPlainText("TICK    DELTA   TRACK   MIDI MESSAGE\n");
-//       ui->plainTextEdit->appendPlainText("____________________________________\n");
-       buffer << "TICK    DELTA   TRACK   MIDI MESSAGE\n";
-       buffer << "____________________________________\n";
-       ui->plainTextEdit->appendPlainText(QString::fromStdString(buffer.str()));
-
-       MidiEvent* mev;
-       int deltatick;
-       for (int event=0; event < midifile[0].size(); event++) {
-          mev = &midifile[0][event];
-          if (event == 0) {
-             deltatick = mev->tick;
-          } else {
-             deltatick = mev->tick - midifile[0][event-1].tick;
-          }
-//          ui->plainTextEdit->appendPlainText(QString::number(qint64(dec)));
-//          ui->plainTextEdit->appendPlainText(QString::number(mev->tick));
-//          ui->plainTextEdit->appendPlainText("\t");
-//          ui->plainTextEdit->appendPlainText(QString::number(deltatick));
-//          ui->plainTextEdit->appendPlainText("\t");
-//          ui->plainTextEdit->appendPlainText(QString::number(mev->track));
-//          ui->plainTextEdit->appendPlainText("\t");
-//          //string a = << hex;
-//          ui->plainTextEdit->appendPlainText((hex));
-          std::stringstream buffer;
-          buffer << dec << mev->tick;
-          buffer << '\t' << deltatick;
-          buffer << '\t' << mev->track;
-          buffer << '\t' << hex;
-          for (int i=0; i < mev->size(); i++) {
- //             ui->plainTextEdit->appendPlainText(QString::number((*mev)[i]));
-             buffer << (int)(*mev)[i] << ' ';
-             if ((int)(*mev)[i] < 16) buffer << ' '; // this line adds a new space in case of (int) < 16 (or (hex) < 10) to ensure equal spacing between elements of messages.
-          }
-          buffer << '\t'; // Places a '\t' after each line.
-          ui->plainTextEdit->appendPlainText(QString::fromStdString(buffer.str()));
-//          cout << endl;
-          Mdt->NEvents = event; // number of events in file opened. Calculated after file importing.
-       }
+     ui->plainTextEdit->appendPlainText(QString::fromStdString(impMid.MidiMessages));
 }
 
 void MainWindow::on_actionImport_MIDI_File_triggered()
@@ -1432,7 +1372,7 @@ void MainWindow::on_actionSave_as_triggered()
 void MainWindow::on_actionTracks_triggered() // open dockwidgettracks.
 {
     if (Mdt->TrackNames.size() < 24)
-        nameTracksReset(Mdt);
+        Mdt->nameTracksReset();
     dwidtracks = new DockWidgetTracks(this, Mdt);
     dwidtracks->show();
     dwidtracks->resize(300,600);
@@ -1449,7 +1389,7 @@ void MainWindow::on_pb_process_clicked() // Process button
     unsigned long time = 0;
     int messg;
     // reset track names, since we are processing a new midi file, to avoid garbage (old names, if you load a new midi file):
-    nameTracksReset(Mdt);
+    Mdt->nameTracksReset();
 
     this->Mdt->Notes.clear(); // Clear notes list before adding new elements.
     Mdt->Tempos.clear(); // Clear tempos list before adding new elements.
