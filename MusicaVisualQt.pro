@@ -14,6 +14,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     musiclib/chords.cpp \
+    musiclib/importmidi.cpp \
     musiclib/midimessages.cpp \
     musiclib/musicdata.cpp \
     utils/cnum.cpp \
@@ -35,6 +36,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     musiclib/chords.h \
+    musiclib/importmidi.h \
     musiclib/midimessages.h \
     musiclib/musicdata.h \
     utils/cnum.h \
