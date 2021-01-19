@@ -1277,6 +1277,7 @@ void MainWindow::ImportMidiFile(const char *midiFileName)
     impMid.importMidiMessagesText(midiFileName);
 
      ui->plainTextEdit->appendPlainText(QString::fromStdString(impMid.MidiMessages));
+     Mdt->NEvents = impMid.NEvents;
 }
 
 void MainWindow::on_actionImport_MIDI_File_triggered()
@@ -1380,139 +1381,13 @@ void MainWindow::on_actionTracks_triggered() // open dockwidgettracks.
     dwidtracks->repaint();
 }
 
-void MainWindow::on_pb_process_clicked() // Process button
+void MainWindow::on_pb_process_clicked() // Process button // ToDo: transfer into MusicData (as a member function), only call it here
 {
     std::stringstream stream;
     string str;
     stream << ui->plainTextEdit->toPlainText().toUtf8().constData(); // Get the entire text from the plain text input box.
-    unsigned int delta, track;
-    unsigned long time = 0;
-    int messg;
-    // reset track names, since we are processing a new midi file, to avoid garbage (old names, if you load a new midi file):
-    Mdt->nameTracksReset();
-
-    this->Mdt->Notes.clear(); // Clear notes list before adding new elements.
-    Mdt->Tempos.clear(); // Clear tempos list before adding new elements.
-    Mdt->PitchMax = 1;
-//    Mdt->PitchMin = 100;
-
-
-    for (int i = 0; getline(stream,str,'\t'); i++) // this loops horizontally and vertically through substrings. Tabs and new-lines will be a new get line, look at '\t'
-    {
-//        int time, delta, track;
-//        int messg;
-        if (i == 0)
-        {
-            Mdt->Tpq = stoi(str.substr(5)); // getting the tpq (ticks per quarter-note) on the first line
-        }
-
-        string messg_str;
-        if (i >= 5 && i%4 == 0) // first column
-        {
-            time = stoi(str, nullptr, 10); // getting the absolute time in ticks
-        }
-        if (i >= 5 && i%4 == 1) // second column
-        {
-            delta = stoi(str, nullptr, 10); // getting the delta time in ticks (relative time from last message)
-        }
-        if (i >= 5 && i%4 == 2) // third column
-        {
-            track = stoi(str, nullptr, 10); // getting the track number
-        }
-        if (i >= 5 && i%4 == 3) // fourth column - the hexadecimal midi message itself
-        {
-            messg = stoi(str, nullptr, 16); // getting the midi message type
-            messg_str = str; // getting the midi message string
-            //ui->plainTextEdit->appendPlainText(QString::fromStdString(messg_str)); // this line is only for verification
-        }
-        //ui->plainTextEdit->appendPlainText(QString::fromStdString(str)); // this line is only for verification
-        //ui->plainTextEdit->appendPlainText(QString::number(i)); // this line is only for verification
-
-        // Save notes in notes list:
-        if (i >= 5 && i%4 == 3) // If the current element of the plain text is a midi message
-        {
-
-            if (messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) > 0) // Condition for Note on is messg_str[0] == '9' and velocity > 0
-            {
-                MidiNote tempnote; // Create an object MidiNote
-                tempnote.t_on = time;
-                tempnote.pitch = stoi(messg_str.substr(3,2), nullptr, 16); // get the pitch from the midi message string
-                tempnote.track = track;
-                tempnote.vel = stoi(messg_str.substr(6,2), nullptr, 16); // get velocity from the midi message string
-                this->Mdt->Notes.push_back(tempnote); // Insert the tempnote into the list "notes"
-                if (tempnote.pitch > Mdt->PitchMax)
-                {
-                        Mdt->PitchMax = tempnote.pitch;
-                        //cout << pitch_max << endl;
-                }
-                if (tempnote.pitch < Mdt->PitchMin)
-                        Mdt->PitchMin = tempnote.pitch;
-                if (tempnote.track > Mdt->NTracks) // if there we see a track whose number is higher than the current number of tracks, we do number of tracks (aka tracks_count) = current track number
-                        Mdt->NTracks = tempnote.track;
-            }
-            if ((messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) == 0) || messg_str[0] == '8') // Condition for Note off is messg_str[0] == '9' and velocity == 0 or messg_str[0] == '8'
-            {
-                for (std::list<MidiNote>::iterator it=this->Mdt->Notes.end() ; it != this->Mdt->Notes.begin(); ) // note_off found: run the list backwards
-                {
-                    --it; // The pointer regress one position at the beginning, since the same message won't be on and off together.
-                    if ((*it).track == track && (*it).pitch == (unsigned int)stoi(messg_str.substr(3,2), nullptr, 16)) // find the first note in the list with the same pitch and in the same track
-                    {
-                        (*it).t_off = time; // set its note_off time (the current time, since it has just found a note_off)
-                        (*it).t_middle = (time + (*it).t_on)/2; // set its middle time ((t_on + t_off)/2)
-                        (*it).duration = time - (*it).t_on; // Sets its duration
-                        (*it).is_note = 1; // This is a real note!
-                        break; // break this loop since the corresponding note_on to this current note_off was found!
-                    }
-
-                }
-            }
-            if (messg_str[0] == 'f' && messg_str[1] == 'f' && messg_str.size() >= 9) // Checks if it's a meta-message
-            {
-                // meta message is ill-formed.
-                // meta messages must have at least three bytes:
-                //    0: 0xff == meta message marker
-                //    1: meta message type
-                //    2: meta message data bytes to follow
-                if (messg_str.substr(3,2) == "51" && messg_str.size() == 18) // Checks if it is a tempo change message
-                {
-                    // Meta tempo message can only be 6 bytes long.      ^ 18 is the string size: 6bytes*2hexDigits + 6 spaces (one at the end of each)
-                    // The new_tempo calculated is given in microseconds per quarter note.
-                    //ui->plainTextEdit->appendPlainText("MetaTempoMessage!\n"); // Line just for checking!
-                    TempoChange temp_tempo_change; // Create a temporary object for tempo change
-                    //temp_tempo_change.new_tempo = ((stoi(messg_str.substr(6,2), nullptr, 16) << 16) + (stoi(messg_str.substr(9,2), nullptr, 16) << 8) + stoi(messg_str.substr(12,2), nullptr, 16)); // equivalent to: return ((*this)[3] << 16) + ((*this)[4] << 8) + (*this)[5];
-                    temp_tempo_change.new_tempo = ((stol(messg_str.substr(9,2), nullptr, 16) << 16) + (stol(messg_str.substr(12,2), nullptr, 16) << 8) + stol(messg_str.substr(15,2), nullptr, 16)); // equivalent to: return ((*this)[3] << 16) + ((*this)[4] << 8) + (*this)[5];
-                    temp_tempo_change.t_on = time;
-                    //cout << temp_tempo_change.new_tempo << "\n";
-                    Mdt->Tempos.push_back(temp_tempo_change); // Stores the tempo change in the list
-                }
-                // reading track names - Changing track names for easing instrument finding
-                else if (messg_str.substr(3,2) == "3 ")// && messg_str.size() > 4) // Check if it is a track name meta message. I don't know its size, I put 4 bytes to test.
-                {
-                    std::string t_name;
-                    std::string straux = messg_str.substr(9);
-                    straux.erase(remove_if(straux.begin(), straux.end(), ::isspace), straux.end()); // remove_if is declared in <algorithm>
-                    hex2ascii(straux, t_name);
-                    if (track <= 24) // since we have a maximum of 24 tracks
-                    {
-                        Mdt->TrackNames.at(track) = t_name; // store the track names when the button Process is pressed.
-                    }
-                }
-                else if (messg_str.substr(3,5) == "58 04" || messg_str.substr(3,4) == "58 4") // time signature messages start with this substring "FF 58 04"
-                {
-                    TimeSignature temp_tsig;
-                    temp_tsig.numerator = stoi(messg_str.substr(9,2));
-                    int denominator_exponent = stoi(messg_str.substr(12,2));
-                    temp_tsig.denominator = std::pow(2, denominator_exponent);
-                    temp_tsig.t_on = time;
-                    Mdt->TSignatures.push_back(temp_tsig);
-                }
-            }
-
-        }
-    }
-    Mdt->NTracks = Mdt->NTracks + 1; // This defines the final number of tracks detected in the processed midi. It is the highest track + 1, since the tracks are numbered from 0 to n-1.
-
-    Mdt->TotalTime = time; // set the current time after processing as global variable total time from this midi processing.
+    str = stream.str();
+    Mdt->processMidiString(str);
     QMessageBox::information(this, tr("Processing completed"), "The midi data in the text input window was successfully completed.", QMessageBox::Ok );
     ui->pb_noteBlocks->setEnabled(true);
     ui->pb_animation->setEnabled(true);

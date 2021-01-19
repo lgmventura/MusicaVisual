@@ -6,7 +6,7 @@ ImportMidi::ImportMidi()
 }
 
 // other member functions:
-void ImportMidi::importMidiMessagesText(const char *midiFileName)
+void ImportMidi::importMidiMessagesText(const char *midiFileName) // useful for debugging
 {
     MidiFile midifile;
     midifile.read(midiFileName);
