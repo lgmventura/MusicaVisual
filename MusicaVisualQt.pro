@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     about.cpp \
     help1.cpp \
     renderChordStar.cpp \
-    utils/colour.cpp
+    utils/colour.cpp \
+    visual/videorecorder.cpp
 
 HEADERS  += mainwindow.h \
     musiclib/chords.h \
@@ -59,7 +60,8 @@ HEADERS  += mainwindow.h \
     csappmidi/include/MidiMessage.h \
     csappmidi/include/Options.h \
     renderChordStar.h \
-    utils/colour.h
+    utils/colour.h \
+    visual/videorecorder.h
 
 FORMS    += mainwindow.ui \
     dockwidgettracks.ui \

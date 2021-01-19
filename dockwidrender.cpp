@@ -29,16 +29,22 @@
 #include <QColorDialog>
 
 extern RenderP *renderproperties;
-extern std::string *codec_fourcc;
+//extern std::string *codec_fourcc;
 //extern chords mdt->GChords;
 
-DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt) :
+DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt, VideoRecorder *vRec) :
     QDockWidget(parent),
     ui(new Ui::DockWidRender)
 {
     ui->setupUi(this);
     this->Mdt = mdt;
-    ui->lineEdit->setText(QString::fromStdString(*codec_fourcc));
+    this->VRec = vRec;
+    if (vRec != nullptr)
+        ui->lineEdit->setText(QString::fromStdString(vRec->CodecFourCC));
+    else
+        ui->lineEdit->setEnabled(false); // no valid video object (will crash if accessed)
+    if (mdt == nullptr)
+        ui->pb_procChordNames->setEnabled(false); // no valid object (will crash if clicked)
     ui->checkBox->setChecked(renderproperties->lines[0]);
     ui->checkBox_2->setChecked(renderproperties->lines[1]);
     ui->checkBox_3->setChecked(renderproperties->sep_render[0]);
@@ -149,7 +155,7 @@ void DockWidRender::on_spinBox_7_valueChanged(int arg1)
 
 void DockWidRender::on_lineEdit_editingFinished()
 {
-    *codec_fourcc = ui->lineEdit->text().toStdString();
+    VRec->CodecFourCC = ui->lineEdit->text().toStdString();
 }
 
 void DockWidRender::on_spinBox_3_valueChanged(int arg1)

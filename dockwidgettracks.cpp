@@ -262,33 +262,35 @@ DockWidgetTracks::DockWidgetTracks(QWidget *parent, MusicData *mdt) :
     ui->colorScheme1_23->setCurrentIndex(tracksproperties->colorScheme[22]);
     ui->colorScheme1_24->setCurrentIndex(tracksproperties->colorScheme[23]);
 
-
-    ui->checkBox->setText(QString::fromStdString(Mdt->TrackNames.at(0)));
-    ui->checkBox_2->setText(QString::fromStdString(Mdt->TrackNames.at(1)));
-    ui->checkBox_3->setText(QString::fromStdString(Mdt->TrackNames.at(2)));
-    ui->checkBox_2->setText(QString::fromStdString(Mdt->TrackNames.at(1)));
-    ui->checkBox_3->setText(QString::fromStdString(Mdt->TrackNames.at(2)));
-    ui->checkBox_4->setText(QString::fromStdString(Mdt->TrackNames.at(3)));
-    ui->checkBox_5->setText(QString::fromStdString(Mdt->TrackNames.at(4)));
-    ui->checkBox_6->setText(QString::fromStdString(Mdt->TrackNames.at(5)));
-    ui->checkBox_7->setText(QString::fromStdString(Mdt->TrackNames.at(6)));
-    ui->checkBox_8->setText(QString::fromStdString(Mdt->TrackNames.at(7)));
-    ui->checkBox_9->setText(QString::fromStdString(Mdt->TrackNames.at(8)));
-    ui->checkBox_10->setText(QString::fromStdString(Mdt->TrackNames.at(9)));
-    ui->checkBox_11->setText(QString::fromStdString(Mdt->TrackNames.at(10)));
-    ui->checkBox_12->setText(QString::fromStdString(Mdt->TrackNames.at(11)));
-    ui->checkBox_13->setText(QString::fromStdString(Mdt->TrackNames.at(12)));
-    ui->checkBox_14->setText(QString::fromStdString(Mdt->TrackNames.at(13)));
-    ui->checkBox_15->setText(QString::fromStdString(Mdt->TrackNames.at(14)));
-    ui->checkBox_16->setText(QString::fromStdString(Mdt->TrackNames.at(15)));
-    ui->checkBox_17->setText(QString::fromStdString(Mdt->TrackNames.at(16)));
-    ui->checkBox_18->setText(QString::fromStdString(Mdt->TrackNames.at(17)));
-    ui->checkBox_19->setText(QString::fromStdString(Mdt->TrackNames.at(18)));
-    ui->checkBox_20->setText(QString::fromStdString(Mdt->TrackNames.at(19)));
-    ui->checkBox_21->setText(QString::fromStdString(Mdt->TrackNames.at(20)));
-    ui->checkBox_22->setText(QString::fromStdString(Mdt->TrackNames.at(21)));
-    ui->checkBox_23->setText(QString::fromStdString(Mdt->TrackNames.at(22)));
-    ui->checkBox_24->setText(QString::fromStdString(Mdt->TrackNames.at(23)));
+    if (Mdt != nullptr) // will crash if trying to access and it's a null pointer
+    {
+        ui->checkBox->setText(QString::fromStdString(Mdt->TrackNames.at(0)));
+        ui->checkBox_2->setText(QString::fromStdString(Mdt->TrackNames.at(1)));
+        ui->checkBox_3->setText(QString::fromStdString(Mdt->TrackNames.at(2)));
+        ui->checkBox_2->setText(QString::fromStdString(Mdt->TrackNames.at(1)));
+        ui->checkBox_3->setText(QString::fromStdString(Mdt->TrackNames.at(2)));
+        ui->checkBox_4->setText(QString::fromStdString(Mdt->TrackNames.at(3)));
+        ui->checkBox_5->setText(QString::fromStdString(Mdt->TrackNames.at(4)));
+        ui->checkBox_6->setText(QString::fromStdString(Mdt->TrackNames.at(5)));
+        ui->checkBox_7->setText(QString::fromStdString(Mdt->TrackNames.at(6)));
+        ui->checkBox_8->setText(QString::fromStdString(Mdt->TrackNames.at(7)));
+        ui->checkBox_9->setText(QString::fromStdString(Mdt->TrackNames.at(8)));
+        ui->checkBox_10->setText(QString::fromStdString(Mdt->TrackNames.at(9)));
+        ui->checkBox_11->setText(QString::fromStdString(Mdt->TrackNames.at(10)));
+        ui->checkBox_12->setText(QString::fromStdString(Mdt->TrackNames.at(11)));
+        ui->checkBox_13->setText(QString::fromStdString(Mdt->TrackNames.at(12)));
+        ui->checkBox_14->setText(QString::fromStdString(Mdt->TrackNames.at(13)));
+        ui->checkBox_15->setText(QString::fromStdString(Mdt->TrackNames.at(14)));
+        ui->checkBox_16->setText(QString::fromStdString(Mdt->TrackNames.at(15)));
+        ui->checkBox_17->setText(QString::fromStdString(Mdt->TrackNames.at(16)));
+        ui->checkBox_18->setText(QString::fromStdString(Mdt->TrackNames.at(17)));
+        ui->checkBox_19->setText(QString::fromStdString(Mdt->TrackNames.at(18)));
+        ui->checkBox_20->setText(QString::fromStdString(Mdt->TrackNames.at(19)));
+        ui->checkBox_21->setText(QString::fromStdString(Mdt->TrackNames.at(20)));
+        ui->checkBox_22->setText(QString::fromStdString(Mdt->TrackNames.at(21)));
+        ui->checkBox_23->setText(QString::fromStdString(Mdt->TrackNames.at(22)));
+        ui->checkBox_24->setText(QString::fromStdString(Mdt->TrackNames.at(23)));
+    }
 }
 
 DockWidgetTracks::~DockWidgetTracks()

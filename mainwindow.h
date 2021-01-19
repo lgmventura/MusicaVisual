@@ -35,6 +35,7 @@
 // Include lib classes
 #include "midimessages.h"
 #include "musicdata.h"
+#include "visual/videorecorder.h"
 
 // Include chords
 #include "chords.h"
@@ -103,7 +104,7 @@ public:
     int xpos;
     int win_width;
     int win_height;
-    void blocks_paint(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int);
+    void blocks_paint(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, VideoRecorder*);
 };
 class RenderP
 {
@@ -194,6 +195,7 @@ private:
     About *aboutDiag = nullptr;
     Help1 *helpDiag_1 = nullptr;
     MusicData *Mdt = nullptr;
+    VideoRecorder *VRec = nullptr;
 };
 
 #endif // MAINWINDOW_H

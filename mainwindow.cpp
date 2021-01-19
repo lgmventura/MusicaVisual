@@ -91,9 +91,9 @@ AnimPainter *animPt;
 RenderP *renderproperties = new RenderP();
 
 //std::string videoFileName;
-bool *videoRecord = new bool(false);
-cv::VideoWriter *video;
-std::string *codec_fourcc = new std::string("X264");
+//bool *videoRecord = new bool(false);
+//cv::VideoWriter *video;
+//std::string *codec_fourcc = new std::string("X264");
 
 //std::vector <std::string> *track_names; // store the track names when the button Process is pressed. // Redefined in tracksproperties, mainwindow.h
 //std::vector<std::string> *Mdt->TrackNames = new std::vector<std::string>; // = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", "Track 17", "Track 18", "Track 19", "Track 20", "Track 21", "Track 22", "Track 23", "Track 24"}; // this works, but is variable in size. So save/load settings won't work if put in TracksP.
@@ -142,7 +142,7 @@ rgb getColorTrackP(int track, int pitch)
 
 }
 
-void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
+void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height, VideoRecorder *vRec) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
 {
     int zoom = endMidiTime - startMidiTime;
     int curr_pos_middle = (startMidiTime + (zoom)/2);
@@ -1244,9 +1244,9 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
             cv::boxFilter(img_moving_notes, img_moving_notes, -1, cv::Size(renderproperties->blur_size_movnotes[0], renderproperties->blur_size_movnotes[1]));
         image = image + img_moving_notes;
     }
-    if (*videoRecord == 1 && video != nullptr)
+    if (vRec->RecordVideo == 1 && vRec != nullptr)
     {
-        video->write(image);
+        vRec->writeFrame(image);
     }
 }
 
@@ -1262,6 +1262,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dwidtracks = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
     dwrenderprop = nullptr;
     this->Mdt = new MusicData(); // create object MusicData
+    this->VRec = new VideoRecorder(720, 480, 30); // dimensions, fps etc. will be eventually changed later
 }
 
 MainWindow::~MainWindow()
@@ -1381,7 +1382,7 @@ void MainWindow::on_actionTracks_triggered() // open dockwidgettracks.
     dwidtracks->repaint();
 }
 
-void MainWindow::on_pb_process_clicked() // Process button // ToDo: transfer into MusicData (as a member function), only call it here
+void MainWindow::on_pb_process_clicked() // Process button
 {
     std::stringstream stream;
     string str;
@@ -1391,12 +1392,6 @@ void MainWindow::on_pb_process_clicked() // Process button // ToDo: transfer int
     QMessageBox::information(this, tr("Processing completed"), "The midi data in the text input window was successfully completed.", QMessageBox::Ok );
     ui->pb_noteBlocks->setEnabled(true);
     ui->pb_animation->setEnabled(true);
-
-//    for (std::list<TempoChange>::iterator it=tempos.begin(); it != tempos.end(); ++it) // Run the  tempo change list forwards
-//    {
-//        ui->plainTextEdit->appendPlainText(QString::number((*it).new_tempo)); // just for checking if the tempos were stored in the list
-//        ui->plainTextEdit->appendPlainText("\n");
-//    }
 }
 
 
@@ -1465,7 +1460,7 @@ void MainWindow::on_pb_animation_clicked()
     }
 
     cv::namedWindow("Animation");
-    animbar = new AnimationBar(0, "Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), renderproperties);
+    animbar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), renderproperties, VRec);
     animbar->show();
 
     animPt = new AnimPainter;
@@ -1474,8 +1469,11 @@ void MainWindow::on_pb_animation_clicked()
     {
         try
         {
-            video = new cv::VideoWriter(ui->edt_videoOutput->text().toStdString(),cv::VideoWriter::fourcc(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->dsb_fps->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
-            //throw video = new cv::VideoWriter(ui->lineEdit->text().toStdString(),CV_FOURCC(codec_fourcc->at(0),codec_fourcc->at(1),codec_fourcc->at(2),codec_fourcc->at(3)),ui->doubleSpinBox->value(), cv::Size(window_width,window_height),true); //CV_FOURCC('X','2','6','4')
+            this->VRec->setVideoDim(window_width, window_height);
+            this->VRec->Fps = ui->dsb_fps->value();
+            this->VRec->OutputPath = ui->edt_videoOutput->text().toStdString();
+            // CodecFourCC will be changed directly in object
+            this->VRec->createVideoWriter();
             animbar->setRecButtonEnabled(true); // video should be ready to be written, activating button
         }
         catch (cv::Exception& e)
@@ -1532,7 +1530,7 @@ void MainWindow::on_pb_animation_clicked()
 
 void MainWindow::on_actionRendering_Properties_triggered()
 {
-    dwrenderprop = new DockWidRender(this, Mdt);
+    dwrenderprop = new DockWidRender(this, Mdt, VRec);
     dwrenderprop->show();
 }
 
@@ -1618,13 +1616,13 @@ void MainWindow::on_actionLoad_settings_triggered()
         if (dwidtracks != nullptr)
         {
             dwidtracks->close();
-            dwidtracks = new DockWidgetTracks(this);
+            dwidtracks = new DockWidgetTracks(this, Mdt);
             dwidtracks->show();
         }
         if (dwrenderprop != nullptr)
         {
             dwrenderprop->close();
-            dwrenderprop = new DockWidRender(this);
+            dwrenderprop = new DockWidRender(this, Mdt, VRec);
             dwrenderprop->show();
         }
     }

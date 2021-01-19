@@ -39,8 +39,8 @@ extern AnimwinP *animwinP;
 extern AnimPainter *animPt;
 //extern std::list <TempoChange> *tempos;
 //extern int mdt->Tpq;
-extern bool *videoRecord;
-extern cv::VideoWriter *video;
+//extern bool *videoRecord;
+//extern cv::VideoWriter *video;
 
 cv::Mat *image;
 int window_width;
@@ -52,7 +52,7 @@ bool play = false;
 double current_time;
 
 //QTimer *timerPlay;
-extern std::string *codec_fourcc;
+//extern std::string *codec_fourcc;
 
 AnimationBar::AnimationBar(QWidget *parent) :
     QWidget(parent),
@@ -62,7 +62,7 @@ AnimationBar::AnimationBar(QWidget *parent) :
     // This original contructor is currently not used nor called. Use the below!
 }
 
-AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *renderproperties):
+AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *renderproperties, VideoRecorder *vRec):
     QWidget(parent),
     ui(new Ui::AnimationBar)
 {
@@ -75,6 +75,7 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     this->winName = winName;
     this->fps = fps;
     this->renderproperties = renderproperties;
+    this->VRec = vRec;
     ui->horizontalSlider->setMaximum(mdt->TotalTime);
     ui->horizontalSlider_2->setMaximum(mdt->TotalTime);
     ui->spinBox->setMaximum(mdt->TotalTime);
@@ -88,7 +89,7 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     ui->spinBox_2->setValue(0);
     ui->horizontalSlider_2->setValue(0);
 
-    ui->label_2->setText(QString::fromStdString(*codec_fourcc));
+    ui->label_2->setText(QString::fromStdString(vRec->CodecFourCC));
 
     playThread = new PlayThread(this, fps);
     connect(playThread, SIGNAL(NumberChanged(int)), this, SLOT(onNumberChanged(int)));
@@ -98,9 +99,9 @@ AnimationBar::~AnimationBar()
 {
     // releasing memory before closing it in this destructor
     img_buffer_sep_tracks->clear();
-    if (*videoRecord == true)
+    if (VRec->RecordVideo == true)
     {
-        video->release();
+        VRec->releaseVideo();
     }
     delete ui;
 }
@@ -110,7 +111,7 @@ void AnimationBar::on_horizontalSlider_valueChanged(int value)
 {
     animwinP->setZoom(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    animPt->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height);
+    animPt->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height, VRec);
     cv::imshow(winName, *image);
 
     if (renderproperties->extra_time[0] == 1)
@@ -128,7 +129,7 @@ void AnimationBar::on_horizontalSlider_2_valueChanged(int value)
 {
     animwinP->setXpos(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    animPt->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height);
+    animPt->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height, VRec);
     cv::imshow(winName, *image);
 }
 
@@ -187,7 +188,7 @@ void AnimationBar::on_pushButton_clicked()
 
 void AnimationBar::on_pushButton_4_toggled(bool checked)
 {
-    *videoRecord = checked;
+    VRec->RecordVideo = checked;
 }
 
 void AnimationBar::setRecButtonEnabled(bool value)

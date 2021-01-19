@@ -29,6 +29,7 @@
 #include <QColor>
 
 #include "musicdata.h"
+#include "visual/videorecorder.h"
 
 namespace Ui {
 class DockWidRender;
@@ -39,7 +40,7 @@ class DockWidRender : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit DockWidRender(QWidget *parent = 0, MusicData *mdt = nullptr);
+    explicit DockWidRender(QWidget *parent = 0, MusicData *mdt = nullptr, VideoRecorder *vRec = nullptr);
     ~DockWidRender();
 
 private slots:
@@ -121,6 +122,7 @@ private:
     QColor hlines;
     QColor vlines;
     MusicData *Mdt;
+    VideoRecorder *VRec;
 };
 
 #endif // DOCKWIDRENDER_H
