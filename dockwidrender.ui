@@ -298,7 +298,7 @@
             </widget>
            </item>
            <item row="1" column="3">
-            <widget class="QComboBox" name="comboBox_2">
+            <widget class="QComboBox" name="cmb_vLnManualDenom">
              <property name="currentText">
               <string>1</string>
              </property>
@@ -516,7 +516,7 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QComboBox" name="comboBox_3">
+         <widget class="QComboBox" name="cmb_dispNoteNamesWhere">
           <item>
            <property name="text">
             <string>as a line</string>
@@ -551,7 +551,7 @@
          </widget>
         </item>
         <item row="4" column="2">
-         <widget class="QSpinBox" name="spinBox_10">
+         <widget class="QSpinBox" name="spb_chordStarOffset">
           <property name="maximum">
            <number>11</number>
           </property>
@@ -612,7 +612,7 @@
         <property name="geometry">
          <rect>
           <x>30</x>
-          <y>20</y>
+          <y>60</y>
           <width>221</width>
           <height>21</height>
          </rect>
@@ -625,7 +625,7 @@
         <property name="geometry">
          <rect>
           <x>270</x>
-          <y>20</y>
+          <y>60</y>
           <width>51</width>
           <height>22</height>
          </rect>
@@ -636,6 +636,36 @@
         <property name="maxLength">
          <number>4</number>
         </property>
+       </widget>
+       <widget class="QComboBox" name="cmb_videoCodec">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>20</y>
+          <width>291</width>
+          <height>25</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>H.264 video encoded by x264 *.mkv</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>MPEG 4 video *.avi</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Movie JPEG *.avi</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Custom FFMPEG FourCC</string>
+         </property>
+        </item>
        </widget>
       </widget>
      </widget>

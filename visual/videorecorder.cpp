@@ -29,3 +29,17 @@ void VideoRecorder::releaseVideo()
 {
     this->Video.release();
 }
+
+std::string VideoRecorder::getFileExtension()
+{
+    std::string fExt = CodecExtension::EXTENSION[CodecFourCC];
+    return fExt;
+}
+
+
+std::map<std::string, std::string> CodecExtension::EXTENSION =
+{
+    {"X264", "mkv"},
+    {"MP4V", "avi"},
+    {"MJPG", "avi"}
+};

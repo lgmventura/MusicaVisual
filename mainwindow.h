@@ -112,8 +112,8 @@ public:
     RenderP();
     int vertRange = 40;
     int vertShift = 0;
-    bool lines[4] = {1,0,0,0};
-    unsigned short beat_measure_manual[2] = {4,4};
+    bool lines[4] = {1,0,0,0}; // {central line, vlines from time signatures, manual, from metronome track}
+    unsigned short beat_measure_manual[2] = {4,2}; // {numerator, denominator} = {x, 2^y}
     bool sep_render[3] = {0,0,0};
     short blur_size[2] = {0,0};
     short blur_size_movnotes[2] = {0,0};
@@ -130,7 +130,7 @@ public:
     int note_names_where = 0;
     int turn_chord_circle = 0;
     bool chord_names = 0;
-    bool chord_analysis[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}; // ToDo: transfer this to class chord analysis
+    bool chord_analysis[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}; // ToDo: improve this
     bool chord_star = 0;
     bool accidentalSharp = 0; // 0 for flat, 1 for sharp
     chord::circle chord_star_type = chord::circleOfSemitones;

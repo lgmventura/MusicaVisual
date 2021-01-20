@@ -50,7 +50,7 @@ private slots:
 
     void on_spinBox_valueChanged(int arg1);
 
-    void on_comboBox_2_currentTextChanged(const QString &arg1);
+    void on_cmb_vLnManualDenom_currentIndexChanged(int index);
 
     void on_checkBox_3_toggled(bool checked);
 
@@ -106,15 +106,17 @@ private slots:
 
     void on_combox_chordStar_currentIndexChanged(int index);
 
-    void on_comboBox_3_currentIndexChanged(int index);
+    void on_cmb_dispNoteNamesWhere_currentIndexChanged(int index);
 
-    void on_spinBox_10_valueChanged(int arg1);
+    void on_spb_chordStarOffset_valueChanged(int arg1);
 
     void on_cb_vLineTSig_toggled(bool checked);
 
     void on_cb_sharpFlat_currentIndexChanged(int index);
 
     void on_cb_AA_toggled(bool checked);
+
+    void on_cmb_videoCodec_currentIndexChanged(int index);
 
 private:
     Ui::DockWidRender *ui;
@@ -123,6 +125,15 @@ private:
     QColor vlines;
     MusicData *Mdt;
     VideoRecorder *VRec;
+};
+
+class RenderWidMaps
+{
+private: RenderWidMaps() {}
+
+public:
+    static std::map<int, string> CMB_FOURCC_KV;
+    static std::map<string, int> CMB_FOURCC_VK;
 };
 
 #endif // DOCKWIDRENDER_H

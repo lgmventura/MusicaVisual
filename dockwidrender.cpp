@@ -39,38 +39,32 @@ DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt, VideoRecorder *vRe
     ui->setupUi(this);
     this->Mdt = mdt;
     this->VRec = vRec;
+    ui->lineEdit->setEnabled(false);
     if (vRec != nullptr)
         ui->lineEdit->setText(QString::fromStdString(vRec->CodecFourCC));
     else
-        ui->lineEdit->setEnabled(false); // no valid video object (will crash if accessed)
+    {
+        ui->cmb_videoCodec->setEnabled(false); // no valid video object (will crash if accessed)
+    }
     if (mdt == nullptr)
         ui->pb_procChordNames->setEnabled(false); // no valid object (will crash if clicked)
-    ui->checkBox->setChecked(renderproperties->lines[0]);
-    ui->checkBox_2->setChecked(renderproperties->lines[1]);
-    ui->checkBox_3->setChecked(renderproperties->sep_render[0]);
-    ui->checkBox_4->setChecked(renderproperties->sep_render[1]);
-    ui->checkBox_5->setChecked(renderproperties->sep_render[2]);
-    ui->spinBox->setValue(renderproperties->beat_measure_manual[0]);
-   // ui->comboBox_2->setCurrentIndex(renderproperties->beat_measure_manual[1]);
-    ui->spinBox_2->setValue(renderproperties->blur_size[0]);
-    ui->spinBox_5->setValue(renderproperties->blur_size[1]);
-    ui->spinBox_6->setValue(renderproperties->blur_size_movnotes[0]);
-    ui->spinBox_7->setValue(renderproperties->blur_size_movnotes[1]);
+    // Tab 0: vertical range/shift
     ui->spinBox_3->setValue(renderproperties->vertRange);
     ui->spinBox_4->setValue(renderproperties->vertShift);
 
-    ui->checkBox_6->setChecked(renderproperties->extra_time[0]);
-    ui->checkBox_7->setChecked(renderproperties->extra_time[1]);
-
+    // Tab 1: lines:
+    ui->spinBox->setValue(renderproperties->beat_measure_manual[0]);
+    ui->cmb_vLnManualDenom->setCurrentIndex(renderproperties->beat_measure_manual[1]);
     ui->checkBox_8->setChecked(renderproperties->hlines);
     ui->comboBox->setCurrentIndex(renderproperties->hlines_type);
     ui->spinBox_8->setValue(renderproperties->hlines_n);
-
     ui->spinBox_9->setMaximum(renderproperties->hlines_n - 1);
     ui->spinBox_9->setValue(renderproperties->hlines_offset);
     ui->checkBox_9->setChecked(renderproperties->half_shift);
-
-    ui->cb_vLineTrack->setChecked(renderproperties->lines[2]);
+    ui->checkBox->setChecked(renderproperties->lines[0]);
+    ui->cb_vLineTSig->setChecked(renderproperties->lines[1]);
+    ui->checkBox_2->setChecked(renderproperties->lines[2]);
+    ui->cb_vLineTrack->setChecked(renderproperties->lines[3]);
     ui->sb_vLineTrack->setValue(renderproperties->vlines_track_n);
 
     hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
@@ -81,6 +75,35 @@ DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt, VideoRecorder *vRe
     pal_v.setColor(QPalette::Window, vlines);
     ui->widget_hlcolour->setPalette(pal_h);
     ui->widget_vlcolour->setPalette(pal_v);
+
+    // Tab 2: render settings:
+    ui->spinBox_2->setValue(renderproperties->blur_size[0]);
+    ui->spinBox_5->setValue(renderproperties->blur_size[1]);
+    ui->spinBox_6->setValue(renderproperties->blur_size_movnotes[0]);
+    ui->spinBox_7->setValue(renderproperties->blur_size_movnotes[1]);
+
+    ui->checkBox_3->setChecked(renderproperties->sep_render[0]);
+    ui->checkBox_4->setChecked(renderproperties->sep_render[1]);
+    ui->checkBox_5->setChecked(renderproperties->sep_render[2]);
+    ui->cb_AA->setChecked(renderproperties->shapeLineType);
+
+    // Tab 3: chord analysis:
+    ui->cb_sharpFlat->setCurrentIndex(renderproperties->accidentalSharp);
+    ui->cb_dispChordStar->setChecked(renderproperties->chord_star);
+    ui->cb_dispNoteNames->setChecked(renderproperties->note_names);
+    ui->cb_dispChordNames->setChecked(renderproperties->chord_names);
+    ui->combox_chordStar->setCurrentIndex(renderproperties->chord_star_type);
+    ui->cmb_dispNoteNamesWhere->setCurrentIndex(renderproperties->note_names_where);
+    ui->spb_chordStarOffset->setValue(renderproperties->turn_chord_circle);
+
+    // Tab 4: extra time:
+    ui->checkBox_6->setChecked(renderproperties->extra_time[0]);
+    ui->checkBox_7->setChecked(renderproperties->extra_time[1]);
+
+    // Tab 5: render video codec::
+    ui->cmb_videoCodec->setCurrentIndex(RenderWidMaps::CMB_FOURCC_VK[VRec->CodecFourCC]);
+
+
 }
 
 DockWidRender::~DockWidRender()
@@ -113,9 +136,9 @@ void DockWidRender::on_spinBox_valueChanged(int arg1)
     renderproperties->beat_measure_manual[0] = arg1;
 }
 
-void DockWidRender::on_comboBox_2_currentTextChanged(const QString &arg1)
+void DockWidRender::on_cmb_vLnManualDenom_currentIndexChanged(int index)
 {
-    renderproperties->beat_measure_manual[1] = stoi(arg1.toStdString());
+    renderproperties->beat_measure_manual[1] = index;
 }
 
 void DockWidRender::on_checkBox_3_toggled(bool checked)
@@ -286,12 +309,12 @@ void DockWidRender::on_combox_chordStar_currentIndexChanged(int index)
     }
 }
 
-void DockWidRender::on_comboBox_3_currentIndexChanged(int index)
+void DockWidRender::on_cmb_dispNoteNamesWhere_currentIndexChanged(int index)
 {
     renderproperties->note_names_where = index;
 }
 
-void DockWidRender::on_spinBox_10_valueChanged(int arg1)
+void DockWidRender::on_spb_chordStarOffset_valueChanged(int arg1)
 {
     renderproperties->turn_chord_circle = arg1;
 }
@@ -315,3 +338,33 @@ void DockWidRender::on_cb_AA_toggled(bool checked)
         renderproperties->shapeLineType = cv::LINE_8;
     }
 }
+
+void DockWidRender::on_cmb_videoCodec_currentIndexChanged(int index)
+{
+    VRec->CodecFourCC = RenderWidMaps::CMB_FOURCC_KV[index];
+    ui->lineEdit->setText(QString::fromStdString(RenderWidMaps::CMB_FOURCC_KV[index]));
+    if (index <= 2)
+    {
+        ui->lineEdit->setEnabled(false);
+    }
+    else if (index == 3) // custom fourCC codec
+    {
+        ui->lineEdit->setEnabled(true);
+    }
+}
+
+// Indices:
+std::map<int, string> RenderWidMaps::CMB_FOURCC_KV =
+{
+    {0, "X264"},
+    {1, "MP4V"},
+    {2, "MJPG"},
+    {3,     ""}
+};
+std::map<string, int> RenderWidMaps::CMB_FOURCC_VK =
+{
+    {"X264", 0},
+    {"MP4V", 1},
+    {"MJPG", 2},
+    {"",     3}
+};

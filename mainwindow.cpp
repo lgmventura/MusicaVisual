@@ -1093,7 +1093,8 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
     }
     if (renderproperties->lines[2]) // manual time signature, given measure
     {
-        for (unsigned int i = 0; i < endMidiTime; i = i + 4*renderproperties->beat_measure_manual[0]*mdt.Tpq/renderproperties->beat_measure_manual[1])
+        int denominator = std::pow(2, renderproperties->beat_measure_manual[1]);
+        for (unsigned int i = 0; i < endMidiTime; i = i + 4*renderproperties->beat_measure_manual[0]*mdt.Tpq/denominator)
         {
             cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {renderproperties->vlines_colour[2], renderproperties->vlines_colour[1], renderproperties->vlines_colour[0]});
         }
@@ -1316,21 +1317,21 @@ void MainWindow::dropEvent(QDropEvent *event)
     //{
     QString QmidiFileName;
 
-        QList<QUrl> urls;
-        QList<QUrl>::Iterator it;
-        urls = event->mimeData()->urls();
-        for (it = urls.begin(); it != urls.end(); it++)
-            QmidiFileName = it->path();
+    QList<QUrl> urls;
+    QList<QUrl>::Iterator it;
+    urls = event->mimeData()->urls();
+    for (it = urls.begin(); it != urls.end(); it++)
+        QmidiFileName = it->path();
 
-        QByteArray ba = QmidiFileName.toUtf8();
-        const char *midiFileName = ba.data();
+    QByteArray ba = QmidiFileName.toUtf8();
+    const char *midiFileName = ba.data();
 
-        //ui->plainTextEdit->appendPlainText("Dropped midi");
-        std::cout << "is midi\n" << midiFileName;
-        //ui->plainTextEdit->appendPlainText(QmidiFileName);
-        MainWindow::ImportMidiFile(midiFileName);
+    //ui->plainTextEdit->appendPlainText("Dropped midi");
+    std::cout << "is midi\n" << midiFileName;
+    //ui->plainTextEdit->appendPlainText(QmidiFileName);
+    MainWindow::ImportMidiFile(midiFileName);
 
-        event->acceptProposedAction();
+    event->acceptProposedAction();
     //}
 }
 
@@ -1471,7 +1472,7 @@ void MainWindow::on_pb_animation_clicked()
         {
             this->VRec->setVideoDim(window_width, window_height);
             this->VRec->Fps = ui->dsb_fps->value();
-            this->VRec->OutputPath = ui->edt_videoOutput->text().toStdString();
+            this->VRec->OutputPath = ui->edt_videoOutput->text().toStdString() + "." + this->VRec->getFileExtension();
             // CodecFourCC will be changed directly in object
             this->VRec->createVideoWriter();
             animbar->setRecButtonEnabled(true); // video should be ready to be written, activating button
