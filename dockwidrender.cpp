@@ -85,7 +85,10 @@ DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt, VideoRecorder *vRe
     ui->checkBox_3->setChecked(renderproperties->sep_render[0]);
     ui->checkBox_4->setChecked(renderproperties->sep_render[1]);
     ui->checkBox_5->setChecked(renderproperties->sep_render[2]);
-    ui->cb_AA->setChecked(renderproperties->shapeLineType);
+    if      (renderproperties->shapeLineType == cv::LINE_8)
+        ui->cb_AA->setChecked(false);
+    else if (renderproperties->shapeLineType == cv::LINE_AA)
+        ui->cb_AA->setChecked(true);
 
     // Tab 3: chord analysis:
     ui->cb_sharpFlat->setCurrentIndex(renderproperties->accidentalSharp);

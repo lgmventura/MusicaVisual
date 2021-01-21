@@ -26,6 +26,7 @@
 #include <QDockWidget>
 
 #include "dialogcolorpicker.h"
+#include "visual/tracks.h"
 #include "musicdata.h"
 
 namespace Ui {
@@ -37,7 +38,7 @@ class DockWidgetTracks : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit DockWidgetTracks(QWidget *parent = 0, MusicData *mdt = nullptr);
+    explicit DockWidgetTracks(TracksP *tProp, QWidget *parent = 0, MusicData *mdt = nullptr);
     ~DockWidgetTracks();
 
 private slots:
@@ -343,6 +344,9 @@ private slots:
 
 private:
     Ui::DockWidgetTracks *ui;
+    TracksP *TProp;
+    MusicData *Mdt;
+
     DialogColorPicker *dcolorpicker;
 
     QColor ct1;
@@ -369,8 +373,6 @@ private:
     QColor ct22;
     QColor ct23;
     QColor ct24;
-
-    MusicData *Mdt;
 };
 
 #endif // DOCKWIDGETTRACKS_H
