@@ -28,17 +28,21 @@
 #include <QColor>
 #include <QColorDialog>
 
-extern RenderP *renderproperties;
+//extern RenderP *RProp;
 //extern std::string *codec_fourcc;
 //extern chords mdt->GChords;
 
-DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt, VideoRecorder *vRec) :
+DockWidRender::DockWidRender(RenderP *rProp, QWidget *parent, MusicData *mdt, VideoRecorder *vRec) :
     QDockWidget(parent),
     ui(new Ui::DockWidRender)
 {
     ui->setupUi(this);
+    // Set member variables:
+    this->RProp = rProp;
     this->Mdt = mdt;
     this->VRec = vRec;
+
+    // Set UI state to current state:
     ui->lineEdit->setEnabled(false);
     if (vRec != nullptr)
         ui->lineEdit->setText(QString::fromStdString(vRec->CodecFourCC));
@@ -49,26 +53,26 @@ DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt, VideoRecorder *vRe
     if (mdt == nullptr)
         ui->pb_procChordNames->setEnabled(false); // no valid object (will crash if clicked)
     // Tab 0: vertical range/shift
-    ui->spinBox_3->setValue(renderproperties->vertRange);
-    ui->spinBox_4->setValue(renderproperties->vertShift);
+    ui->spinBox_3->setValue(RProp->vertRange);
+    ui->spinBox_4->setValue(RProp->vertShift);
 
     // Tab 1: lines:
-    ui->spinBox->setValue(renderproperties->beat_measure_manual[0]);
-    ui->cmb_vLnManualDenom->setCurrentIndex(renderproperties->beat_measure_manual[1]);
-    ui->checkBox_8->setChecked(renderproperties->hlines);
-    ui->comboBox->setCurrentIndex(renderproperties->hlines_type);
-    ui->spinBox_8->setValue(renderproperties->hlines_n);
-    ui->spinBox_9->setMaximum(renderproperties->hlines_n - 1);
-    ui->spinBox_9->setValue(renderproperties->hlines_offset);
-    ui->checkBox_9->setChecked(renderproperties->half_shift);
-    ui->checkBox->setChecked(renderproperties->lines[0]);
-    ui->cb_vLineTSig->setChecked(renderproperties->lines[1]);
-    ui->checkBox_2->setChecked(renderproperties->lines[2]);
-    ui->cb_vLineTrack->setChecked(renderproperties->lines[3]);
-    ui->sb_vLineTrack->setValue(renderproperties->vlines_track_n);
+    ui->spinBox->setValue(RProp->beat_measure_manual[0]);
+    ui->cmb_vLnManualDenom->setCurrentIndex(RProp->beat_measure_manual[1]);
+    ui->checkBox_8->setChecked(RProp->hlines);
+    ui->comboBox->setCurrentIndex(RProp->hlines_type);
+    ui->spinBox_8->setValue(RProp->hlines_n);
+    ui->spinBox_9->setMaximum(RProp->hlines_n - 1);
+    ui->spinBox_9->setValue(RProp->hlines_offset);
+    ui->checkBox_9->setChecked(RProp->half_shift);
+    ui->checkBox->setChecked(RProp->lines[0]);
+    ui->cb_vLineTSig->setChecked(RProp->lines[1]);
+    ui->checkBox_2->setChecked(RProp->lines[2]);
+    ui->cb_vLineTrack->setChecked(RProp->lines[3]);
+    ui->sb_vLineTrack->setValue(RProp->vlines_track_n);
 
-    hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
-    vlines.setRgb(renderproperties->vlines_colour[0], renderproperties->vlines_colour[1], renderproperties->vlines_colour[2]);
+    hlines.setRgb(RProp->hlines_colour[0], RProp->hlines_colour[1], RProp->hlines_colour[2]);
+    vlines.setRgb(RProp->vlines_colour[0], RProp->vlines_colour[1], RProp->vlines_colour[2]);
     QPalette pal_h = ui->widget_hlcolour->palette();
     QPalette pal_v = ui->widget_vlcolour->palette();
     pal_h.setColor(QPalette::Window, hlines);
@@ -77,31 +81,31 @@ DockWidRender::DockWidRender(QWidget *parent, MusicData *mdt, VideoRecorder *vRe
     ui->widget_vlcolour->setPalette(pal_v);
 
     // Tab 2: render settings:
-    ui->spinBox_2->setValue(renderproperties->blur_size[0]);
-    ui->spinBox_5->setValue(renderproperties->blur_size[1]);
-    ui->spinBox_6->setValue(renderproperties->blur_size_movnotes[0]);
-    ui->spinBox_7->setValue(renderproperties->blur_size_movnotes[1]);
+    ui->spinBox_2->setValue(RProp->blur_size[0]);
+    ui->spinBox_5->setValue(RProp->blur_size[1]);
+    ui->spinBox_6->setValue(RProp->blur_size_movnotes[0]);
+    ui->spinBox_7->setValue(RProp->blur_size_movnotes[1]);
 
-    ui->checkBox_3->setChecked(renderproperties->sep_render[0]);
-    ui->checkBox_4->setChecked(renderproperties->sep_render[1]);
-    ui->checkBox_5->setChecked(renderproperties->sep_render[2]);
-    if      (renderproperties->shapeLineType == cv::LINE_8)
+    ui->checkBox_3->setChecked(RProp->sep_render[0]);
+    ui->checkBox_4->setChecked(RProp->sep_render[1]);
+    ui->checkBox_5->setChecked(RProp->sep_render[2]);
+    if      (RProp->shapeLineType == cv::LINE_8)
         ui->cb_AA->setChecked(false);
-    else if (renderproperties->shapeLineType == cv::LINE_AA)
+    else if (RProp->shapeLineType == cv::LINE_AA)
         ui->cb_AA->setChecked(true);
 
     // Tab 3: chord analysis:
-    ui->cb_sharpFlat->setCurrentIndex(renderproperties->accidentalSharp);
-    ui->cb_dispChordStar->setChecked(renderproperties->chord_star);
-    ui->cb_dispNoteNames->setChecked(renderproperties->note_names);
-    ui->cb_dispChordNames->setChecked(renderproperties->chord_names);
-    ui->combox_chordStar->setCurrentIndex(renderproperties->chord_star_type);
-    ui->cmb_dispNoteNamesWhere->setCurrentIndex(renderproperties->note_names_where);
-    ui->spb_chordStarOffset->setValue(renderproperties->turn_chord_circle);
+    ui->cb_sharpFlat->setCurrentIndex(RProp->accidentalSharp);
+    ui->cb_dispChordStar->setChecked(RProp->chord_star);
+    ui->cb_dispNoteNames->setChecked(RProp->note_names);
+    ui->cb_dispChordNames->setChecked(RProp->chord_names);
+    ui->combox_chordStar->setCurrentIndex(RProp->chord_star_type);
+    ui->cmb_dispNoteNamesWhere->setCurrentIndex(RProp->note_names_where);
+    ui->spb_chordStarOffset->setValue(RProp->turn_chord_circle);
 
     // Tab 4: extra time:
-    ui->checkBox_6->setChecked(renderproperties->extra_time[0]);
-    ui->checkBox_7->setChecked(renderproperties->extra_time[1]);
+    ui->checkBox_6->setChecked(RProp->extra_time[0]);
+    ui->checkBox_7->setChecked(RProp->extra_time[1]);
 
     // Tab 5: render video codec::
     ui->cmb_videoCodec->setCurrentIndex(RenderWidMaps::CMB_FOURCC_VK[VRec->CodecFourCC]);
@@ -116,67 +120,67 @@ DockWidRender::~DockWidRender()
 
 void DockWidRender::on_checkBox_toggled(bool checked)
 {
-    renderproperties->lines[0] = checked;
+    RProp->lines[0] = checked;
 }
 
 void DockWidRender::on_cb_vLineTSig_toggled(bool checked)
 {
-    renderproperties->lines[1] = checked;
+    RProp->lines[1] = checked;
 }
 
 void DockWidRender::on_checkBox_2_toggled(bool checked)
 {
-    renderproperties->lines[2] = checked;
+    RProp->lines[2] = checked;
 }
 
 void DockWidRender::on_cb_vLineTrack_toggled(bool checked)
 {
-    renderproperties->lines[3] = checked;
+    RProp->lines[3] = checked;
 }
 
 void DockWidRender::on_spinBox_valueChanged(int arg1)
 {
-    renderproperties->beat_measure_manual[0] = arg1;
+    RProp->beat_measure_manual[0] = arg1;
 }
 
 void DockWidRender::on_cmb_vLnManualDenom_currentIndexChanged(int index)
 {
-    renderproperties->beat_measure_manual[1] = index;
+    RProp->beat_measure_manual[1] = index;
 }
 
 void DockWidRender::on_checkBox_3_toggled(bool checked)
 {
-    renderproperties->sep_render[0] = checked;
+    RProp->sep_render[0] = checked;
 }
 
 void DockWidRender::on_checkBox_4_toggled(bool checked)
 {
-    renderproperties->sep_render[1] = checked;
+    RProp->sep_render[1] = checked;
 }
 
 void DockWidRender::on_checkBox_5_toggled(bool checked)
 {
-    renderproperties->sep_render[2] = checked;
+    RProp->sep_render[2] = checked;
 }
 
 void DockWidRender::on_spinBox_2_valueChanged(int arg1)
 {
-    renderproperties->blur_size[0] = arg1;
+    RProp->blur_size[0] = arg1;
 }
 
 void DockWidRender::on_spinBox_5_valueChanged(int arg1)
 {
-    renderproperties->blur_size[1] = arg1;
+    RProp->blur_size[1] = arg1;
 }
 
 void DockWidRender::on_spinBox_6_valueChanged(int arg1)
 {
-    renderproperties->blur_size_movnotes[0] = arg1;
+    RProp->blur_size_movnotes[0] = arg1;
 }
 
 void DockWidRender::on_spinBox_7_valueChanged(int arg1)
 {
-    renderproperties->blur_size_movnotes[1] = arg1;
+    RProp->blur_size_movnotes[1] = arg1;
 }
 
 void DockWidRender::on_lineEdit_editingFinished()
@@ -186,63 +190,63 @@ void DockWidRender::on_lineEdit_editingFinished()
 
 void DockWidRender::on_spinBox_3_valueChanged(int arg1)
 {
-    renderproperties->vertRange = arg1;
+    RProp->vertRange = arg1;
 }
 
 void DockWidRender::on_spinBox_4_valueChanged(int arg1)
 {
-    renderproperties->vertShift = arg1;
+    RProp->vertShift = arg1;
 }
 
 void DockWidRender::on_checkBox_6_toggled(bool checked)
 {
-    renderproperties->extra_time[0] = checked;
+    RProp->extra_time[0] = checked;
 }
 
 void DockWidRender::on_checkBox_7_toggled(bool checked)
 {
-    renderproperties->extra_time[1] = checked;
+    RProp->extra_time[1] = checked;
 }
 
 void DockWidRender::on_checkBox_8_toggled(bool checked)
 {
-    renderproperties->hlines = checked;
+    RProp->hlines = checked;
 }
 
 void DockWidRender::on_comboBox_currentIndexChanged(int index)
 {
-    renderproperties->hlines_type = index;
+    RProp->hlines_type = index;
 }
 
 void DockWidRender::on_spinBox_8_valueChanged(int arg1)
 {
-    renderproperties->hlines_n = arg1;
+    RProp->hlines_n = arg1;
     ui->spinBox_9->setMaximum(arg1 - 1);
 }
 
 void DockWidRender::on_spinBox_9_valueChanged(int arg1)
 {
-    renderproperties->hlines_offset = arg1;
+    RProp->hlines_offset = arg1;
 }
 
 void DockWidRender::on_checkBox_9_toggled(bool checked)
 {
-    renderproperties->half_shift = checked;
+    RProp->half_shift = checked;
 }
 
 void DockWidRender::on_pb_setClr_vlines_clicked()
 {
     QColor tcolor;
-    tcolor.setRgb(renderproperties->vlines_colour[0],
-                  renderproperties->vlines_colour[1],
-                  renderproperties->vlines_colour[2]);
+    tcolor.setRgb(RProp->vlines_colour[0],
+                  RProp->vlines_colour[1],
+                  RProp->vlines_colour[2]);
     tcolor = QColorDialog::getColor(tcolor, this);
     if (!tcolor.isValid()) return;
 
-    renderproperties->vlines_colour[0] = tcolor.red();
-    renderproperties->vlines_colour[1] = tcolor.green();
-    renderproperties->vlines_colour[2] = tcolor.blue();
-    vlines.setRgb(renderproperties->vlines_colour[0], renderproperties->vlines_colour[1], renderproperties->vlines_colour[2]);
+    RProp->vlines_colour[0] = tcolor.red();
+    RProp->vlines_colour[1] = tcolor.green();
+    RProp->vlines_colour[2] = tcolor.blue();
+    vlines.setRgb(RProp->vlines_colour[0], RProp->vlines_colour[1], RProp->vlines_colour[2]);
     QPalette pal_v = ui->widget_vlcolour->palette();
     pal_v.setColor(QPalette::Window, vlines);
     ui->widget_vlcolour->setPalette(pal_v);
@@ -251,16 +255,16 @@ void DockWidRender::on_pb_setClr_vlines_clicked()
 void DockWidRender::on_pb_setClr_hlines_clicked()
 {
     QColor tcolor;
-    tcolor.setRgb(renderproperties->hlines_colour[0],
-                  renderproperties->hlines_colour[1],
-                  renderproperties->hlines_colour[2]);
+    tcolor.setRgb(RProp->hlines_colour[0],
+                  RProp->hlines_colour[1],
+                  RProp->hlines_colour[2]);
     tcolor = QColorDialog::getColor(tcolor, this);
     if (!tcolor.isValid()) return;
 
-    renderproperties->hlines_colour[0] = tcolor.red();
-    renderproperties->hlines_colour[1] = tcolor.green();
-    renderproperties->hlines_colour[2] = tcolor.blue();
-    hlines.setRgb(renderproperties->hlines_colour[0], renderproperties->hlines_colour[1], renderproperties->hlines_colour[2]);
+    RProp->hlines_colour[0] = tcolor.red();
+    RProp->hlines_colour[1] = tcolor.green();
+    RProp->hlines_colour[2] = tcolor.blue();
+    hlines.setRgb(RProp->hlines_colour[0], RProp->hlines_colour[1], RProp->hlines_colour[2]);
     QPalette pal_h = ui->widget_hlcolour->palette();
     pal_h.setColor(QPalette::Window, hlines);
     ui->widget_hlcolour->setPalette(pal_h);
@@ -268,18 +272,18 @@ void DockWidRender::on_pb_setClr_hlines_clicked()
 
 void DockWidRender::on_sb_vLineTrack_valueChanged(int arg1)
 {
-    renderproperties->vlines_track_n = arg1;
+    RProp->vlines_track_n = arg1;
 }
 
 void DockWidRender::on_cb_dispChordNames_toggled(bool checked)
 {
-    renderproperties->chord_names = checked;
+    RProp->chord_names = checked;
 }
 
 void DockWidRender::on_pb_procChordNames_clicked()
 {
     chords chords;
-    chords.process_chords(this->Mdt->Notes, renderproperties->chord_analysis);
+    chords.process_chords(this->Mdt->Notes, RProp->chord_analysis);
     Mdt->GChords = chords;
 }
 
@@ -287,58 +291,58 @@ void DockWidRender::on_lineEdit_excludeTracks_textEdited(const QString &arg1) //
 {
 //    std::string str = arg1.toStdString();
 
-//    renderproperties->chord_analysis;
+//    RProp->chord_analysis;
 }
 
 void DockWidRender::on_cb_dispNoteNames_toggled(bool checked)
 {
-    renderproperties->note_names = checked;
+    RProp->note_names = checked;
 }
 
 void DockWidRender::on_cb_dispChordStar_toggled(bool checked)
 {
-    renderproperties->chord_star = checked;
+    RProp->chord_star = checked;
 }
 
 void DockWidRender::on_combox_chordStar_currentIndexChanged(int index)
 {
     if (index == 0)
     {
-        renderproperties->chord_star_type = chord::circleOfSemitones;
+        RProp->chord_star_type = chord::circleOfSemitones;
     }
     else if (index == 1)
     {
-        renderproperties->chord_star_type = chord::circleOfFifths;
+        RProp->chord_star_type = chord::circleOfFifths;
     }
 }
 
 void DockWidRender::on_cmb_dispNoteNamesWhere_currentIndexChanged(int index)
 {
-    renderproperties->note_names_where = index;
+    RProp->note_names_where = index;
 }
 
 void DockWidRender::on_spb_chordStarOffset_valueChanged(int arg1)
 {
-    renderproperties->turn_chord_circle = arg1;
+    RProp->turn_chord_circle = arg1;
 }
 
 void DockWidRender::on_cb_sharpFlat_currentIndexChanged(int index)
 {
     if (index == 0)
-        renderproperties->accidentalSharp = false;
+        RProp->accidentalSharp = false;
     else if (index == 1)
-        renderproperties->accidentalSharp = true;
+        RProp->accidentalSharp = true;
 }
 
 void DockWidRender::on_cb_AA_toggled(bool checked)
 {
     if (checked == true)
     {
-        renderproperties->shapeLineType = cv::LINE_AA;
+        RProp->shapeLineType = cv::LINE_AA;
     }
     else
     {
-        renderproperties->shapeLineType = cv::LINE_8;
+        RProp->shapeLineType = cv::LINE_8;
     }
 }
 

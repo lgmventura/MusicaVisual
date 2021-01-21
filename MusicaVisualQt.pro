@@ -31,8 +31,9 @@ SOURCES += main.cpp\
     dockwidrender.cpp \
     about.cpp \
     help1.cpp \
-    renderChordStar.cpp \
     utils/colour.cpp \
+    visual/animation.cpp \
+    visual/renderChordStar.cpp \
     visual/tracks.cpp \
     visual/videorecorder.cpp
 
@@ -60,8 +61,9 @@ HEADERS  += mainwindow.h \
     csappmidi/include/MidiFile.h \
     csappmidi/include/MidiMessage.h \
     csappmidi/include/Options.h \
-    renderChordStar.h \
     utils/colour.h \
+    visual/animation.h \
+    visual/renderChordStar.h \
     visual/tracks.h \
     visual/videorecorder.h
 

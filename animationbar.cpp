@@ -35,21 +35,21 @@
 #include <QFileDialog>
 //#include <QTimer>
 
-extern AnimwinP *animwinP;
-extern AnimPainter *animPt;
+//extern AnimwinP *animwinP;
+//extern AnimPainter *animPt;
 //extern std::list <TempoChange> *tempos;
 //extern int mdt->Tpq;
 //extern bool *videoRecord;
 //extern cv::VideoWriter *video;
 
-cv::Mat *image;
-int window_width;
-int window_height;
-char* winName;
+//cv::Mat *image;
+//int window_width;
+//int window_height;
+//char* winName;
 //int total_time;
-bool play = false;
+//bool play = false;
 
-double current_time;
+//double current_time;
 
 //QTimer *timerPlay;
 //extern std::string *codec_fourcc;
@@ -62,7 +62,7 @@ AnimationBar::AnimationBar(QWidget *parent) :
     // This original contructor is currently not used nor called. Use the below!
 }
 
-AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *renderproperties, TracksP *tProp, VideoRecorder *vRec):
+AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, TracksP *tProp, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec):
     QWidget(parent),
     ui(new Ui::AnimationBar)
 {
@@ -74,8 +74,10 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     this->window_height = window_height;
     this->winName = winName;
     this->fps = fps;
-    this->renderproperties = renderproperties;
+    this->RProp = rProp;
     this->TProp = tProp;
+    this->APainter = aPainter;
+    this->AState = aState;
     this->VRec = vRec;
     ui->horizontalSlider->setMaximum(mdt->TotalTime);
     ui->horizontalSlider_2->setMaximum(mdt->TotalTime);
@@ -110,17 +112,17 @@ AnimationBar::~AnimationBar()
 
 void AnimationBar::on_horizontalSlider_valueChanged(int value)
 {
-    animwinP->setZoom(value);
+    AState->setZoom(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    animPt->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height, *TProp, VRec);
+    APainter->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *RProp, VRec);
     cv::imshow(winName, *image);
 
-    if (renderproperties->extra_time[0] == 1)
+    if (RProp->extra_time[0] == 1)
     {
         ui->horizontalSlider_2->setMinimum(-value/2);
         ui->spinBox_2->setMinimum(-value/2);
     }
-    if (renderproperties->extra_time[1] == 1)
+    if (RProp->extra_time[1] == 1)
     {
         ui->horizontalSlider_2->setMaximum(Mdt->TotalTime+value/2);
         ui->spinBox_2->setMaximum(Mdt->TotalTime+value/2);
@@ -128,9 +130,9 @@ void AnimationBar::on_horizontalSlider_valueChanged(int value)
 }
 void AnimationBar::on_horizontalSlider_2_valueChanged(int value)
 {
-    animwinP->setXpos(value);
+    AState->setXpos(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    animPt->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, animwinP->xpos - (animwinP->zoom)/2, animwinP->xpos + (animwinP->zoom)/2, window_width, window_height, *TProp, VRec);
+    APainter->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *RProp, VRec);
     cv::imshow(winName, *image);
 }
 
@@ -144,9 +146,9 @@ void AnimationBar::onNumberChanged(int num)
     double pace = ((double)Mdt->Tpq*1000000.0/(double)(*it).new_tempo/fps);// + 0.5); // The +0.5 is for correct rounding and the 192.0 should be the PPQ, but actually it can be other value.
     if (pace > 150) pace = 2; // improve this. The problem: the first new_tempo is wrongly read to be equal to tpq (pointer issue, I think)
     //std::cout << tpq << ' ' << (*it).new_tempo << ", start: " << (*it).t_on << "; size: " << tempos->size() << std::endl;
-    current_time = current_time + pace;
+    AState->CurrentTime = AState->CurrentTime + pace;
     //ui->spinBox_2->setValue(ui->spinBox_2->value() + pace);// + 1);
-    ui->spinBox_2->setValue(current_time);// + 1);
+    ui->spinBox_2->setValue(AState->CurrentTime);// + 1);
     if (ui->spinBox_2->value() == Mdt->TotalTime)
         playThread->stop = true;
 }
@@ -154,7 +156,7 @@ void AnimationBar::onNumberChanged(int num)
 void AnimationBar::on_pushButton_2_clicked()
 {
     playThread->stop = false;
-    current_time = ui->spinBox_2->value();
+    AState->CurrentTime = ui->spinBox_2->value();
     playThread->start(QThread::LowPriority);
     //ui->spinBox_2->setValue(ui->spinBox_2->value() + 1000/30);
 //    play = true;
@@ -178,7 +180,7 @@ void AnimationBar::on_pushButton_3_clicked()
 void AnimationBar::on_pushButton_clicked()
 {
     ui->spinBox_2->setValue(0);
-    current_time = 0;
+    AState->CurrentTime = 0;
 }
 
 //void AnimationBar::on_pushButton_4_clicked()

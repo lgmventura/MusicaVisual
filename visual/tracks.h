@@ -8,11 +8,11 @@ class TracksP // ATTENTION: TracksP (class) or tracksproperties (objects) and Re
 public:
     TracksP();
     int tColours[24][3]= {
-        {0, 0, 200} ,   //1 (index 0)
+        {60, 60, 240} ,   //1 (index 0)
         {0, 120, 120} ,   //2
-        {0, 200, 0},    //3
+        {0, 220, 0},    //3
         {120, 120, 0},    //4
-        {200, 0, 0},    //5
+        {220, 20, 20},    //5
         {120, 0, 120},    //6
         {80, 80, 200} ,   //7
         {0, 200, 200} , //8
