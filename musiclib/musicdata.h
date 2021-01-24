@@ -28,6 +28,7 @@ public: // methods
 //TODO:    std::string importMidi(const char *midiFileName);
     void nameTracksReset();
     void processMidiString(string midiMessagesText);
+    string squeezeTracksMidiStr(string midiMessagesText);
 
 };
 

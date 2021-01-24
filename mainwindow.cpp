@@ -106,8 +106,9 @@ void MainWindow::ImportMidiFile(const char *midiFileName)
     ImportMidi impMid;
     impMid.importMidiMessagesText(midiFileName);
 
-     ui->plainTextEdit->appendPlainText(QString::fromStdString(impMid.MidiMessages));
-     Mdt->NEvents = impMid.NEvents;
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->appendPlainText(QString::fromStdString(impMid.MidiMessages));
+    Mdt->NEvents = impMid.NEvents;
 }
 
 void MainWindow::on_actionImport_MIDI_File_triggered()
@@ -485,71 +486,9 @@ void MainWindow::on_actionHow_does_it_work_triggered()
 void MainWindow::on_actionSqueeze_tracks_triggered()
 {
     std::stringstream stream; // for the whole text in the edit area
-    string str; // one line
     stream << ui->plainTextEdit->toPlainText().toUtf8().constData(); // Get the entire text from the plain text input box.
-    std::vector <unsigned int> tracks_list;
-
-    std::set <unsigned short> tracks_set;
-    std::set<unsigned short>::iterator it;
-    std::pair<std::set<unsigned short>::iterator,bool> ret;
-
-    unsigned short tnum_temp;
-    std::string messg_str;
-    //std::map <unsigned short, unsigned short> tracks_association;
-    for (int i = 0; getline(stream,str,'\t'); i++)
-    {
-        if (i >= 5 && i%4 == 2) // position (column) of a track number in the plain text
-        {
-            tnum_temp = stoi(str, nullptr, 10);
-        }
-        if (i >= 5 && i%4 == 3) // getting midi message
-        {
-            //messg = stoi(str, nullptr, 16); // getting the midi message type
-            messg_str = str; // getting the midi message string
-            //ui->plainTextEdit->appendPlainText(QString::fromStdString(messg_str)); // this line is only for verification
-        }
-        if (messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) > 0) // checking midi message. Consider the track not empty if there is at least one note_on message.
-        {
-            tracks_list.push_back(tnum_temp); // getting the track number and inserting into the list
-            ret = tracks_set.insert(tnum_temp); // getting the track number and inserting into the set. The set is like its mathematical definition, so it doesn't get repeated items
-            //if (ret.second==false) // if no element was inserted into the set because the element is already there
-            //    it=ret.first; // to improve inserting efficiency, see http://www.cplusplus.com/reference/set/set/insert/
-        }
-    }
-    stream.str(std::string());
-    stream.clear();
-    stream << ui->plainTextEdit->toPlainText().toUtf8().constData(); // Get the entire text from the plain text input box. Run it again for replacing track numbers.
-    std::stringstream stream2;
-    std::string str2;
-
+    std::string midiMessagesFromTextEdt = stream.str();
+    std::string midiMessagesSqz = Mdt->squeezeTracksMidiStr(midiMessagesFromTextEdt);
     ui->plainTextEdit->clear();
-    //ui->plainTextEdit->appendPlainText(QString::fromStdString(std::to_string(tracks_set.size()))); // only for debug
-    for (int i = 0; getline(stream,str,'\t'); i++)
-    {
-        if (i < 5) // for the first lines
-            str2.append(str); // nothing changes
-        else if (i >= 5 && i%4 != 2) // for the following changes, if it is not in the track column,
-            str2.append(str); // nothing changes
-        else //if (i >= 5 && i%4 == 2) // else
-        {
-            it = tracks_set.find(stoi(str, nullptr, 10)); // find position of the track in the new set containing only non-empty tracks
-            str2.append(std::to_string(std::distance(tracks_set.begin(), it))); // insert it to the auxiliar string str2
-        }
-        stream2 << str2;
-        stream2 << '\t';
-
-        str2.clear();
-    }
-    ui->plainTextEdit->appendPlainText(QString::fromStdString(stream2.str()));
-
-//    ui->plainTextEdit->appendPlainText(QString::fromStdString(std::to_string(tracks_set.size())));
-//    for(it = tracks_set.begin(); it != tracks_set.end(); it++)
-//        {
-//            ui->plainTextEdit->appendPlainText(QString::fromStdString(std::to_string(*it)));// << '\n';
-//            ui->plainTextEdit->appendPlainText(QString::fromStdString("  "));
-//            //outstream_1 << std::to_string(*it) << '\n';
-//            //str = std::to_string(*it);
-//        }
-    tracks_list.clear();
-    tracks_set.clear();
+    ui->plainTextEdit->appendPlainText(QString::fromStdString(midiMessagesSqz));
 }
