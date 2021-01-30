@@ -254,7 +254,7 @@ void MainWindow::on_pb_noteBlocks_clicked()
     cv::Mat *image_win1 = new cv::Mat;
     *image_win1 = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
 
-    note_blocks_paint(*image_win1, *Mdt, "Note blocks", 0, Mdt->TotalTime, window_width, window_height);
+    note_blocks_paint(*image_win1, *Mdt, (char*) "Note blocks", 0, Mdt->TotalTime, window_width, window_height);
 
     cv::namedWindow("Note blocks");
     cv::imshow("Note blocks", *image_win1);
@@ -284,7 +284,7 @@ void MainWindow::on_pb_animation_clicked()
     std::vector <cv::Mat> *img_buffer_sep_tracks = new std::vector <cv::Mat>;
     // and now we use the std::vector.push_back method to insert elements at the end of the vector, doing it for every track (so, I use the for). Then, inside this funcion, I clone the matrix.
     // the method clone() for cv::Mat creates a copy rather than an instance of the matrix. This is how I ensure I am giving having different matrices.
-    for (int kz = 0; kz < Mdt->NTracks; kz++)
+    for (unsigned int kz = 0; kz < Mdt->NTracks; kz++)
     {
         img_buffer_sep_tracks->push_back(mat_zeros.clone());
     }
@@ -434,7 +434,7 @@ void MainWindow::on_actionLoad_settings_triggered()
         }
         catch (exception& e)
         {
-            QString msg = QString::fromStdString(std::strcat("Error on interpreting data from the file. C++ function: input_file.read(reinterpret_cast<char*>(data),sizeof(*data)); Description", e.what()));
+            QString msg = QString::fromStdString(std::strcat((char *)"Error on interpreting data from the file. C++ function: input_file.read(reinterpret_cast<char*>(data),sizeof(*data)); Description", e.what()));
             QMessageBox::critical(this, tr("Cannot load settings"), msg, QMessageBox::Ok );
         }
         catch (...)
