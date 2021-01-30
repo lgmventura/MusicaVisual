@@ -242,7 +242,7 @@ void note_blocks_paint( cv::Mat image, MusicData mdt, char* window_name, int sta
         pt2.y = (int)(y2);//window_height*(((*it).pitch + 1)/(50));
         //std::cout << (*it).t_on << ' ' << (*it).t_off << ": " << (*it).pitch << '\n';
         //std::cout << pt1.x << ' ' << pt1.y << ": " << pt2.x << ' ' << pt2.y << '\n';
-        cv::rectangle( image, pt1, pt2, {(*it).vel,(*it).vel,(*it).vel}, 2, 8 );
+        cv::rectangle( image, pt1, pt2, {(double)(*it).vel,(double)(*it).vel,(double)(*it).vel}, 2, 8 );
     }
 }
 

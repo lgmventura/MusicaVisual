@@ -60,9 +60,9 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
                         pt3.y = f2int_safe(y3); // Center y
                         if (abs(pt3.x - pt5[tnum].x) < tProp.max_connect_dist && pt5[tnum] != cv::Point(0,0))
                             if ( ! rProp.sep_render[1])
-                                cv::line( image, pt3, pt5[tnum], {tProp.getCv(tnum,2)/4,  tProp.getCv(tnum,1)/4,  tProp.getCv(tnum,0)/4}, 1, lineType );
+                                cv::line( image, pt3, pt5[tnum], {(double)tProp.getCv(tnum,2)/4,  (double)tProp.getCv(tnum,1)/4,  (double)tProp.getCv(tnum,0)/4}, 1, lineType );
                             else
-                                cv::line( img_buffer_sep_tracks[tnum], pt3, pt5[tnum], {tProp.getCv(tnum,2)/4,  tProp.getCv(tnum,1)/4,  tProp.getCv(tnum,0)/4}, 1, lineType );
+                                cv::line( img_buffer_sep_tracks[tnum], pt3, pt5[tnum], {(double)tProp.getCv(tnum,2)/4,  (double)tProp.getCv(tnum,1)/4,  (double)tProp.getCv(tnum,0)/4}, 1, lineType );
                         pt5[tnum].x = f2int_safe(x3); // Center x of the previous note
                         pt5[tnum].y = f2int_safe(y3); // Center y of the previous note
                     }
@@ -920,7 +920,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
 
                     if ((*it).track == tnum && rProp.lines[3] && rProp.vlines_track_n == (int)tnum)
                     {
-                        cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {rProp.vlines_colour[2]*(*it).vel/128, rProp.vlines_colour[1]*(*it).vel/128, rProp.vlines_colour[0]*(*it).vel/128});
+                        cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {(double)(double)rProp.vlines_colour[2]*(*it).vel/128, (double)(double)rProp.vlines_colour[1]*(*it).vel/128, (double)(double)rProp.vlines_colour[0]*(*it).vel/128});
                     }
                 }
             }
@@ -946,9 +946,9 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
             for (int i = tsig.t_on; i < tsig_next.t_on; i = i + 4*mdt.Tpq/tsig.denominator) // a sub-beat is 4*ticks_per_quarter_note/denominator
             {
                 if (k % tsig.numerator == 0) // for a whole beat, we consider the numerator
-                    cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {rProp.vlines_colour[2], rProp.vlines_colour[1], rProp.vlines_colour[0]});
+                    cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {(double)rProp.vlines_colour[2], (double)rProp.vlines_colour[1], (double)rProp.vlines_colour[0]});
                 else
-                    cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {0.6*rProp.vlines_colour[2], 0.6*rProp.vlines_colour[1], 0.6*rProp.vlines_colour[0]});
+                    cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {0.6*(double)rProp.vlines_colour[2], 0.6*(double)rProp.vlines_colour[1], 0.6*(double)rProp.vlines_colour[0]});
                 k++;
             }
             tsig_next = tsig;
@@ -959,7 +959,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
         int denominator = std::pow(2, rProp.beat_measure_manual[1]);
         for (unsigned int i = 0; i < endMidiTime; i = i + 4*rProp.beat_measure_manual[0]*mdt.Tpq/denominator)
         {
-            cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {rProp.vlines_colour[2], rProp.vlines_colour[1], rProp.vlines_colour[0]});
+            cv::line(image, cv::Point((int)((float)window_width*((-(float)startMidiTime + (float)i)/((float)endMidiTime - (float)startMidiTime))), window_height), cv::Point((int)((double)window_width*((-(double)startMidiTime + (double)i)/((double)endMidiTime - (double)startMidiTime))), 0), {(double)rProp.vlines_colour[2], (double)rProp.vlines_colour[1], (double)rProp.vlines_colour[0]});
         }
     }
 
@@ -976,7 +976,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
             {
                 int hline_y = (float)window_height/2 - note_height*(pitch_span)/2 + (note_height*i*rProp.hlines_n) - rProp.vertShift - rProp.hlines_offset*note_height + rProp.half_shift*note_height/2;
                 hline_y = hline_y + basePitchRef*note_height;
-                cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {rProp.hlines_colour[2], rProp.hlines_colour[1], rProp.hlines_colour[0]});
+                cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {(double)rProp.hlines_colour[2], (double)rProp.hlines_colour[1], (double)rProp.hlines_colour[0]});
             }
         }
         if(rProp.hlines_type == 1) // One line every semitone and a brighter line every n semitones
@@ -986,12 +986,12 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
                 if (i%rProp.hlines_n == basePitchRef)
                 {
                    int hline_y = (float)window_height/2 - note_height*(pitch_span)/2 + (note_height*i) - rProp.vertShift - rProp.hlines_offset*note_height - rProp.half_shift*note_height/2;
-                   cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {rProp.hlines_colour[2], rProp.hlines_colour[1], rProp.hlines_colour[0]});
+                   cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {(double)rProp.hlines_colour[2], (double)rProp.hlines_colour[1], (double)rProp.hlines_colour[0]});
                 }
                 else
                 {
                     int hline_y = (float)window_height/2 - note_height*(pitch_span)/2 + (note_height*i) - rProp.vertShift - rProp.hlines_offset*note_height - rProp.half_shift*note_height/2;
-                    cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {rProp.hlines_colour[2]/2, rProp.hlines_colour[1]/2, rProp.hlines_colour[0]/2});
+                    cv::line(image, cv::Point(0, hline_y), cv::Point(window_width, hline_y), {(double)rProp.hlines_colour[2]/2, (double)rProp.hlines_colour[1]/2, (double)rProp.hlines_colour[0]/2});
                 }
             }
         }
@@ -1003,7 +1003,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
                 if (ii == 1 || ii == 3 || ii == 5 || ii == 8 || ii == 10)
                 {
                     int hline_y = (float)window_height/2 - note_height*(pitch_span)/2 + (note_height*i) - rProp.vertShift - rProp.hlines_offset*note_height - rProp.half_shift*note_height/2;
-                    cv::rectangle(image, cv::Point(0, hline_y + 1), cv::Point(window_width, hline_y + note_height), {rProp.hlines_colour[2], rProp.hlines_colour[1], rProp.hlines_colour[0]}, -1);
+                    cv::rectangle(image, cv::Point(0, hline_y + 1), cv::Point(window_width, hline_y + note_height), {(double)rProp.hlines_colour[2], (double)rProp.hlines_colour[1], (double)rProp.hlines_colour[0]}, -1);
                 }
             }
         }
@@ -1015,7 +1015,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
                 if (ii == 0 || ii == 2 || ii == 4 || ii == 6 || ii == 7 || ii == 9 || ii == 11)
                 {
                     int hline_y = (float)window_height/2 - note_height*(pitch_span)/2 + (note_height*i) - rProp.vertShift - rProp.hlines_offset*note_height - rProp.half_shift*note_height/2;
-                    cv::rectangle(image, cv::Point(0, hline_y + 1), cv::Point(window_width, hline_y + note_height), {rProp.hlines_colour[2], rProp.hlines_colour[1], rProp.hlines_colour[0]}, -1);
+                    cv::rectangle(image, cv::Point(0, hline_y + 1), cv::Point(window_width, hline_y + note_height), {(double)rProp.hlines_colour[2], (double)rProp.hlines_colour[1], (double)rProp.hlines_colour[0]}, -1);
                 }
             }
         }
