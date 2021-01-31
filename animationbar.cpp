@@ -20,7 +20,7 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#include "animationbar.h"
+
 #include "ui_animationbar.h"
 #include "mainwindow.h"
 #include "opencv2/core.hpp"

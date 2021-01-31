@@ -29,7 +29,11 @@
 
 #include "playthread.h"
 
-#include "mainwindow.h"
+//#include "mainwindow.h"
+#include "musiclib/musicdata.h"
+#include "visual/videorecorder.h"
+#include "dockwidgettracks.h"
+#include "dockwidrender.h"
 #include "midimessages.h"
 
 namespace Ui {

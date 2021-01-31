@@ -29,6 +29,7 @@
 
 #include "dockwidgettracks.h"
 #include "dockwidrender.h"
+#include "animationbar.h"
 #include "about.h"
 #include "help1.h"
 
@@ -110,6 +111,7 @@ private:
     RenderP *RProp;
     AnimState *AState;
     AnimPainter *APainter;
+    AnimationBar *AnimBar;
 };
 
 #endif // MAINWINDOW_H

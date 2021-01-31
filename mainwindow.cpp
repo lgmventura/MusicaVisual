@@ -63,7 +63,7 @@ using namespace std;
 //unsigned int Mdt->Tpq; // Ticks per Quarter-Note
 //chords Mdt->GChords; // global var for chords
 
-AnimationBar *animbar;
+//AnimationBar *animbar;
 //AnimwinP *animwinP;
 //AnimPainter *animPt;
 
@@ -277,7 +277,7 @@ void MainWindow::on_pb_animation_clicked()
 
     AState = new AnimState();
 
-    // now, if you create a vector of cv::Mat objects, you are actually creating a vector of pointers to the SAME matrix. cv::Mat is not a matrix, but rather a pointer to one.
+    // Since OpenCV 4.x: if you create a vector of cv::Mat objects, you are actually creating a vector of pointers to the SAME matrix. cv::Mat is not a matrix, but rather a pointer to one.
     // First of all, we need to declare the empty matrix:
     cv::Mat mat_zeros = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     // then we declare the vector of the same type, but without declaring its size yet:
@@ -290,8 +290,8 @@ void MainWindow::on_pb_animation_clicked()
     }
 
     cv::namedWindow("Animation");
-    animbar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, TProp, APainter, AState, VRec);
-    animbar->show();
+    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, TProp, APainter, AState, VRec);
+    AnimBar->show();
 
     APainter = new AnimPainter();
 
@@ -304,7 +304,7 @@ void MainWindow::on_pb_animation_clicked()
             this->VRec->OutputPath = ui->edt_videoOutput->text().toStdString() + "." + this->VRec->getFileExtension();
             // CodecFourCC will be changed directly in object
             this->VRec->createVideoWriter();
-            animbar->setRecButtonEnabled(true); // video should be ready to be written, activating button
+            AnimBar->setRecButtonEnabled(true); // video should be ready to be written, activating button
         }
         catch (cv::Exception& e)
         {
