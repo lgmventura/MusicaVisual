@@ -52,32 +52,6 @@
 
 using namespace std;
 
-//TracksP *tracksproperties = new TracksP(); // Global variable with tracks parameters for exhibition.
-//int Mdt->NEvents; // Global var to store number of events
-//std::list <MidiNote> Mdt->Notes; // List of processed notes.
-//std::list <TempoChange> *Mdt->Tempos = new std::list <TempoChange>;
-//std::list <TimeSignature> Mdt->TSignatures; // list of time signatures (being used for vertical lines)
-//unsigned long mdt.TotalTime = 0; // Global variable to store the total time of the current processed midi file.
-//unsigned int Mdt->PitchMax = 1, Mdt->PitchMin = 128;
-//unsigned int Mdt->NTracks = 1;
-//unsigned int Mdt->Tpq; // Ticks per Quarter-Note
-//chords Mdt->GChords; // global var for chords
-
-//AnimationBar *animbar;
-//AnimwinP *animwinP;
-//AnimPainter *animPt;
-
-//RenderP *renderproperties = new RenderP();
-
-//std::string videoFileName;
-//bool *videoRecord = new bool(false);
-//cv::VideoWriter *video;
-//std::string *codec_fourcc = new std::string("X264");
-
-//std::vector <std::string> *track_names; // store the track names when the button Process is pressed. // Redefined in tracksproperties, mainwindow.h
-//std::vector<std::string> *Mdt->TrackNames = new std::vector<std::string>; // = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", "Track 17", "Track 18", "Track 19", "Track 20", "Track 21", "Track 22", "Track 23", "Track 24"}; // this works, but is variable in size. So save/load settings won't work if put in TracksP.
-
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -225,26 +199,6 @@ void MainWindow::on_pb_process_clicked() // Process button
 }
 
 
-void note_blocks_paint( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height)
-{
-    cv::Point pt1, pt2;
-    double x1, x2, y1, y2;
-    //std::cout << "Paint blocks! " << Mdt->PitchMin << ' ' << pitch_max << endl;
-    for (std::list<MidiNote>::iterator it=mdt.Notes.begin() ; it != mdt.Notes.end(); ++it) // Run the list forwards
-    {
-        x1 = (double)window_width*((double)(*it).t_on/((double)endMidiTime - (double)startMidiTime));
-        x2 = (double)window_width*((double)(*it).t_off/((double)endMidiTime - (double)startMidiTime));
-        y1 = (double)window_height - (double)window_height*((double)(*it).pitch/((double)mdt.PitchMax - (double)mdt.PitchMin + 20.0));
-        y2 = (double)window_height - (double)window_height*(((double)(*it).pitch + 1.0)/((double)mdt.PitchMax - (double)mdt.PitchMin + 20.0));
-        pt1.x = (int)(x1); //window_width*((*it).t_on/(endMidiTime - startMidiTime));
-        pt2.x = (int)(x2); //window_width*((*it).t_off/(endMidiTime - startMidiTime));
-        pt1.y = (int)(y1); //window_height*((*it).pitch/(50));
-        pt2.y = (int)(y2);//window_height*(((*it).pitch + 1)/(50));
-        //std::cout << (*it).t_on << ' ' << (*it).t_off << ": " << (*it).pitch << '\n';
-        //std::cout << pt1.x << ' ' << pt1.y << ": " << pt2.x << ' ' << pt2.y << '\n';
-        cv::rectangle( image, pt1, pt2, {(double)(*it).vel,(double)(*it).vel,(double)(*it).vel}, 2, 8 );
-    }
-}
 
 void MainWindow::on_pb_noteBlocks_clicked()
 {
@@ -254,7 +208,7 @@ void MainWindow::on_pb_noteBlocks_clicked()
     cv::Mat *image_win1 = new cv::Mat;
     *image_win1 = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
 
-    note_blocks_paint(*image_win1, *Mdt, (char*) "Note blocks", 0, Mdt->TotalTime, window_width, window_height);
+    APainter->note_blocks_paint(*image_win1, *Mdt, (char*) "Note blocks", 0, Mdt->TotalTime, window_width, window_height);
 
     cv::namedWindow("Note blocks");
     cv::imshow("Note blocks", *image_win1);

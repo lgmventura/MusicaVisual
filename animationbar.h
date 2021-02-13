@@ -29,7 +29,8 @@
 
 #include "playthread.h"
 
-//#include "mainwindow.h"
+//#include "mainwindow.h" // now mainwindow includes this animationbar.h. There cannot be a cycle of includes, otherwise the compiler seems to ignore the last one and generates an error that the class
+//wasn't defined, as if we hadn't included the this file, actually.
 #include "musiclib/musicdata.h"
 #include "visual/videorecorder.h"
 #include "dockwidgettracks.h"

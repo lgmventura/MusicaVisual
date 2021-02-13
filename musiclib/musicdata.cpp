@@ -134,8 +134,8 @@ void MusicData::processMidiString(string midiMessagesText) // legacy, still usef
                 else if (messg_str.substr(3,5) == "58 04" || messg_str.substr(3,4) == "58 4") // time signature messages start with this substring "FF 58 04"
                 {
                     TimeSignature temp_tsig;
-                    temp_tsig.numerator = stoi(messg_str.substr(9,2));
-                    int denominator_exponent = stoi(messg_str.substr(12,2));
+                    temp_tsig.numerator = stoi(messg_str.substr(9,2), nullptr, 16);
+                    int denominator_exponent = stoi(messg_str.substr(12,2), nullptr, 16);
                     temp_tsig.denominator = std::pow(2, denominator_exponent);
                     temp_tsig.t_on = time;
                     this->TSignatures.push_back(temp_tsig);

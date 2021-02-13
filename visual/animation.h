@@ -67,6 +67,7 @@ public:
     int xpos;
     int win_width;
     int win_height;
+    void note_blocks_paint( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
     void blocks_paint(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, TracksP, RenderP, VideoRecorder*);
 };
 

@@ -5,6 +5,28 @@ RenderP::RenderP()
 
 }
 
+
+void AnimPainter::note_blocks_paint(cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height)
+{
+    cv::Point pt1, pt2;
+    double x1, x2, y1, y2;
+    //std::cout << "Paint blocks! " << Mdt->PitchMin << ' ' << pitch_max << endl;
+    for (std::list<MidiNote>::iterator it=mdt.Notes.begin() ; it != mdt.Notes.end(); ++it) // Run the list forwards
+    {
+        x1 = (double)window_width*((double)(*it).t_on/((double)endMidiTime - (double)startMidiTime));
+        x2 = (double)window_width*((double)(*it).t_off/((double)endMidiTime - (double)startMidiTime));
+        y1 = (double)window_height - (double)window_height*((double)(*it).pitch/((double)mdt.PitchMax - (double)mdt.PitchMin + 20.0));
+        y2 = (double)window_height - (double)window_height*(((double)(*it).pitch + 1.0)/((double)mdt.PitchMax - (double)mdt.PitchMin + 20.0));
+        pt1.x = (int)(x1); //window_width*((*it).t_on/(endMidiTime - startMidiTime));
+        pt2.x = (int)(x2); //window_width*((*it).t_off/(endMidiTime - startMidiTime));
+        pt1.y = (int)(y1); //window_height*((*it).pitch/(50));
+        pt2.y = (int)(y2);//window_height*(((*it).pitch + 1)/(50));
+        //std::cout << (*it).t_on << ' ' << (*it).t_off << ": " << (*it).pitch << '\n';
+        //std::cout << pt1.x << ' ' << pt1.y << ": " << pt2.x << ' ' << pt2.y << '\n';
+        cv::rectangle( image, pt1, pt2, {(double)(*it).vel,(double)(*it).vel,(double)(*it).vel}, 2, 8 );
+    }
+}
+
 void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height, TracksP tProp, RenderP rProp, VideoRecorder *vRec) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
 {
     int zoom = endMidiTime - startMidiTime;
