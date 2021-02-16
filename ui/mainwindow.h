@@ -27,11 +27,11 @@
 
 #include <algorithm>
 
-#include "dockwidgettracks.h"
-#include "dockwidrender.h"
-#include "animationbar.h"
-#include "about.h"
-#include "help1.h"
+#include "ui/tracks_qdw.h"
+#include "ui/render_qdw.h"
+#include "ui/animationbar.h"
+#include "ui/about.h"
+#include "ui/help.h"
 
 // Include lib classes
 #include "midimessages.h"

@@ -20,11 +20,10 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#include "dockwidgettracks.h"
-#include "ui_dockwidgettracks.h"
+#include "ui/tracks_qdw.h"
+#include "ui_tracks_qdw.h"
 
 #include "mainwindow.h"
-#include "dialogcolorpicker.h"
 
 #include <QColor>
 #include <QColorDialog>

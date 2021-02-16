@@ -20,8 +20,8 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#ifndef DOCKWIDRENDER_H
-#define DOCKWIDRENDER_H
+#ifndef RENDER_QDW_H
+#define RENDER_QDW_H
 
 #include <QDockWidget>
 
@@ -138,4 +138,4 @@ public:
     static std::map<string, int> CMB_FOURCC_VK;
 };
 
-#endif // DOCKWIDRENDER_H
+#endif // RENDER_QDW_H

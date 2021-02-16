@@ -36,7 +36,7 @@
 #include "Options.h"
 
 // Include UI classes
-#include "dockwidgettracks.h"
+#include "tracks_qdw.h"
 #include "animationbar.h"
 
 // Iostream (just to help on debugging)

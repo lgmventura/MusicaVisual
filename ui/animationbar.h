@@ -33,8 +33,8 @@
 //wasn't defined, as if we hadn't included the this file, actually.
 #include "musiclib/musicdata.h"
 #include "visual/videorecorder.h"
-#include "dockwidgettracks.h"
-#include "dockwidrender.h"
+#include "tracks_qdw.h"
+#include "render_qdw.h"
 #include "midimessages.h"
 
 namespace Ui {

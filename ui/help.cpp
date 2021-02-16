@@ -20,8 +20,8 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#include "help1.h"
-#include "ui_help1.h"
+#include "help.h"
+#include "ui_help.h"
 
 Help1::Help1(QWidget *parent) :
     QDialog(parent),

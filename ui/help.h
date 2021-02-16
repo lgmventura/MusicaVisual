@@ -20,39 +20,25 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#ifndef DIALOGCOLORPICKER_H
-#define DIALOGCOLORPICKER_H
+#ifndef HELP_H
+#define HELP_H
 
 #include <QDialog>
-#include <QColor>
 
 namespace Ui {
-class DialogColorPicker;
+class Help1;
 }
 
-class DialogColorPicker : public QDialog
+class Help1 : public QDialog
 {
     Q_OBJECT
-    Q_PROPERTY(QColor color READ color NOTIFY colorChanged)
 
 public:
-    explicit DialogColorPicker(QWidget *parent = 0);
-    ~DialogColorPicker();
-
-    QColor color() const
-    {
-        return m_color;
-    }
-
-signals:
-    void colorChanged(QColor color);
-
-private slots:
-    void onColorChanged();
+    explicit Help1(QWidget *parent = 0);
+    ~Help1();
 
 private:
-    Ui::DialogColorPicker *ui;
-    QColor m_color;
+    Ui::Help1 *ui;
 };
 
-#endif // DIALOGCOLORPICKER_H
+#endif // HELP_H

@@ -17,44 +17,43 @@ SOURCES += main.cpp\
     musiclib/importmidi.cpp \
     musiclib/midimessages.cpp \
     musiclib/musicdata.cpp \
+    ui/about.cpp \
+    ui/animationbar.cpp \
+    ui/help.cpp \
+    ui/mainwindow.cpp \
+    ui/playthread.cpp \
+    ui/render_qdw.cpp \
+    ui/tracks_qdw.cpp \
     utils/cnum.cpp \
-        mainwindow.cpp \
     csappmidi/src-library/MidiFile.cpp \
     csappmidi/src-library/MidiEvent.cpp \
     csappmidi/src-library/MidiEventList.cpp \
     csappmidi/src-library/MidiMessage.cpp \
     csappmidi/src-library/Binasc.cpp \
-    dockwidgettracks.cpp \
-    dialogcolorpicker.cpp \
-    animationbar.cpp \
-    playthread.cpp \
-    dockwidrender.cpp \
-    about.cpp \
-    help1.cpp \
     utils/colour.cpp \
     visual/animation.cpp \
     visual/renderChordStar.cpp \
     visual/tracks.cpp \
     visual/videorecorder.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     musiclib/chords.h \
     musiclib/importmidi.h \
     musiclib/midimessages.h \
     musiclib/musicdata.h \
+    ui/about.h \
+    ui/animationbar.h \
+    ui/help.h \
+    ui/mainwindow.h \
+    ui/playthread.h \
+    ui/render_qdw.h \
+    ui/tracks_qdw.h \
     utils/cnum.h \
     csappmidi/include/MidiFile.h \
     csappmidi/include/MidiEventList.h \
     csappmidi/include/MidiEvent.h \
     csappmidi/include/MidiMessage.h \
     csappmidi/include/Binasc.h \
-    dockwidgettracks.h \
-    dialogcolorpicker.h \
-    animationbar.h \
-    playthread.h \
-    dockwidrender.h \
-    about.h \
-    help1.h \
     csappmidi/include/Binasc.h \
     csappmidi/include/MidiEvent.h \
     csappmidi/include/MidiEventList.h \
@@ -67,13 +66,13 @@ HEADERS  += mainwindow.h \
     visual/tracks.h \
     visual/videorecorder.h
 
-FORMS    += mainwindow.ui \
-    dockwidgettracks.ui \
-    dialogcolorpicker.ui \
-    animationbar.ui \
-    dockwidrender.ui \
-    about.ui \
-    help1.ui
+FORMS    += \
+    ui/about.ui \
+    ui/animationbar.ui \
+    ui/help.ui \
+    ui/mainwindow.ui \
+    ui/render_qdw.ui \
+    ui/tracks_qdw.ui
 
 
 INCLUDEPATH += .

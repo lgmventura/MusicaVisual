@@ -20,12 +20,11 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#ifndef DOCKWIDGETTRACKS_H
-#define DOCKWIDGETTRACKS_H
+#ifndef TRACKS_QDW_H
+#define TRACKS_QDW_H
 
 #include <QDockWidget>
 
-#include "dialogcolorpicker.h"
 #include "visual/tracks.h"
 #include "musicdata.h"
 
@@ -347,7 +346,7 @@ private:
     TracksP *TProp;
     MusicData *Mdt;
 
-    DialogColorPicker *dcolorpicker;
+//    DialogColorPicker *dcolorpicker;
 
     QColor ct1;
     QColor ct2;
@@ -375,4 +374,4 @@ private:
     QColor ct24;
 };
 
-#endif // DOCKWIDGETTRACKS_H
+#endif // TRACKS_QDW_H

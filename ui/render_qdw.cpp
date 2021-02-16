@@ -20,8 +20,8 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#include "dockwidrender.h"
-#include "ui_dockwidrender.h"
+#include "ui/render_qdw.h"
+#include "ui_render_qdw.h"
 #include "mainwindow.h"
 #include "chords.h"
 
@@ -240,7 +240,7 @@ void DockWidRender::on_pb_setClr_vlines_clicked()
     tcolor.setRgb(RProp->vlines_colour[0],
                   RProp->vlines_colour[1],
                   RProp->vlines_colour[2]);
-    tcolor = QColorDialog::getColor(tcolor, this);
+    tcolor = QColorDialog::getColor(tcolor, this, "Pick a colour for the vertical rythmic lines", QColorDialog::DontUseNativeDialog);
     if (!tcolor.isValid()) return;
 
     RProp->vlines_colour[0] = tcolor.red();
@@ -258,7 +258,7 @@ void DockWidRender::on_pb_setClr_hlines_clicked()
     tcolor.setRgb(RProp->hlines_colour[0],
                   RProp->hlines_colour[1],
                   RProp->hlines_colour[2]);
-    tcolor = QColorDialog::getColor(tcolor, this);
+    tcolor = QColorDialog::getColor(tcolor, this, "Pick a colour for the horizontal lines", QColorDialog::DontUseNativeDialog);
     if (!tcolor.isValid()) return;
 
     RProp->hlines_colour[0] = tcolor.red();
