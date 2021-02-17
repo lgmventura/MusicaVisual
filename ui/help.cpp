@@ -23,14 +23,18 @@
 #include "help.h"
 #include "ui_help.h"
 
-Help1::Help1(QWidget *parent) :
+Help::Help(std::string htmlStr, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Help1)
+    ui(new Ui::Help)
 {
     ui->setupUi(this);
+
+    QString QHtmlStr;
+    QHtmlStr = QHtmlStr.fromStdString(htmlStr);
+    ui->textEdit->setHtml(QHtmlStr);
 }
 
-Help1::~Help1()
+Help::~Help()
 {
     delete ui;
 }

@@ -22,8 +22,8 @@ SOURCES += main.cpp\
     ui/help.cpp \
     ui/mainwindow.cpp \
     ui/playthread.cpp \
-    ui/render_qdw.cpp \
-    ui/tracks_qdw.cpp \
+    ui/rendersetup.cpp \
+    ui/trackssetup.cpp \
     utils/cnum.cpp \
     csappmidi/src-library/MidiFile.cpp \
     csappmidi/src-library/MidiEvent.cpp \
@@ -46,8 +46,8 @@ HEADERS  += \
     ui/help.h \
     ui/mainwindow.h \
     ui/playthread.h \
-    ui/render_qdw.h \
-    ui/tracks_qdw.h \
+    ui/rendersetup.h \
+    ui/trackssetup.h \
     utils/cnum.h \
     csappmidi/include/MidiFile.h \
     csappmidi/include/MidiEventList.h \
@@ -71,8 +71,8 @@ FORMS    += \
     ui/animationbar.ui \
     ui/help.ui \
     ui/mainwindow.ui \
-    ui/render_qdw.ui \
-    ui/tracks_qdw.ui
+    ui/rendersetup.ui \
+    ui/trackssetup.ui
 
 
 INCLUDEPATH += .
@@ -82,6 +82,7 @@ INCLUDEPATH += csappmidi/src-library
 INCLUDEPATH += csappmidi/lib
 INCLUDEPATH += csappmidi/obj
 INCLUDEPATH += musiclib/
+INCLUDEPATH += ui/
 
 INCLUDEPATH += /usr/local/include
 INCLUDEPATH += /usr/local/include/opencv
@@ -112,3 +113,6 @@ LIBS += `pkg-config opencv --cflags --libs`
 #QMAKE_LFLAGS += `-L/usr/lib/python3.8/config-3.8-x86_64-linux-gnu -L/usr/lib  -lcrypt -lpthread -ldl  -lutil -lm -lm`
 
 #CONFIG += static
+
+RESOURCES += \
+    resourcelist.qrc

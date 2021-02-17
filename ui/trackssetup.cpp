@@ -20,7 +20,7 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#include "ui/tracks_qdw.h"
+#include "ui/trackssetup.h"
 #include "ui_tracks_qdw.h"
 
 #include "mainwindow.h"
@@ -32,9 +32,9 @@
 //extern TracksP *TProp;
 //extern std::vector <std::string> *Mdt->TrackNames;
 
-DockWidgetTracks::DockWidgetTracks(TracksP *tProp, QWidget *parent, MusicData *mdt) :
+TracksWidget::TracksWidget(TracksP *tProp, QWidget *parent, MusicData *mdt) :
     QDockWidget(parent),
-    ui(new Ui::DockWidgetTracks)
+    ui(new Ui::TracksWidget)
 {
     ui->setupUi(this);
     this->TProp = tProp;
@@ -293,12 +293,12 @@ DockWidgetTracks::DockWidgetTracks(TracksP *tProp, QWidget *parent, MusicData *m
     }
 }
 
-DockWidgetTracks::~DockWidgetTracks()
+TracksWidget::~TracksWidget()
 {
     delete ui;
 }
 
-void DockWidgetTracks::on_pushButton_clicked()
+void TracksWidget::on_pushButton_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(0,0),
@@ -319,7 +319,7 @@ void DockWidgetTracks::on_pushButton_clicked()
     ui->widget1->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_2_clicked()
+void TracksWidget::on_pushButton_2_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(1,0),
@@ -340,7 +340,7 @@ void DockWidgetTracks::on_pushButton_2_clicked()
     ui->widget1_2->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_3_clicked()
+void TracksWidget::on_pushButton_3_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(2,0),
@@ -361,7 +361,7 @@ void DockWidgetTracks::on_pushButton_3_clicked()
     ui->widget1_3->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_4_clicked()
+void TracksWidget::on_pushButton_4_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(3,0),
@@ -382,7 +382,7 @@ void DockWidgetTracks::on_pushButton_4_clicked()
     ui->widget1_4->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_5_clicked()
+void TracksWidget::on_pushButton_5_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(4,0),
@@ -403,7 +403,7 @@ void DockWidgetTracks::on_pushButton_5_clicked()
     ui->widget1_5->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_6_clicked()
+void TracksWidget::on_pushButton_6_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(5,0),
@@ -424,7 +424,7 @@ void DockWidgetTracks::on_pushButton_6_clicked()
     ui->widget1_6->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_7_clicked()
+void TracksWidget::on_pushButton_7_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(6,0),
@@ -445,7 +445,7 @@ void DockWidgetTracks::on_pushButton_7_clicked()
     ui->widget1_7->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_8_clicked()
+void TracksWidget::on_pushButton_8_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(7,0),
@@ -466,7 +466,7 @@ void DockWidgetTracks::on_pushButton_8_clicked()
     ui->widget1_8->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_9_clicked()
+void TracksWidget::on_pushButton_9_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(8,0),
@@ -487,7 +487,7 @@ void DockWidgetTracks::on_pushButton_9_clicked()
     ui->widget1_9->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_10_clicked()
+void TracksWidget::on_pushButton_10_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(9,0),
@@ -508,7 +508,7 @@ void DockWidgetTracks::on_pushButton_10_clicked()
     ui->widget1_10->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_11_clicked()
+void TracksWidget::on_pushButton_11_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(10,0),
@@ -529,7 +529,7 @@ void DockWidgetTracks::on_pushButton_11_clicked()
     ui->widget1_11->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_12_clicked()
+void TracksWidget::on_pushButton_12_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(11,0),
@@ -550,7 +550,7 @@ void DockWidgetTracks::on_pushButton_12_clicked()
     ui->widget1_12->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_13_clicked()
+void TracksWidget::on_pushButton_13_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(12,0),
@@ -571,7 +571,7 @@ void DockWidgetTracks::on_pushButton_13_clicked()
     ui->widget1_13->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_14_clicked()
+void TracksWidget::on_pushButton_14_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(13,0),
@@ -592,7 +592,7 @@ void DockWidgetTracks::on_pushButton_14_clicked()
     ui->widget1_14->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_15_clicked()
+void TracksWidget::on_pushButton_15_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(14,0),
@@ -613,7 +613,7 @@ void DockWidgetTracks::on_pushButton_15_clicked()
     ui->widget1_15->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_16_clicked()
+void TracksWidget::on_pushButton_16_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(15,0),
@@ -634,7 +634,7 @@ void DockWidgetTracks::on_pushButton_16_clicked()
     ui->widget1_16->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_17_clicked()
+void TracksWidget::on_pushButton_17_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(16,0),
@@ -655,7 +655,7 @@ void DockWidgetTracks::on_pushButton_17_clicked()
     ui->widget1_17->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_18_clicked()
+void TracksWidget::on_pushButton_18_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(17,0),
@@ -676,7 +676,7 @@ void DockWidgetTracks::on_pushButton_18_clicked()
     ui->widget1_18->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_19_clicked()
+void TracksWidget::on_pushButton_19_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(18,0),
@@ -697,7 +697,7 @@ void DockWidgetTracks::on_pushButton_19_clicked()
     ui->widget1_19->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_20_clicked()
+void TracksWidget::on_pushButton_20_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(19,0),
@@ -718,7 +718,7 @@ void DockWidgetTracks::on_pushButton_20_clicked()
     ui->widget1_20->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_21_clicked()
+void TracksWidget::on_pushButton_21_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(20,0),
@@ -739,7 +739,7 @@ void DockWidgetTracks::on_pushButton_21_clicked()
     ui->widget1_21->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_22_clicked()
+void TracksWidget::on_pushButton_22_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(21,0),
@@ -760,7 +760,7 @@ void DockWidgetTracks::on_pushButton_22_clicked()
     ui->widget1_22->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_23_clicked()
+void TracksWidget::on_pushButton_23_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(22,0),
@@ -781,7 +781,7 @@ void DockWidgetTracks::on_pushButton_23_clicked()
     ui->widget1_23->setPalette(pal);
 }
 
-void DockWidgetTracks::on_pushButton_24_clicked()
+void TracksWidget::on_pushButton_24_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(TProp->getCv(23,0),
@@ -818,365 +818,365 @@ void DockWidgetTracks::on_pushButton_24_clicked()
 //    ui->widget1_2->setPalette(pal);
 //}
 
-void DockWidgetTracks::on_checkBox_toggled(bool checked)
+void TracksWidget::on_checkBox_toggled(bool checked)
 {
     TProp->active[0] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_2_toggled(bool checked)
+void TracksWidget::on_checkBox_2_toggled(bool checked)
 {
     TProp->active[1] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_3_toggled(bool checked)
+void TracksWidget::on_checkBox_3_toggled(bool checked)
 {
     TProp->active[2] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_4_toggled(bool checked)
+void TracksWidget::on_checkBox_4_toggled(bool checked)
 {
     TProp->active[3] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_5_toggled(bool checked)
+void TracksWidget::on_checkBox_5_toggled(bool checked)
 {
     TProp->active[4] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_6_toggled(bool checked)
+void TracksWidget::on_checkBox_6_toggled(bool checked)
 {
     TProp->active[5] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_7_toggled(bool checked)
+void TracksWidget::on_checkBox_7_toggled(bool checked)
 {
     TProp->active[6] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_8_toggled(bool checked)
+void TracksWidget::on_checkBox_8_toggled(bool checked)
 {
     TProp->active[7] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_9_toggled(bool checked)
+void TracksWidget::on_checkBox_9_toggled(bool checked)
 {
     TProp->active[8] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_10_toggled(bool checked)
+void TracksWidget::on_checkBox_10_toggled(bool checked)
 {
     TProp->active[9] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_11_toggled(bool checked)
+void TracksWidget::on_checkBox_11_toggled(bool checked)
 {
     TProp->active[10] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_12_toggled(bool checked)
+void TracksWidget::on_checkBox_12_toggled(bool checked)
 {
     TProp->active[11] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_13_toggled(bool checked)
+void TracksWidget::on_checkBox_13_toggled(bool checked)
 {
     TProp->active[12] = checked;
 }
-void DockWidgetTracks::on_checkBox_14_toggled(bool checked)
+void TracksWidget::on_checkBox_14_toggled(bool checked)
 {
     TProp->active[13] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_15_toggled(bool checked)
+void TracksWidget::on_checkBox_15_toggled(bool checked)
 {
     TProp->active[14] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_16_toggled(bool checked)
+void TracksWidget::on_checkBox_16_toggled(bool checked)
 {
     TProp->active[15] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_17_toggled(bool checked)
+void TracksWidget::on_checkBox_17_toggled(bool checked)
 {
     TProp->active[16] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_18_toggled(bool checked)
+void TracksWidget::on_checkBox_18_toggled(bool checked)
 {
     TProp->active[17] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_19_toggled(bool checked)
+void TracksWidget::on_checkBox_19_toggled(bool checked)
 {
     TProp->active[18] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_20_toggled(bool checked)
+void TracksWidget::on_checkBox_20_toggled(bool checked)
 {
     TProp->active[19] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_21_toggled(bool checked)
+void TracksWidget::on_checkBox_21_toggled(bool checked)
 {
     TProp->active[20] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_22_toggled(bool checked)
+void TracksWidget::on_checkBox_22_toggled(bool checked)
 {
     TProp->active[21] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_23_toggled(bool checked)
+void TracksWidget::on_checkBox_23_toggled(bool checked)
 {
     TProp->active[22] = checked;
 }
 
-void DockWidgetTracks::on_checkBox_24_toggled(bool checked)
+void TracksWidget::on_checkBox_24_toggled(bool checked)
 {
     TProp->active[23] = checked;
 }
 
 
 
-void DockWidgetTracks::on_notesAppear1_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_currentIndexChanged(int index)
 {
     TProp->shape[0] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_2_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_2_currentIndexChanged(int index)
 {
     TProp->shape[1] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_3_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_3_currentIndexChanged(int index)
 {
     TProp->shape[2] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_4_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_4_currentIndexChanged(int index)
 {
     TProp->shape[3] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_5_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_5_currentIndexChanged(int index)
 {
     TProp->shape[4] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_6_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_6_currentIndexChanged(int index)
 {
     TProp->shape[5] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_7_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_7_currentIndexChanged(int index)
 {
     TProp->shape[6] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_8_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_8_currentIndexChanged(int index)
 {
     TProp->shape[7] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_9_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_9_currentIndexChanged(int index)
 {
     TProp->shape[8] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_10_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_10_currentIndexChanged(int index)
 {
     TProp->shape[9] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_11_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_11_currentIndexChanged(int index)
 {
     TProp->shape[10] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_12_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_12_currentIndexChanged(int index)
 {
     TProp->shape[11] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_13_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_13_currentIndexChanged(int index)
 {
     TProp->shape[12] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_14_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_14_currentIndexChanged(int index)
 {
     TProp->shape[13] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_15_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_15_currentIndexChanged(int index)
 {
     TProp->shape[14] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_16_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_16_currentIndexChanged(int index)
 {
     TProp->shape[15] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_17_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_17_currentIndexChanged(int index)
 {
     TProp->shape[16] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_18_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_18_currentIndexChanged(int index)
 {
     TProp->shape[17] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_19_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_19_currentIndexChanged(int index)
 {
     TProp->shape[18] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_20_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_20_currentIndexChanged(int index)
 {
     TProp->shape[19] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_21_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_21_currentIndexChanged(int index)
 {
     TProp->shape[20] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_22_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_22_currentIndexChanged(int index)
 {
     TProp->shape[21] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_23_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_23_currentIndexChanged(int index)
 {
     TProp->shape[22] = index;
 }
 
-void DockWidgetTracks::on_notesAppear1_24_currentIndexChanged(int index)
+void TracksWidget::on_notesAppear1_24_currentIndexChanged(int index)
 {
     TProp->shape[23] = index;
 }
 
 
 
-void DockWidgetTracks::on_spinBox_valueChanged(int arg1)
+void TracksWidget::on_spinBox_valueChanged(int arg1)
 {
     TProp->track_blur[0] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_2_valueChanged(int arg1)
+void TracksWidget::on_spinBox_2_valueChanged(int arg1)
 {
     TProp->track_blur[1] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_3_valueChanged(int arg1)
+void TracksWidget::on_spinBox_3_valueChanged(int arg1)
 {
     TProp->track_blur[2] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_4_valueChanged(int arg1)
+void TracksWidget::on_spinBox_4_valueChanged(int arg1)
 {
     TProp->track_blur[3] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_5_valueChanged(int arg1)
+void TracksWidget::on_spinBox_5_valueChanged(int arg1)
 {
     TProp->track_blur[4] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_6_valueChanged(int arg1)
+void TracksWidget::on_spinBox_6_valueChanged(int arg1)
 {
     TProp->track_blur[5] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_7_valueChanged(int arg1)
+void TracksWidget::on_spinBox_7_valueChanged(int arg1)
 {
     TProp->track_blur[6] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_8_valueChanged(int arg1)
+void TracksWidget::on_spinBox_8_valueChanged(int arg1)
 {
     TProp->track_blur[7] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_9_valueChanged(int arg1)
+void TracksWidget::on_spinBox_9_valueChanged(int arg1)
 {
     TProp->track_blur[8] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_10_valueChanged(int arg1)
+void TracksWidget::on_spinBox_10_valueChanged(int arg1)
 {
     TProp->track_blur[9] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_11_valueChanged(int arg1)
+void TracksWidget::on_spinBox_11_valueChanged(int arg1)
 {
     TProp->track_blur[10] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_12_valueChanged(int arg1)
+void TracksWidget::on_spinBox_12_valueChanged(int arg1)
 {
     TProp->track_blur[11] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_13_valueChanged(int arg1)
+void TracksWidget::on_spinBox_13_valueChanged(int arg1)
 {
     TProp->track_blur[12] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_14_valueChanged(int arg1)
+void TracksWidget::on_spinBox_14_valueChanged(int arg1)
 {
     TProp->track_blur[13] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_15_valueChanged(int arg1)
+void TracksWidget::on_spinBox_15_valueChanged(int arg1)
 {
     TProp->track_blur[14] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_16_valueChanged(int arg1)
+void TracksWidget::on_spinBox_16_valueChanged(int arg1)
 {
     TProp->track_blur[15] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_17_valueChanged(int arg1)
+void TracksWidget::on_spinBox_17_valueChanged(int arg1)
 {
     TProp->track_blur[16] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_18_valueChanged(int arg1)
+void TracksWidget::on_spinBox_18_valueChanged(int arg1)
 {
     TProp->track_blur[17] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_19_valueChanged(int arg1)
+void TracksWidget::on_spinBox_19_valueChanged(int arg1)
 {
     TProp->track_blur[18] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_20_valueChanged(int arg1)
+void TracksWidget::on_spinBox_20_valueChanged(int arg1)
 {
     TProp->track_blur[19] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_21_valueChanged(int arg1)
+void TracksWidget::on_spinBox_21_valueChanged(int arg1)
 {
     TProp->track_blur[20] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_22_valueChanged(int arg1)
+void TracksWidget::on_spinBox_22_valueChanged(int arg1)
 {
     TProp->track_blur[21] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_23_valueChanged(int arg1)
+void TracksWidget::on_spinBox_23_valueChanged(int arg1)
 {
     TProp->track_blur[22] = arg1;
 }
 
-void DockWidgetTracks::on_spinBox_24_valueChanged(int arg1)
+void TracksWidget::on_spinBox_24_valueChanged(int arg1)
 {
     TProp->track_blur[23] = arg1;
 }
@@ -1184,244 +1184,244 @@ void DockWidgetTracks::on_spinBox_24_valueChanged(int arg1)
 
 
 
-void DockWidgetTracks::on_notesConnect1_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_currentIndexChanged(int index)
 {
     TProp->interconnect[0] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_2_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_2_currentIndexChanged(int index)
 {
     TProp->interconnect[1] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_3_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_3_currentIndexChanged(int index)
 {
     TProp->interconnect[2] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_4_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_4_currentIndexChanged(int index)
 {
     TProp->interconnect[3] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_5_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_5_currentIndexChanged(int index)
 {
     TProp->interconnect[4] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_6_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_6_currentIndexChanged(int index)
 {
     TProp->interconnect[5] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_7_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_7_currentIndexChanged(int index)
 {
     TProp->interconnect[6] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_8_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_8_currentIndexChanged(int index)
 {
     TProp->interconnect[7] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_9_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_9_currentIndexChanged(int index)
 {
     TProp->interconnect[8] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_10_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_10_currentIndexChanged(int index)
 {
     TProp->interconnect[9] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_11_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_11_currentIndexChanged(int index)
 {
     TProp->interconnect[10] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_12_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_12_currentIndexChanged(int index)
 {
     TProp->interconnect[11] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_13_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_13_currentIndexChanged(int index)
 {
     TProp->interconnect[12] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_14_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_14_currentIndexChanged(int index)
 {
     TProp->interconnect[13] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_15_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_15_currentIndexChanged(int index)
 {
     TProp->interconnect[14] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_16_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_16_currentIndexChanged(int index)
 {
     TProp->interconnect[15] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_17_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_17_currentIndexChanged(int index)
 {
     TProp->interconnect[16] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_18_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_18_currentIndexChanged(int index)
 {
     TProp->interconnect[17] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_19_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_19_currentIndexChanged(int index)
 {
     TProp->interconnect[18] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_20_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_20_currentIndexChanged(int index)
 {
     TProp->interconnect[19] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_21_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_21_currentIndexChanged(int index)
 {
     TProp->interconnect[20] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_22_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_22_currentIndexChanged(int index)
 {
     TProp->interconnect[21] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_23_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_23_currentIndexChanged(int index)
 {
     TProp->interconnect[22] = index;
 }
 
-void DockWidgetTracks::on_notesConnect1_24_currentIndexChanged(int index)
+void TracksWidget::on_notesConnect1_24_currentIndexChanged(int index)
 {
     TProp->interconnect[23] = index;
 }
 
 
 
-void DockWidgetTracks::on_colorScheme1_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_currentIndexChanged(int index)
 {
     TProp->colorScheme[0] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_2_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_2_currentIndexChanged(int index)
 {
     TProp->colorScheme[1] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_3_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_3_currentIndexChanged(int index)
 {
     TProp->colorScheme[2] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_4_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_4_currentIndexChanged(int index)
 {
     TProp->colorScheme[3] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_5_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_5_currentIndexChanged(int index)
 {
     TProp->colorScheme[4] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_6_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_6_currentIndexChanged(int index)
 {
     TProp->colorScheme[5] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_7_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_7_currentIndexChanged(int index)
 {
     TProp->colorScheme[6] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_8_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_8_currentIndexChanged(int index)
 {
     TProp->colorScheme[7] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_9_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_9_currentIndexChanged(int index)
 {
     TProp->colorScheme[8] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_10_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_10_currentIndexChanged(int index)
 {
     TProp->colorScheme[9] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_11_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_11_currentIndexChanged(int index)
 {
     TProp->colorScheme[10] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_12_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_12_currentIndexChanged(int index)
 {
     TProp->colorScheme[11] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_13_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_13_currentIndexChanged(int index)
 {
     TProp->colorScheme[12] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_14_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_14_currentIndexChanged(int index)
 {
     TProp->colorScheme[13] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_15_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_15_currentIndexChanged(int index)
 {
     TProp->colorScheme[14] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_16_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_16_currentIndexChanged(int index)
 {
     TProp->colorScheme[15] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_17_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_17_currentIndexChanged(int index)
 {
     TProp->colorScheme[16] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_18_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_18_currentIndexChanged(int index)
 {
     TProp->colorScheme[16] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_19_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_19_currentIndexChanged(int index)
 {
     TProp->colorScheme[18] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_20_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_20_currentIndexChanged(int index)
 {
     TProp->colorScheme[19] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_21_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_21_currentIndexChanged(int index)
 {
     TProp->colorScheme[20] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_22_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_22_currentIndexChanged(int index)
 {
     TProp->colorScheme[21] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_23_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_23_currentIndexChanged(int index)
 {
     TProp->colorScheme[22] = index;
 }
 
-void DockWidgetTracks::on_colorScheme1_24_currentIndexChanged(int index)
+void TracksWidget::on_colorScheme1_24_currentIndexChanged(int index)
 {
     TProp->colorScheme[23] = index;
 }

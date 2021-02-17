@@ -25,20 +25,22 @@
 
 #include <QDialog>
 
+#include <string>
+
 namespace Ui {
-class Help1;
+class Help;
 }
 
-class Help1 : public QDialog
+class Help : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Help1(QWidget *parent = 0);
-    ~Help1();
+    explicit Help(std::string htmlStr, QWidget *parent = 0);
+    ~Help();
 
 private:
-    Ui::Help1 *ui;
+    Ui::Help *ui;
 };
 
 #endif // HELP_H

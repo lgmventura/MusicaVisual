@@ -36,7 +36,7 @@
 #include "Options.h"
 
 // Include UI classes
-#include "tracks_qdw.h"
+#include "trackssetup.h"
 #include "animationbar.h"
 
 // Iostream (just to help on debugging)
@@ -179,7 +179,7 @@ void MainWindow::on_actionTracks_triggered() // open dockwidgettracks.
 {
     if (Mdt->TrackNames.size() < 24)
         Mdt->nameTracksReset();
-    dwidtracks = new DockWidgetTracks(TProp, this, Mdt);
+    dwidtracks = new TracksWidget(TProp, this, Mdt);
     dwidtracks->show();
     dwidtracks->resize(300,600);
     dwidtracks->pos();
@@ -314,7 +314,7 @@ void MainWindow::on_pb_animation_clicked()
 
 void MainWindow::on_actionRendering_Properties_triggered()
 {
-    dwrenderprop = new DockWidRender(RProp, this, Mdt, VRec);
+    dwrenderprop = new RenderWidget(RProp, this, Mdt, VRec);
     dwrenderprop->show();
 }
 
@@ -400,13 +400,13 @@ void MainWindow::on_actionLoad_settings_triggered()
         if (dwidtracks != nullptr)
         {
             dwidtracks->close();
-            dwidtracks = new DockWidgetTracks(TProp, this, Mdt);
+            dwidtracks = new TracksWidget(TProp, this, Mdt);
             dwidtracks->show();
         }
         if (dwrenderprop != nullptr)
         {
             dwrenderprop->close();
-            dwrenderprop = new DockWidRender(RProp, this, Mdt, VRec);
+            dwrenderprop = new RenderWidget(RProp, this, Mdt, VRec);
             dwrenderprop->show();
         }
     }
@@ -424,7 +424,34 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionHow_does_it_work_triggered()
 {
     {
-        helpDiag_1 = new Help1(this);
+        QFile helpFile(":doc/en/help_en.html");
+//        stringstream helpStrStream;
+//        string line;
+//        ifstream helpFile ();
+//        if (helpFile.is_open())
+//        {
+//            while ( getline (helpFile, line))
+//            {
+//                helpStrStream << line << endl;
+//                cout << line << endl;
+//            }
+//            helpFile.close();
+//        }
+//        else {
+//            cout << "Help file not found." << endl;
+//        }
+        if (!helpFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+        string helpStr = "";
+
+        QTextStream in(&helpFile);
+        QString line = in.readLine();
+        while (!line.isNull()) {
+            helpStr = helpStr + line.toStdString() + '\n';
+            line = in.readLine();
+        }
+        //cout << helpStr << endl;
+        helpDiag_1 = new Help(helpStr, this);
         helpDiag_1->show();
     }
 }

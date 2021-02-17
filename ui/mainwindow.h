@@ -27,8 +27,8 @@
 
 #include <algorithm>
 
-#include "ui/tracks_qdw.h"
-#include "ui/render_qdw.h"
+#include "ui/trackssetup.h"
+#include "ui/rendersetup.h"
 #include "ui/animationbar.h"
 #include "ui/about.h"
 #include "ui/help.h"
@@ -101,10 +101,10 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    DockWidgetTracks *dwidtracks;
-    DockWidRender *dwrenderprop = nullptr;
+    TracksWidget *dwidtracks;
+    RenderWidget *dwrenderprop = nullptr;
     About *aboutDiag = nullptr;
-    Help1 *helpDiag_1 = nullptr;
+    Help *helpDiag_1 = nullptr;
     MusicData *Mdt = nullptr;
     VideoRecorder *VRec = nullptr;
     TracksP *TProp;

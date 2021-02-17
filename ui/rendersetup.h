@@ -20,8 +20,8 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#ifndef RENDER_QDW_H
-#define RENDER_QDW_H
+#ifndef RENDERSETUP_H
+#define RENDERSETUP_H
 
 #include <QDockWidget>
 
@@ -33,16 +33,16 @@
 #include "visual/videorecorder.h"
 
 namespace Ui {
-class DockWidRender;
+class RenderWidget;
 }
 
-class DockWidRender : public QDockWidget
+class RenderWidget : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit DockWidRender(RenderP *rProp, QWidget *parent = 0, MusicData *mdt = nullptr, VideoRecorder *vRec = nullptr);
-    ~DockWidRender();
+    explicit RenderWidget(RenderP *rProp, QWidget *parent = 0, MusicData *mdt = nullptr, VideoRecorder *vRec = nullptr);
+    ~RenderWidget();
 
 private slots:
     void on_checkBox_toggled(bool checked);
@@ -120,7 +120,7 @@ private slots:
     void on_cmb_videoCodec_currentIndexChanged(int index);
 
 private:
-    Ui::DockWidRender *ui;
+    Ui::RenderWidget *ui;
     RenderP *RProp;
 
     QColor hlines;
@@ -138,4 +138,4 @@ public:
     static std::map<string, int> CMB_FOURCC_VK;
 };
 
-#endif // RENDER_QDW_H
+#endif // RENDERSETUP_H

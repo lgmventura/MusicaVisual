@@ -136,8 +136,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>516</width>
-         <height>210</height>
+         <width>524</width>
+         <height>215</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -174,7 +174,7 @@
      <x>0</x>
      <y>0</y>
      <width>692</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -281,7 +281,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Squeeze tracks</string>
+    <string>Remove empty tracks (squeeze)</string>
    </property>
   </action>
  </widget>

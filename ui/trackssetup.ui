@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DockWidgetTracks</class>
- <widget class="QDockWidget" name="DockWidgetTracks">
+ <class>TracksWidget</class>
+ <widget class="QDockWidget" name="TracksWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -42,7 +42,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1009</width>
+         <width>999</width>
          <height>1356</height>
         </rect>
        </property>

@@ -20,8 +20,8 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#ifndef TRACKS_QDW_H
-#define TRACKS_QDW_H
+#ifndef TRACKSSETUP_H
+#define TRACKSSETUP_H
 
 #include <QDockWidget>
 
@@ -29,16 +29,16 @@
 #include "musicdata.h"
 
 namespace Ui {
-class DockWidgetTracks;
+class TracksWidget;
 }
 
-class DockWidgetTracks : public QDockWidget
+class TracksWidget : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit DockWidgetTracks(TracksP *tProp, QWidget *parent = 0, MusicData *mdt = nullptr);
-    ~DockWidgetTracks();
+    explicit TracksWidget(TracksP *tProp, QWidget *parent = 0, MusicData *mdt = nullptr);
+    ~TracksWidget();
 
 private slots:
     void on_pushButton_clicked();
@@ -342,7 +342,7 @@ private slots:
     void on_colorScheme1_24_currentIndexChanged(int index);
 
 private:
-    Ui::DockWidgetTracks *ui;
+    Ui::TracksWidget *ui;
     TracksP *TProp;
     MusicData *Mdt;
 
@@ -374,4 +374,4 @@ private:
     QColor ct24;
 };
 
-#endif // TRACKS_QDW_H
+#endif // TRACKSSETUP_H

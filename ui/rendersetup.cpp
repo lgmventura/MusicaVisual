@@ -20,7 +20,7 @@
  * Thanks to OpenCV library used as well to work with images and videos.
  */
 
-#include "ui/render_qdw.h"
+#include "ui/rendersetup.h"
 #include "ui_render_qdw.h"
 #include "mainwindow.h"
 #include "chords.h"
@@ -32,9 +32,9 @@
 //extern std::string *codec_fourcc;
 //extern chords mdt->GChords;
 
-DockWidRender::DockWidRender(RenderP *rProp, QWidget *parent, MusicData *mdt, VideoRecorder *vRec) :
+RenderWidget::RenderWidget(RenderP *rProp, QWidget *parent, MusicData *mdt, VideoRecorder *vRec) :
     QDockWidget(parent),
-    ui(new Ui::DockWidRender)
+    ui(new Ui::RenderWidget)
 {
     ui->setupUi(this);
     // Set member variables:
@@ -113,128 +113,128 @@ DockWidRender::DockWidRender(RenderP *rProp, QWidget *parent, MusicData *mdt, Vi
 
 }
 
-DockWidRender::~DockWidRender()
+RenderWidget::~RenderWidget()
 {
     delete ui;
 }
 
-void DockWidRender::on_checkBox_toggled(bool checked)
+void RenderWidget::on_checkBox_toggled(bool checked)
 {
     RProp->lines[0] = checked;
 }
 
-void DockWidRender::on_cb_vLineTSig_toggled(bool checked)
+void RenderWidget::on_cb_vLineTSig_toggled(bool checked)
 {
     RProp->lines[1] = checked;
 }
 
-void DockWidRender::on_checkBox_2_toggled(bool checked)
+void RenderWidget::on_checkBox_2_toggled(bool checked)
 {
     RProp->lines[2] = checked;
 }
 
-void DockWidRender::on_cb_vLineTrack_toggled(bool checked)
+void RenderWidget::on_cb_vLineTrack_toggled(bool checked)
 {
     RProp->lines[3] = checked;
 }
 
-void DockWidRender::on_spinBox_valueChanged(int arg1)
+void RenderWidget::on_spinBox_valueChanged(int arg1)
 {
     RProp->beat_measure_manual[0] = arg1;
 }
 
-void DockWidRender::on_cmb_vLnManualDenom_currentIndexChanged(int index)
+void RenderWidget::on_cmb_vLnManualDenom_currentIndexChanged(int index)
 {
     RProp->beat_measure_manual[1] = index;
 }
 
-void DockWidRender::on_checkBox_3_toggled(bool checked)
+void RenderWidget::on_checkBox_3_toggled(bool checked)
 {
     RProp->sep_render[0] = checked;
 }
 
-void DockWidRender::on_checkBox_4_toggled(bool checked)
+void RenderWidget::on_checkBox_4_toggled(bool checked)
 {
     RProp->sep_render[1] = checked;
 }
 
-void DockWidRender::on_checkBox_5_toggled(bool checked)
+void RenderWidget::on_checkBox_5_toggled(bool checked)
 {
     RProp->sep_render[2] = checked;
 }
 
-void DockWidRender::on_spinBox_2_valueChanged(int arg1)
+void RenderWidget::on_spinBox_2_valueChanged(int arg1)
 {
     RProp->blur_size[0] = arg1;
 }
 
-void DockWidRender::on_spinBox_5_valueChanged(int arg1)
+void RenderWidget::on_spinBox_5_valueChanged(int arg1)
 {
     RProp->blur_size[1] = arg1;
 }
 
-void DockWidRender::on_spinBox_6_valueChanged(int arg1)
+void RenderWidget::on_spinBox_6_valueChanged(int arg1)
 {
     RProp->blur_size_movnotes[0] = arg1;
 }
 
-void DockWidRender::on_spinBox_7_valueChanged(int arg1)
+void RenderWidget::on_spinBox_7_valueChanged(int arg1)
 {
     RProp->blur_size_movnotes[1] = arg1;
 }
 
-void DockWidRender::on_lineEdit_editingFinished()
+void RenderWidget::on_lineEdit_editingFinished()
 {
     VRec->CodecFourCC = ui->lineEdit->text().toStdString();
 }
 
-void DockWidRender::on_spinBox_3_valueChanged(int arg1)
+void RenderWidget::on_spinBox_3_valueChanged(int arg1)
 {
     RProp->vertRange = arg1;
 }
 
-void DockWidRender::on_spinBox_4_valueChanged(int arg1)
+void RenderWidget::on_spinBox_4_valueChanged(int arg1)
 {
     RProp->vertShift = arg1;
 }
 
-void DockWidRender::on_checkBox_6_toggled(bool checked)
+void RenderWidget::on_checkBox_6_toggled(bool checked)
 {
     RProp->extra_time[0] = checked;
 }
 
-void DockWidRender::on_checkBox_7_toggled(bool checked)
+void RenderWidget::on_checkBox_7_toggled(bool checked)
 {
     RProp->extra_time[1] = checked;
 }
 
-void DockWidRender::on_checkBox_8_toggled(bool checked)
+void RenderWidget::on_checkBox_8_toggled(bool checked)
 {
     RProp->hlines = checked;
 }
 
-void DockWidRender::on_comboBox_currentIndexChanged(int index)
+void RenderWidget::on_comboBox_currentIndexChanged(int index)
 {
     RProp->hlines_type = index;
 }
 
-void DockWidRender::on_spinBox_8_valueChanged(int arg1)
+void RenderWidget::on_spinBox_8_valueChanged(int arg1)
 {
     RProp->hlines_n = arg1;
     ui->spinBox_9->setMaximum(arg1 - 1);
 }
 
-void DockWidRender::on_spinBox_9_valueChanged(int arg1)
+void RenderWidget::on_spinBox_9_valueChanged(int arg1)
 {
     RProp->hlines_offset = arg1;
 }
 
-void DockWidRender::on_checkBox_9_toggled(bool checked)
+void RenderWidget::on_checkBox_9_toggled(bool checked)
 {
     RProp->half_shift = checked;
 }
 
-void DockWidRender::on_pb_setClr_vlines_clicked()
+void RenderWidget::on_pb_setClr_vlines_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(RProp->vlines_colour[0],
@@ -252,7 +252,7 @@ void DockWidRender::on_pb_setClr_vlines_clicked()
     ui->widget_vlcolour->setPalette(pal_v);
 }
 
-void DockWidRender::on_pb_setClr_hlines_clicked()
+void RenderWidget::on_pb_setClr_hlines_clicked()
 {
     QColor tcolor;
     tcolor.setRgb(RProp->hlines_colour[0],
@@ -270,41 +270,41 @@ void DockWidRender::on_pb_setClr_hlines_clicked()
     ui->widget_hlcolour->setPalette(pal_h);
 }
 
-void DockWidRender::on_sb_vLineTrack_valueChanged(int arg1)
+void RenderWidget::on_sb_vLineTrack_valueChanged(int arg1)
 {
     RProp->vlines_track_n = arg1;
 }
 
-void DockWidRender::on_cb_dispChordNames_toggled(bool checked)
+void RenderWidget::on_cb_dispChordNames_toggled(bool checked)
 {
     RProp->chord_names = checked;
 }
 
-void DockWidRender::on_pb_procChordNames_clicked()
+void RenderWidget::on_pb_procChordNames_clicked()
 {
     chords chords;
     chords.process_chords(this->Mdt->Notes, RProp->chord_analysis);
     Mdt->GChords = chords;
 }
 
-void DockWidRender::on_lineEdit_excludeTracks_textEdited(const QString &arg1) // ToDo. Regex?
+void RenderWidget::on_lineEdit_excludeTracks_textEdited(const QString &arg1) // ToDo. Regex?
 {
 //    std::string str = arg1.toStdString();
 
 //    RProp->chord_analysis;
 }
 
-void DockWidRender::on_cb_dispNoteNames_toggled(bool checked)
+void RenderWidget::on_cb_dispNoteNames_toggled(bool checked)
 {
     RProp->note_names = checked;
 }
 
-void DockWidRender::on_cb_dispChordStar_toggled(bool checked)
+void RenderWidget::on_cb_dispChordStar_toggled(bool checked)
 {
     RProp->chord_star = checked;
 }
 
-void DockWidRender::on_combox_chordStar_currentIndexChanged(int index)
+void RenderWidget::on_combox_chordStar_currentIndexChanged(int index)
 {
     if (index == 0)
     {
@@ -316,17 +316,17 @@ void DockWidRender::on_combox_chordStar_currentIndexChanged(int index)
     }
 }
 
-void DockWidRender::on_cmb_dispNoteNamesWhere_currentIndexChanged(int index)
+void RenderWidget::on_cmb_dispNoteNamesWhere_currentIndexChanged(int index)
 {
     RProp->note_names_where = index;
 }
 
-void DockWidRender::on_spb_chordStarOffset_valueChanged(int arg1)
+void RenderWidget::on_spb_chordStarOffset_valueChanged(int arg1)
 {
     RProp->turn_chord_circle = arg1;
 }
 
-void DockWidRender::on_cb_sharpFlat_currentIndexChanged(int index)
+void RenderWidget::on_cb_sharpFlat_currentIndexChanged(int index)
 {
     if (index == 0)
         RProp->accidentalSharp = false;
@@ -334,7 +334,7 @@ void DockWidRender::on_cb_sharpFlat_currentIndexChanged(int index)
         RProp->accidentalSharp = true;
 }
 
-void DockWidRender::on_cb_AA_toggled(bool checked)
+void RenderWidget::on_cb_AA_toggled(bool checked)
 {
     if (checked == true)
     {
@@ -346,7 +346,7 @@ void DockWidRender::on_cb_AA_toggled(bool checked)
     }
 }
 
-void DockWidRender::on_cmb_videoCodec_currentIndexChanged(int index)
+void RenderWidget::on_cmb_videoCodec_currentIndexChanged(int index)
 {
     VRec->CodecFourCC = RenderWidMaps::CMB_FOURCC_KV[index];
     ui->lineEdit->setText(QString::fromStdString(RenderWidMaps::CMB_FOURCC_KV[index]));
