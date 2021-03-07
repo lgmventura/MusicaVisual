@@ -363,7 +363,12 @@ void MainWindow::on_actionSave_settings_as_triggered()
                                                            tr("Save settings"),
                                                            "//home//",
                                                            "Data file (*.dat);;Plain Text File (*.txt);;All Files (*.*)");
-    ofstream output_file(save_file_name.toStdString(),ios::binary);
+    saveSettings(save_file_name.toStdString());
+}
+
+void MainWindow::saveSettings(string filePath)
+{
+    ofstream output_file(filePath, ios::binary);
     output_file.write(reinterpret_cast<char*>(TProp),sizeof(*TProp));
     output_file.write(reinterpret_cast<char*>(RProp),sizeof(*RProp));
     output_file.close();
@@ -379,36 +384,41 @@ void MainWindow::on_actionLoad_settings_triggered()
                                                            "Data file (*.dat);;Plain Text File (*.txt);;All Files (*.*)");
     if (open_file_name != nullptr)
     {
-        ifstream input_file(open_file_name.toStdString(),ios::binary);
-        try
-        {
-            input_file.read(reinterpret_cast<char*>(TProp),sizeof(*TProp));
-            input_file.read(reinterpret_cast<char*>(RProp),sizeof(*RProp));
-            cout << "Settings file could be correctly interpreted.";
-        }
-        catch (exception& e)
-        {
-            QString msg = QString::fromStdString(std::strcat((char *)"Error on interpreting data from the file. C++ function: input_file.read(reinterpret_cast<char*>(data),sizeof(*data)); Description", e.what()));
-            QMessageBox::critical(this, tr("Cannot load settings"), msg, QMessageBox::Ok );
-        }
-        catch (...)
-        {
-            QString msg = QString::fromStdString("Unexpected error on calling: input_file.read(reinterpret_cast<char*>(data),sizeof(*data));");
-            QMessageBox::critical(this, tr("Cannot load settings"), msg, QMessageBox::Ok );
-        }
-        input_file.close();
-        if (dwidtracks != nullptr)
-        {
-            dwidtracks->close();
-            dwidtracks = new TracksWidget(TProp, this, Mdt);
-            dwidtracks->show();
-        }
-        if (dwrenderprop != nullptr)
-        {
-            dwrenderprop->close();
-            dwrenderprop = new RenderWidget(RProp, this, Mdt, VRec);
-            dwrenderprop->show();
-        }
+        loadSettings(open_file_name.toStdString());
+    }
+}
+
+void MainWindow::loadSettings(string filePath)
+{
+    ifstream input_file(filePath, ios::binary);
+    try
+    {
+        input_file.read(reinterpret_cast<char*>(TProp),sizeof(*TProp));
+        input_file.read(reinterpret_cast<char*>(RProp),sizeof(*RProp));
+        cout << "Settings file could be correctly interpreted.";
+    }
+    catch (exception& e)
+    {
+        QString msg = QString::fromStdString(std::strcat((char *)"Error on interpreting data from the file. C++ function: input_file.read(reinterpret_cast<char*>(data),sizeof(*data)); Description", e.what()));
+        QMessageBox::critical(this, tr("Cannot load settings"), msg, QMessageBox::Ok );
+    }
+    catch (...)
+    {
+        QString msg = QString::fromStdString("Unexpected error on calling: input_file.read(reinterpret_cast<char*>(data),sizeof(*data));");
+        QMessageBox::critical(this, tr("Cannot load settings"), msg, QMessageBox::Ok );
+    }
+    input_file.close();
+    if (dwidtracks != nullptr)
+    {
+        dwidtracks->close();
+        dwidtracks = new TracksWidget(TProp, this, Mdt);
+        dwidtracks->show();
+    }
+    if (dwrenderprop != nullptr)
+    {
+        dwrenderprop->close();
+        dwrenderprop = new RenderWidget(RProp, this, Mdt, VRec);
+        dwrenderprop->show();
     }
 }
 

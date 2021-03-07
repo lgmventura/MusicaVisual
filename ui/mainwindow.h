@@ -99,6 +99,10 @@ private slots:
 
     void on_pb_animation_clicked();
 
+    void saveSettings(string filePath);
+
+    void loadSettings(string filePath);
+
 private:
     Ui::MainWindow *ui;
     TracksWidget *dwidtracks;
