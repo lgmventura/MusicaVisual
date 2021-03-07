@@ -21,7 +21,7 @@
  */
 
 #include "ui/rendersetup.h"
-#include "ui_render_qdw.h"
+#include "ui_rendersetup.h"
 #include "mainwindow.h"
 #include "chords.h"
 

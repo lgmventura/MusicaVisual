@@ -14,7 +14,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Tracks appearences</string>
+   <string>Tracks appearances</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
@@ -42,7 +42,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>999</width>
+         <width>1009</width>
          <height>1356</height>
         </rect>
        </property>

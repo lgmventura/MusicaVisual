@@ -21,7 +21,7 @@
  */
 
 #include "ui/trackssetup.h"
-#include "ui_tracks_qdw.h"
+#include "ui_trackssetup.h"
 
 #include "mainwindow.h"
 

@@ -35,7 +35,7 @@ void ImportMidi::importMidiMessagesText(const char *midiFileName) // useful for 
         buffer << '\t' << deltatick;
         buffer << '\t' << mev->track;
         buffer << '\t' << hex;
-        for (int i=0; i < mev->size(); i++) {
+        for (unsigned long i=0; i < mev->size(); i++) {
             buffer << (int)(*mev)[i] << ' ';
             if ((int)(*mev)[i] < 16) buffer << ' '; // this line adds a new space in case of (int) < 16 (or (hex) < 10) to ensure equal spacing between elements of messages.
         }
