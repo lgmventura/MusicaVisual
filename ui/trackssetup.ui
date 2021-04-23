@@ -32,7 +32,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="3" column="0">
      <widget class="QScrollArea" name="scrollArea">
       <property name="widgetResizable">
        <bool>true</bool>
@@ -40,9 +40,9 @@
       <widget class="QWidget" name="scrollAreaWidgetContents">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>-362</x>
          <y>0</y>
-         <width>1009</width>
+         <width>999</width>
          <height>1356</height>
         </rect>
        </property>

@@ -19,6 +19,7 @@ SOURCES += main.cpp\
     musiclib/musicdata.cpp \
     ui/about.cpp \
     ui/animationbar.cpp \
+    ui/blocklayersetup.cpp \
     ui/help.cpp \
     ui/mainwindow.cpp \
     ui/playthread.cpp \
@@ -43,6 +44,7 @@ HEADERS  += \
     musiclib/musicdata.h \
     ui/about.h \
     ui/animationbar.h \
+    ui/blocklayersetup.h \
     ui/help.h \
     ui/mainwindow.h \
     ui/playthread.h \
@@ -69,6 +71,7 @@ HEADERS  += \
 FORMS    += \
     ui/about.ui \
     ui/animationbar.ui \
+    ui/blocklayersetup.ui \
     ui/help.ui \
     ui/mainwindow.ui \
     ui/rendersetup.ui \

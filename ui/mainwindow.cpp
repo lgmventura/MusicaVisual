@@ -483,3 +483,9 @@ void MainWindow::on_actionSqueeze_tracks_triggered()
     ui->plainTextEdit->clear();
     ui->plainTextEdit->appendPlainText(QString::fromStdString(midiMessagesSqz));
 }
+
+void MainWindow::on_actionSetup_block_layers_triggered()
+{
+    Bls = new BlockLayerSetup(Mdt, TProp, this);
+    Bls->show();
+}

@@ -2,6 +2,7 @@
 #define TRACKS_H
 
 #include "utils/colour.h"
+#include <string>
 
 class TracksP // ATTENTION: TracksP (class) or tracksproperties (objects) and RenderP (class) and renderproperties (object) have to be of a fixed static size. Otherwise, edit -> save/load settings won't work!
 {
@@ -40,11 +41,23 @@ public:
     short interconnect[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
     int max_connect_dist = 100;
     short colorScheme[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+    int maxBlur = 20;
 
 public: // member functions
     rgb getColour(int track, int pitch);
     int getCv(int a, int b) {return (tColours[a][b]);}
     void setCv(int a, int b, int v) {tColours[a][b] = v;}
+};
+
+class BlockSetupOptions // static
+{
+private:
+    BlockSetupOptions() {}
+
+public:
+    const static std::string ColourSchemes[3];
+    const static std::string Shapes[19];
+    const static std::string Interconnection[2];
 };
 
 #endif // TRACKS_H

@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "ui/trackssetup.h"
+#include "ui/blocklayersetup.h"
 #include "ui/rendersetup.h"
 #include "ui/animationbar.h"
 #include "ui/about.h"
@@ -103,8 +104,11 @@ private slots:
 
     void loadSettings(string filePath);
 
+    void on_actionSetup_block_layers_triggered();
+
 private:
     Ui::MainWindow *ui;
+    BlockLayerSetup *Bls = nullptr;
     TracksWidget *dwidtracks;
     RenderWidget *dwrenderprop = nullptr;
     About *aboutDiag = nullptr;
