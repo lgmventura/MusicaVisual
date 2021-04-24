@@ -21,6 +21,9 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
     //mainWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     mainWidget->setMinimumHeight(rowH*this->Mdt->NTracks);
 
+    // Changing UI elements
+    ui->cb_allTracks->setTristate(true);
+
     // Adding UI elements:
     Cb_trackActive = new std::vector<QCheckBox*>;
     Wid_tColours = new std::vector<ColourWidget*>;
@@ -38,8 +41,8 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
         cb_trackActive->setChecked(TProp->active[iTrack]);
-        QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { on_cb_track_toggled(iTrack); });
-        QObject::connect(this, SIGNAL(on_cb_track_toggled(int)), this, SLOT(on_cb_track_toggledTriggered(int)));
+        QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { trackVisibilityChanged(iTrack); });
+        QObject::connect(this, SIGNAL(changeTrackVisibility(int)), this, SLOT(trackVisibilityChanged(int)));
         Cb_trackActive->push_back(cb_trackActive);
         layout->addWidget(cb_trackActive, iTrack, 0, 1, 1, Qt::AlignLeft);
 
@@ -137,10 +140,32 @@ BlockLayerSetup::~BlockLayerSetup()
     delete ui;
 }
 
-void BlockLayerSetup::on_cb_track_toggledTriggered(int track)
+void BlockLayerSetup::trackVisibilityChanged(int track)
 {
     bool state = Cb_trackActive->at(track)->isChecked();
     this->TProp->active[track] = state;
+
+    // updating checkbox "all tracks" according to how many tracks are visible:
+    unsigned int numVisibleTracks = 0;
+    for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
+    {
+        if (this->TProp->active[iTrack] == true)
+        {
+            numVisibleTracks++;
+        }
+    }
+    if (numVisibleTracks == 0)
+    {
+        ui->cb_allTracks->setCheckState(Qt::CheckState::Unchecked);
+    }
+    else if (numVisibleTracks == this->Mdt->NTracks)
+    {
+        ui->cb_allTracks->setCheckState(Qt::CheckState::Checked);
+    }
+    else
+    {
+        ui->cb_allTracks->setCheckState(Qt::CheckState::PartiallyChecked);
+    }
 }
 
 void BlockLayerSetup::colourChanged(int track)
@@ -176,4 +201,31 @@ void BlockLayerSetup::blurChanged(int track)
 {
     int newBlurValue = Spb_blur->at(track)->value();
     this->TProp->track_blur[track] = newBlurValue;
+}
+
+void BlockLayerSetup::allTracksToggled(bool checked)
+{
+    for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
+    {
+        Cb_trackActive->at(iTrack)->setChecked(checked);
+        emit changeTrackVisibility(iTrack);
+    }
+}
+
+void BlockLayerSetup::on_cb_allTracks_stateChanged(int arg1)
+{
+    bool checked = true;
+    if (arg1 == Qt::CheckState::Unchecked)
+    {
+        checked = false;
+    }
+    else if (arg1 == Qt::CheckState::Checked)
+    {
+        checked = true;
+    }
+    else if (arg1 == Qt::CheckState::PartiallyChecked)
+    {
+        return;
+    }
+    this->allTracksToggled(checked);
 }

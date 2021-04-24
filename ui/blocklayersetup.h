@@ -39,16 +39,20 @@ private:
     std::vector<QComboBox*> *Cmb_interconnect;
     std::vector<QSpinBox*> *Spb_blur;
 
+    void allTracksToggled(bool checked);
+
 private slots:
-    void on_cb_track_toggledTriggered(int track);
+    void trackVisibilityChanged(int track);
     void colourChanged(int track);
     void colourSchemeChanged(int track);
     void shapeChanged(int track);
     void interconnectionsChanged(int track);
     void blurChanged(int track);
 
+    void on_cb_allTracks_stateChanged(int arg1);
+
 signals:
-    void on_cb_track_toggled(int track);
+    void changeTrackVisibility(int track);
     //signal for colour change in the ColourWidget class
     void changeColourScheme(int track);
     void changeShape(int track);
