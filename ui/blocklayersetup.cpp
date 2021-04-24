@@ -1,10 +1,6 @@
 #include "blocklayersetup.h"
 #include "ui_blocklayersetup.h"
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QDial>
-#include <QSpinBox>
 
 BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent) :
     QDockWidget(parent),
@@ -26,8 +22,8 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
     mainWidget->setMinimumHeight(rowH*this->Mdt->NTracks);
 
     // Adding UI elements:
-    std::vector<QCheckBox*> cb_tracksActive;
-    std::vector<QWidget*> wid_tColours;
+    Cb_trackActive = new std::vector<QCheckBox*>;
+    Wid_tColours = new std::vector<QWidget*>;
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
         layout->setRowStretch(iTrack, rowH);
@@ -38,7 +34,13 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
         cb_trackActive->setChecked(TProp->active[iTrack]);
-        cb_tracksActive.push_back(cb_trackActive);
+        //cb_trackActive->connect(cb_trackActive, &QCheckBox::stateChanged, on_cb_track_toggled(iTrack, cb_trackActive->checkState()));
+//        signalMapper = new QSignalMapper(this);
+//        QObject::connect(cb_trackActive, &QCheckBox::toggled, signalMapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
+//        signalMapper->setMapping(cb_trackActive, iTrack);
+        connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { on_cb_track_toggled(iTrack); });
+        QObject::connect(this, SIGNAL(on_cb_track_toggled(int)), this, SLOT(on_cb_track_toggledTriggered(int)));
+        Cb_trackActive->push_back(cb_trackActive);
         layout->addWidget(cb_trackActive, iTrack, 0, 1, 1, Qt::AlignLeft);
 
 
@@ -53,7 +55,7 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
         wid_colour->setAutoFillBackground(true);
         wid_colour->setMinimumHeight(rowH);
         wid_colour->setMinimumWidth(2*rowH);
-        wid_tColours.push_back(wid_colour);
+        Wid_tColours->push_back(wid_colour);
 
         // Add drop down menu for colour scheme:
         QComboBox *cmb_colScheme = new QComboBox(mainWidget);
@@ -116,3 +118,11 @@ BlockLayerSetup::~BlockLayerSetup()
 {
     delete ui;
 }
+
+void BlockLayerSetup::on_cb_track_toggledTriggered(int track)
+{
+    //bool state = static_cast<QCheckBox*>(ui->scrollArea->track,0))->isChecked();// Cb_trackActive->at(track)->isChecked();
+    this->TProp->active[track] = false;
+    //emit on_cb_track_toggled(track);
+}
+

@@ -47,6 +47,8 @@ public: // member functions
     rgb getColour(int track, int pitch);
     int getCv(int a, int b) {return (tColours[a][b]);}
     void setCv(int a, int b, int v) {tColours[a][b] = v;}
+
+    void setActive(int track, bool value) {active[track] = value;}
 };
 
 class BlockSetupOptions // static
