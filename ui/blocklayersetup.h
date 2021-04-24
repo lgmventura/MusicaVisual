@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include <QDial>
 #include <QSpinBox>
+#include <QGridLayout>
 
 #include "visual/tracks.h"
 #include "musicdata.h"
@@ -23,6 +24,10 @@ public:
     explicit BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent = nullptr);
     ~BlockLayerSetup();
 
+    // public functions:
+    void drawUi();
+    void updateUi();
+
 private:
     Ui::BlockLayerSetup *ui;
 
@@ -30,6 +35,9 @@ private:
     MusicData *Mdt;
 
     // layout:
+    int rowH = 35;
+    QWidget *mainWidget;
+    QGridLayout *layout;
 
     // UI elements:
     std::vector<QCheckBox*> *Cb_trackActive;
@@ -39,6 +47,7 @@ private:
     std::vector<QComboBox*> *Cmb_interconnect;
     std::vector<QSpinBox*> *Spb_blur;
 
+    // private functions:
     void allTracksToggled(bool checked);
 
 private slots:

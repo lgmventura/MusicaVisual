@@ -48,7 +48,7 @@ rgb TracksP::getColour(int track, int pitch)
 }
 
 const std::string BlockSetupOptions::ColourSchemes[3] = {
-    "Single",
+    "Single colour",
     "1/12 hue shift per half tone",
     "1/12 hue shift per fifth"};
 const std::string BlockSetupOptions::Shapes[19] = {
@@ -69,10 +69,20 @@ const std::string BlockSetupOptions::Shapes[19] = {
     "Rhombus with height prop to vel",
     "Triangles Nabla with height prop to vel",
     "Triangles Delta with height prop to vel",
-    "Triangles &gt; (fp)",
-    "Triangles &lt; (pf)"
+    "Triangles > (fp)",
+    "Triangles < (pf)"
 };
 const std::string BlockSetupOptions::Interconnection[2] = {
     "No connection",
     "Straight line"
 };
+
+void saveIni(std::string savePath)
+{
+    //TODO
+}
+
+void loadIni(std::string iniPath)
+{
+    //TODO
+}

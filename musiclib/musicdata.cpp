@@ -3,7 +3,8 @@
 // Constructor method:
 MusicData::MusicData()
 {
-
+    // initialising basic stuff that can be used before processing:
+    TrackNames.push_back("Track 1");
 }
 
 
@@ -11,7 +12,7 @@ MusicData::MusicData()
 void MusicData::nameTracksReset()
 {
     this->TrackNames.clear();
-    for (int i = 1; i <= 24; i++)
+    for (int i = 1; i <= 128; i++)
         this->TrackNames.push_back("Track " + std::to_string(i));
 }
 
@@ -25,6 +26,7 @@ void MusicData::processMidiString(string midiMessagesText) // legacy, still usef
 
     this->Notes.clear(); // Clear notes list before adding new elements.
     this->Tempos.clear(); // Clear tempos list before adding new elements.
+    this->NTracks = 1;
     this->PitchMax = 1;
 //    this->PitchMin = 127;
 
@@ -126,7 +128,7 @@ void MusicData::processMidiString(string midiMessagesText) // legacy, still usef
                     std::string straux = messg_str.substr(9);
                     straux.erase(remove_if(straux.begin(), straux.end(), ::isspace), straux.end()); // remove_if is declared in <algorithm>
                     hex2ascii(straux, t_name);
-                    if (track <= 24) // since we have a maximum of 24 tracks
+                    if (track <= 128) // the maximum number of tracks is 128
                     {
                         this->TrackNames.at(track) = t_name; // store the track names when the button Process is pressed.
                     }

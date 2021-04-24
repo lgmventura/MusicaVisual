@@ -11,18 +11,28 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
     Mdt = mdt;
     TProp = tProp;
 
-    // Setting up layout:
-    int rowH = 35;
 
-    QWidget *mainWidget = new QWidget(ui->scrollArea);
-    QGridLayout *layout = new QGridLayout(mainWidget);
+
+    // Changing UI elements
+    ui->cb_allTracks->setTristate(true);
+
+    this->drawUi();
+}
+
+BlockLayerSetup::~BlockLayerSetup()
+{
+    delete ui;
+}
+
+void BlockLayerSetup::drawUi()
+{
+    // Setting up layout:
+    mainWidget = new QWidget(ui->scrollArea);
+    layout = new QGridLayout(mainWidget);
     ui->scrollArea->setWidget(mainWidget);
     mainWidget->setLayout(layout);
     //mainWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     mainWidget->setMinimumHeight(rowH*this->Mdt->NTracks);
-
-    // Changing UI elements
-    ui->cb_allTracks->setTristate(true);
 
     // Adding UI elements:
     Cb_trackActive = new std::vector<QCheckBox*>;
@@ -135,10 +145,20 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
     }
 }
 
-BlockLayerSetup::~BlockLayerSetup()
+void BlockLayerSetup::updateUi() // send a signal to all ui elements for them to update
 {
-    delete ui;
+    for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
+    {
+        emit changeTrackVisibility(iTrack);
+        // ToDo: colour
+        emit changeColourScheme(iTrack);
+        emit changeShape(iTrack);
+        emit changeInterconnections(iTrack);
+        emit changeBlur(iTrack);
+    }
 }
+
+// slots for UI elements:
 
 void BlockLayerSetup::trackVisibilityChanged(int track)
 {

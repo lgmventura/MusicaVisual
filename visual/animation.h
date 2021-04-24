@@ -37,7 +37,7 @@ public:
     int note_names_where = 0;
     int turn_chord_circle = 0;
     bool chord_names = 0;
-    bool chord_analysis[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}; // ToDo: improve this
+    bool chord_analysis[128] = {[0 ... 127] = 1}; // ToDo: improve this
     bool chord_star = 0;
     bool accidentalSharp = 0; // 0 for flat, 1 for sharp
     chord::circle chord_star_type = chord::circleOfSemitones;

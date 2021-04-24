@@ -62,10 +62,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setAcceptDrops(true); // accept file droppings to ease the file opening
     dwidtracks = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
     dwrenderprop = nullptr;
+    Bls = nullptr;
     this->Mdt = new MusicData(); // create object MusicData
     this->VRec = new VideoRecorder(720, 480, 30); // dimensions, fps etc. will be eventually changed later
     this->TProp = new TracksP();
     this->RProp = new RenderP();
+
 }
 
 MainWindow::~MainWindow()
@@ -420,6 +422,12 @@ void MainWindow::loadSettings(string filePath)
         dwrenderprop = new RenderWidget(RProp, this, Mdt, VRec);
         dwrenderprop->show();
     }
+    if (Bls != nullptr)
+    {
+        Bls->close();
+        Bls = new BlockLayerSetup(Mdt, TProp, this);
+        Bls->show();
+    }
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -486,6 +494,10 @@ void MainWindow::on_actionSqueeze_tracks_triggered()
 
 void MainWindow::on_actionSetup_block_layers_triggered()
 {
+    if (Bls != nullptr)
+    {
+        Bls->close();
+    }
     Bls = new BlockLayerSetup(Mdt, TProp, this);
     Bls->show();
 }

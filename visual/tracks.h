@@ -8,7 +8,7 @@ class TracksP // ATTENTION: TracksP (class) or tracksproperties (objects) and Re
 {
 public:
     TracksP();
-    int tColours[24][3]= {
+    int tColours[128][3]= { // pre-initializing the first 24 tracks, idea: use an ini file.
         {60, 60, 240} ,   //1 (index 0)
         {0, 120, 120} ,   //2
         {0, 220, 0},    //3
@@ -25,7 +25,6 @@ public:
         {50, 100, 150}, //14
         {150, 100, 50}, //15
         {100, 200, 100}, //16 (index 15)
-        // new tracks
         {30, 60, 90},
         {60, 30, 90},
         {30, 90, 60},
@@ -35,12 +34,12 @@ public:
         {200, 100, 50},
         {50, 100, 200}
     };
-    bool active[24] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1};
-    short shape[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-    short track_blur[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-    short interconnect[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+    bool active[128] = { [0 ... 127 ] = 1 };
+    short shape[128] = {0};
+    short track_blur[128] = {0};
+    short interconnect[128] = {0};
+    short colorScheme[128] = {0};
     int max_connect_dist = 100;
-    short colorScheme[24] = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
     int maxBlur = 20;
 
 public: // member functions
@@ -49,6 +48,9 @@ public: // member functions
     void setCv(int a, int b, int v) {tColours[a][b] = v;}
 
     void setActive(int track, bool value) {active[track] = value;}
+
+    void saveIni(std::string savePath);
+    void loadIni(std::string iniPath);
 };
 
 class BlockSetupOptions // static
