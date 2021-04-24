@@ -24,6 +24,10 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
     // Adding UI elements:
     Cb_trackActive = new std::vector<QCheckBox*>;
     Wid_tColours = new std::vector<ColourWidget*>;
+    Cmb_colScheme = new std::vector<QComboBox*>;
+    Cmb_shape = new std::vector<QComboBox*>;
+    Cmb_interconnect = new std::vector<QComboBox*>;
+    Spb_blur = new std::vector<QSpinBox*>;
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
         layout->setRowStretch(iTrack, rowH);
@@ -34,7 +38,7 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
         cb_trackActive->setChecked(TProp->active[iTrack]);
-        connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { on_cb_track_toggled(iTrack); });
+        QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { on_cb_track_toggled(iTrack); });
         QObject::connect(this, SIGNAL(on_cb_track_toggled(int)), this, SLOT(on_cb_track_toggledTriggered(int)));
         Cb_trackActive->push_back(cb_trackActive);
         layout->addWidget(cb_trackActive, iTrack, 0, 1, 1, Qt::AlignLeft);
@@ -55,8 +59,7 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
         wid_colour->setMinimumHeight(rowH);
         wid_colour->setMinimumWidth(2*rowH);
         Wid_tColours->push_back(wid_colour);
-        connect(wid_colour, &ColourWidget::colourChanged, [this, iTrack] { colourChanged(iTrack); });
-        //QObject::connect(this, SIGNAL(on_cb_track_toggled(int)), this, SLOT(on_cb_track_toggledTriggered(int)));
+        QObject::connect(wid_colour, &ColourWidget::colourChanged, [this, iTrack] { colourChanged(iTrack); });
 
         // Add drop down menu for colour scheme:
         QComboBox *cmb_colScheme = new QComboBox(mainWidget);
@@ -70,6 +73,10 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
         layout->addWidget(cmb_colScheme, iTrack, 2, 1, 1, Qt::AlignLeft);
         cmb_colScheme->setMinimumWidth(4*rowH);
         cmb_colScheme->setCurrentIndex(TProp->colorScheme[iTrack]);
+        Cmb_colScheme->push_back(cmb_colScheme);
+        QObject::connect(cmb_colScheme, qOverload<int>(&QComboBox::currentIndexChanged), [this, iTrack] { colourSchemeChanged(iTrack); });
+        QObject::connect(this, SIGNAL(changeColourScheme(int)), this, SLOT(colourSchemeChanged(int)));
+
 
         // Add drop down menu for shapes:
         QComboBox *cmb_shape = new QComboBox(mainWidget);
@@ -83,6 +90,9 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
         layout->addWidget(cmb_shape, iTrack, 3, 1, 1, Qt::AlignLeft);
         cmb_shape->setMinimumWidth(4*rowH);
         cmb_shape->setCurrentIndex(TProp->shape[iTrack]);
+        Cmb_shape->push_back(cmb_shape);
+        QObject::connect(cmb_shape, qOverload<int>(&QComboBox::currentIndexChanged), [this, iTrack] { shapeChanged(iTrack); });
+        QObject::connect(this, SIGNAL(changeShape(int)), this, SLOT(shapeChanged(int)));
 
         // Add drop down menu for interconnections:
         QComboBox *cmb_interconnect = new QComboBox(mainWidget);
@@ -96,6 +106,9 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
         layout->addWidget(cmb_interconnect, iTrack, 4, 1, 1, Qt::AlignLeft);
         cmb_interconnect->setMinimumWidth(4*rowH);
         cmb_interconnect->setCurrentIndex(TProp->interconnect[iTrack]);
+        Cmb_interconnect->push_back(cmb_interconnect);
+        QObject::connect(cmb_interconnect, qOverload<int>(&QComboBox::currentIndexChanged), [this, iTrack] { interconnectionsChanged(iTrack); });
+        QObject::connect(this, SIGNAL(changeInterconnections(int)), this, SLOT(interconnectionsChanged(int)));
 
         // Add dial for blur:
         QDial *dial_blur = new QDial(mainWidget);
@@ -108,6 +121,10 @@ BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent
         spb_blur->setMaximum(TProp->maxBlur);
         spb_blur->setValue(TProp->track_blur[iTrack]);
         layout->addWidget(spb_blur, iTrack, 6, 1, 1, Qt::AlignLeft);
+        Spb_blur->push_back(spb_blur);
+        QObject::connect(spb_blur, qOverload<int>(&QSpinBox::valueChanged), [this, iTrack] { blurChanged(iTrack); });
+        QObject::connect(this, SIGNAL(changeBlur(int)), this, SLOT(blurChanged(int)));
+
 
         // Connecting dial to spinbox:
         connect(dial_blur, &QDial::valueChanged, spb_blur, &QSpinBox::setValue);
@@ -135,4 +152,28 @@ void BlockLayerSetup::colourChanged(int track)
     this->TProp->setCv(track, 0, r);
     this->TProp->setCv(track, 1, g);
     this->TProp->setCv(track, 2, b);
+}
+
+void BlockLayerSetup::colourSchemeChanged(int track)
+{
+    int newColScheme = Cmb_colScheme->at(track)->currentIndex();
+    this->TProp->colorScheme[track] = newColScheme;
+}
+
+void BlockLayerSetup::shapeChanged(int track)
+{
+    int newShapeIndex = Cmb_shape->at(track)->currentIndex();
+    this->TProp->shape[track] = newShapeIndex;
+}
+
+void BlockLayerSetup::interconnectionsChanged(int track)
+{
+    int newInterconnIndex = Cmb_interconnect->at(track)->currentIndex();
+    this->TProp->interconnect[track] = newInterconnIndex;
+}
+
+void BlockLayerSetup::blurChanged(int track)
+{
+    int newBlurValue = Spb_blur->at(track)->value();
+    this->TProp->track_blur[track] = newBlurValue;
 }
