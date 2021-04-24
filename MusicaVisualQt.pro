@@ -20,6 +20,7 @@ SOURCES += main.cpp\
     ui/about.cpp \
     ui/animationbar.cpp \
     ui/blocklayersetup.cpp \
+    ui/colourwidget.cpp \
     ui/help.cpp \
     ui/mainwindow.cpp \
     ui/playthread.cpp \
@@ -45,6 +46,7 @@ HEADERS  += \
     ui/about.h \
     ui/animationbar.h \
     ui/blocklayersetup.h \
+    ui/colourwidget.h \
     ui/help.h \
     ui/mainwindow.h \
     ui/playthread.h \

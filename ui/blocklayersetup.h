@@ -10,6 +10,7 @@
 
 #include "visual/tracks.h"
 #include "musicdata.h"
+#include "ui/colourwidget.h"
 
 namespace Ui {
 class BlockLayerSetup;
@@ -35,13 +36,15 @@ private:
 
     // UI elements:
     std::vector<QCheckBox*> *Cb_trackActive;
-    std::vector<QWidget*> *Wid_tColours;
+    std::vector<ColourWidget*> *Wid_tColours;
 
 private slots:
     void on_cb_track_toggledTriggered(int track);
+    void colourChanged(int track);
 
 signals:
     void on_cb_track_toggled(int track);
+    void changeColour(int track);
 };
 
 #endif // BLOCKLAYERSETUP_H
