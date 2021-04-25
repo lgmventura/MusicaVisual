@@ -181,6 +181,7 @@ void MainWindow::on_actionSave_as_triggered()
 
 void MainWindow::on_pb_process_clicked() // Process button
 {
+    // Processing midi data:
     std::stringstream stream;
     string str;
     stream << ui->plainTextEdit->toPlainText().toUtf8().constData(); // Get the entire text from the plain text input box.
@@ -189,6 +190,11 @@ void MainWindow::on_pb_process_clicked() // Process button
     QMessageBox::information(this, tr("Processing completed"), "The midi data in the text input window was successfully completed.", QMessageBox::Ok );
     ui->pb_noteBlocks->setEnabled(true);
     ui->pb_animation->setEnabled(true);
+
+    // Processing chords:
+    chords chords;
+    chords.process_chords(this->Mdt->Notes, true);
+    Mdt->GChords = chords;
 }
 
 
@@ -494,5 +500,6 @@ void MainWindow::on_actionSetup_chord_layers_triggered()
         Cls->close();
     }
     Cls = new ChordLayerSetup(Mdt, ChordL, this);
+    Cls->resize(640, 480);
     Cls->show();
 }

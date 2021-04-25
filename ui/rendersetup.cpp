@@ -50,8 +50,6 @@ RenderWidget::RenderWidget(RenderP *rProp, QWidget *parent, MusicData *mdt, Vide
     {
         ui->cmb_videoCodec->setEnabled(false); // no valid video object (will crash if accessed)
     }
-    if (mdt == nullptr)
-        ui->pb_procChordNames->setEnabled(false); // no valid object (will crash if clicked)
     // Tab 0: vertical range/shift
     ui->spinBox_3->setValue(RProp->vertRange);
     ui->spinBox_4->setValue(RProp->vertShift);
@@ -278,20 +276,6 @@ void RenderWidget::on_sb_vLineTrack_valueChanged(int arg1)
 void RenderWidget::on_cb_dispChordNames_toggled(bool checked)
 {
     RProp->chord_names = checked;
-}
-
-void RenderWidget::on_pb_procChordNames_clicked()
-{
-    chords chords;
-    chords.process_chords(this->Mdt->Notes, true);
-    Mdt->GChords = chords;
-}
-
-void RenderWidget::on_lineEdit_excludeTracks_textEdited(const QString &arg1) // ToDo. Regex?
-{
-//    std::string str = arg1.toStdString();
-
-//    RProp->chord_analysis;
 }
 
 void RenderWidget::on_cb_dispNoteNames_toggled(bool checked)

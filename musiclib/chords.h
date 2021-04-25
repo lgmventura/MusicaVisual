@@ -94,7 +94,7 @@ public:
     // methods:
     void insertPitch(pitch pitch);
     std::set<pitch> getPitches();
-    std::string getPitchesStr(bool accidentalSharp = false);
+    std::string getPitchesStr(bool accidentalSharp = false, bool *tracks = new bool[128], bool includeUnsetTracks = true);
     std::string getName();
     std::set<float> getAnglesDeg(circle type, bool *tracks, bool includeUnsetTracks = true); // for visual representation of chords
 

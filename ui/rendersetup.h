@@ -97,10 +97,6 @@ private slots:
 
     void on_cb_dispChordNames_toggled(bool checked);
 
-    void on_pb_procChordNames_clicked();
-
-    void on_lineEdit_excludeTracks_textEdited(const QString &arg1);
-
     void on_cb_dispNoteNames_toggled(bool checked);
 
     void on_cb_dispChordStar_toggled(bool checked);

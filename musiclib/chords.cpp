@@ -88,16 +88,26 @@ std::set<pitch> chord::getPitches()
 {
     return chord::Pitches;
 }
-std::string chord::getPitchesStr(bool accidentalSharp)
+std::string chord::getPitchesStr(bool accidentalSharp, bool *tracks, bool includeUnsetTracks)
 {
     std::string pitchesStr = "Pitches:";
     for (std::set<pitch>::iterator pt = chord::Pitches.begin(); pt!=chord::Pitches.end(); ++pt)
     {
         pitch p = *pt;
-        if (accidentalSharp)
-            pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::sharp);
-        else
-            pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::flat);
+        if (p.getMidiTrack() == -1 && includeUnsetTracks == true)
+        {
+            if (accidentalSharp)
+                pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::sharp);
+            else
+                pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::flat);
+        }
+        else if (tracks[p.getMidiTrack()] == true)
+        {
+            if (accidentalSharp)
+                pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::sharp);
+            else
+                pitchesStr = pitchesStr + " " + p.getLetterNameWithOctave(pitch::flat);
+        }
     }
     return pitchesStr;
 }

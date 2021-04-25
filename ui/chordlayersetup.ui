@@ -21,7 +21,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox">
+         <widget class="QCheckBox" name="cb_allTracksChordStars">
           <property name="text">
            <string>All tracks</string>
           </property>

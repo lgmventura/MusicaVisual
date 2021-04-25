@@ -1057,7 +1057,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end())
             {
                 std::string ptStr = "Pitches:";
-                ptStr = chordWT.Chord.getPitchesStr(rProp.accidentalSharp);
+                ptStr = chordWT.Chord.getPitchesStr(rProp.accidentalSharp, chordL.ChordStarTrack);
                 cv::putText(image,
                         ptStr,//"Here is some text",
                         cv::Point(10,30), // Coordinates

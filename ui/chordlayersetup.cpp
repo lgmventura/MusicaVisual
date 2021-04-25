@@ -57,4 +57,53 @@ void ChordLayerSetup::chordStarTrackActiveChanged(int track)
 {
     bool state = Cb_trackActiveChordStars->at(track)->isChecked();
     this->ChordL->ChordStarTrack[track] = state;
+
+    // updating checkbox "all tracks" according to how many tracks are visible:
+    unsigned int numVisibleTracks = 0;
+    for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
+    {
+        if (this->ChordL->ChordStarTrack[iTrack] == true)
+        {
+            numVisibleTracks++;
+        }
+    }
+    if (numVisibleTracks == 0)
+    {
+        ui->cb_allTracksChordStars->setCheckState(Qt::CheckState::Unchecked);
+    }
+    else if (numVisibleTracks == this->Mdt->NTracks)
+    {
+        ui->cb_allTracksChordStars->setCheckState(Qt::CheckState::Checked);
+    }
+    else
+    {
+        ui->cb_allTracksChordStars->setCheckState(Qt::CheckState::PartiallyChecked);
+    }
+}
+
+void ChordLayerSetup::allTracksToggledChordStars(bool checked)
+{
+    for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
+    {
+        Cb_trackActiveChordStars->at(iTrack)->setChecked(checked);
+        emit changeChordStarTrackActive(iTrack);
+    }
+}
+
+void ChordLayerSetup::on_cb_allTracksChordStars_stateChanged(int arg1)
+{
+    bool checked = true;
+    if (arg1 == Qt::CheckState::Unchecked)
+    {
+        checked = false;
+    }
+    else if (arg1 == Qt::CheckState::Checked)
+    {
+        checked = true;
+    }
+    else if (arg1 == Qt::CheckState::PartiallyChecked)
+    {
+        return;
+    }
+    this->allTracksToggledChordStars(checked);
 }

@@ -39,10 +39,13 @@ private:
     // functions:
     void drawUI();
     void drawTabChordStars();
+    void allTracksToggledChordStars(bool checked);
     // other tabs to be implemented
 
 private slots:
     void chordStarTrackActiveChanged(int track);
+
+    void on_cb_allTracksChordStars_stateChanged(int arg1);
 
 signals:
     void changeChordStarTrackActive(int track);
