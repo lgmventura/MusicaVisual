@@ -27,7 +27,7 @@ void AnimPainter::note_blocks_paint(cv::Mat image, MusicData mdt, char* window_n
     }
 }
 
-void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height, TracksP tProp, RenderP rProp, VideoRecorder *vRec) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
+void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height, TracksP tProp, ChordLayers chordL, RenderP rProp, VideoRecorder *vRec) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
 {
     int zoom = endMidiTime - startMidiTime;
     int curr_pos_middle = (startMidiTime + (zoom)/2);
@@ -1097,7 +1097,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
                     dispChordDisc(type, image, centre, diam, true, rProp.turn_chord_circle, rProp.accidentalSharp);
                 }
                 chord currChord = chordWT.Chord;
-                renderChordStar(currChord, type, image, centre, diam, rProp.turn_chord_circle);
+                renderChordStar(currChord, type, image, centre, diam, chordL.ChordStarTrack, rProp.turn_chord_circle);
             }
 
         }

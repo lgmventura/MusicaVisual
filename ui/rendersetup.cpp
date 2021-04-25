@@ -283,7 +283,7 @@ void RenderWidget::on_cb_dispChordNames_toggled(bool checked)
 void RenderWidget::on_pb_procChordNames_clicked()
 {
     chords chords;
-    chords.process_chords(this->Mdt->Notes, RProp->chord_analysis);
+    chords.process_chords(this->Mdt->Notes, true);
     Mdt->GChords = chords;
 }
 

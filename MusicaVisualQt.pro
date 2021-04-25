@@ -26,6 +26,7 @@ SOURCES += main.cpp\
     ui/playthread.cpp \
     ui/rendersetup.cpp \
     ui/trackssetup.cpp \
+    ui/chordlayersetup.cpp \
     utils/cnum.cpp \
     csappmidi/src-library/MidiFile.cpp \
     csappmidi/src-library/MidiEvent.cpp \
@@ -34,6 +35,7 @@ SOURCES += main.cpp\
     csappmidi/src-library/Binasc.cpp \
     utils/colour.cpp \
     visual/animation.cpp \
+    visual/chordlayers.cpp \
     visual/renderChordStar.cpp \
     visual/tracks.cpp \
     visual/videorecorder.cpp
@@ -52,6 +54,7 @@ HEADERS  += \
     ui/playthread.h \
     ui/rendersetup.h \
     ui/trackssetup.h \
+    ui/chordlayersetup.h \
     utils/cnum.h \
     csappmidi/include/MidiFile.h \
     csappmidi/include/MidiEventList.h \
@@ -66,6 +69,7 @@ HEADERS  += \
     csappmidi/include/Options.h \
     utils/colour.h \
     visual/animation.h \
+    visual/chordlayers.h \
     visual/renderChordStar.h \
     visual/tracks.h \
     visual/videorecorder.h
@@ -77,7 +81,8 @@ FORMS    += \
     ui/help.ui \
     ui/mainwindow.ui \
     ui/rendersetup.ui \
-    ui/trackssetup.ui
+    ui/trackssetup.ui \
+    ui/chordlayersetup.ui
 
 
 INCLUDEPATH += .

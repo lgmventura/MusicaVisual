@@ -55,6 +55,7 @@ private:
     std::string SolfeggioFlat; // Do to Si
     std::string SolfeggioSharp;
 
+    int MidiTrack = -1; // if not set or not relevant, the default value is -1
 
 // get methods:
 public:
@@ -62,7 +63,10 @@ public:
     int getDistanceFromLastC();
     std::string getLetterName(Accidental type);
     std::string getLetterNameWithOctave(Accidental type);
+    int getMidiTrack();
+
 // set methods:
+    void setTrack(int track);
 
 // other:
     bool isValidPitch();
@@ -92,7 +96,7 @@ public:
     std::set<pitch> getPitches();
     std::string getPitchesStr(bool accidentalSharp = false);
     std::string getName();
-    std::set<float> getAnglesDeg(circle type); // for visual representation of chords
+    std::set<float> getAnglesDeg(circle type, bool *tracks, bool includeUnsetTracks = true); // for visual representation of chords
 
 private:
     void calculateName();
@@ -119,7 +123,7 @@ public:
 
     // Methods
     //int process_chords(std::list <MidiNote> notes, std::list<int> tracks);
-    int process_chords(std::list <MidiNote> notes, bool* tracks);
+    int process_chords(std::list <MidiNote> notes, bool includeTrackInfo);
 };
 
 #endif // CHORDNAMES_H

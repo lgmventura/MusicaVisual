@@ -62,7 +62,7 @@ AnimationBar::AnimationBar(QWidget *parent) :
     // This original contructor is currently not used nor called. Use the below!
 }
 
-AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, TracksP *tProp, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec):
+AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, TracksP *tProp, ChordLayers *chordL, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec):
     QWidget(parent),
     ui(new Ui::AnimationBar)
 {
@@ -76,6 +76,7 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     this->fps = fps;
     this->RProp = rProp;
     this->TProp = tProp;
+    this->ChordL = chordL;
     this->APainter = aPainter;
     this->AState = aState;
     this->VRec = vRec;
@@ -96,6 +97,8 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
 
     playThread = new PlayThread(this, fps);
     connect(playThread, SIGNAL(NumberChanged(int)), this, SLOT(onNumberChanged(int)));
+
+    //DrawBlThread = new DrawBlocksThread(mdt, image, img_buffer_sep_tracks, window_width, window_height, fps, RProp, TProp, APainter, AState, VRec);
 }
 
 AnimationBar::~AnimationBar()
@@ -114,7 +117,7 @@ void AnimationBar::on_horizontalSlider_valueChanged(int value)
 {
     AState->setZoom(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    APainter->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *RProp, VRec);
+    APainter->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *ChordL, *RProp, VRec);
     cv::imshow(winName, *image);
 
     if (RProp->extra_time[0] == 1)
@@ -132,7 +135,7 @@ void AnimationBar::on_horizontalSlider_2_valueChanged(int value)
 {
     AState->setXpos(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    APainter->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *RProp, VRec);
+    APainter->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *ChordL, *RProp, VRec);
     cv::imshow(winName, *image);
 }
 
@@ -151,6 +154,7 @@ void AnimationBar::onNumberChanged(int num)
     ui->spinBox_2->setValue(AState->CurrentTime);// + 1);
     if (ui->spinBox_2->value() == Mdt->TotalTime)
         playThread->stop = true;
+    playThread->wait(1); // wait with timeout for the next frame to respond
 }
 
 void AnimationBar::on_pushButton_2_clicked()

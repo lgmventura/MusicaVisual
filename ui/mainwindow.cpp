@@ -60,12 +60,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     //TracksP tracksproperties;
     setAcceptDrops(true); // accept file droppings to ease the file opening
-    dwidtracks = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
-    dwrenderprop = nullptr;
-    Bls = nullptr;
+    this->dwrenderprop = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
+    this->Bls = nullptr;
+    this->Cls = nullptr;
     this->Mdt = new MusicData(); // create object MusicData
     this->VRec = new VideoRecorder(720, 480, 30); // dimensions, fps etc. will be eventually changed later
     this->TProp = new TracksP();
+    this->ChordL = new ChordLayers();
     this->RProp = new RenderP();
 
 }
@@ -177,16 +178,6 @@ void MainWindow::on_actionSave_as_triggered()
     }
 }
 
-void MainWindow::on_actionTracks_triggered() // open dockwidgettracks.
-{
-    if (Mdt->TrackNames.size() < 24)
-        Mdt->nameTracksReset();
-    dwidtracks = new TracksWidget(TProp, this, Mdt);
-    dwidtracks->show();
-    dwidtracks->resize(300,600);
-    dwidtracks->pos();
-    dwidtracks->repaint();
-}
 
 void MainWindow::on_pb_process_clicked() // Process button
 {
@@ -246,7 +237,7 @@ void MainWindow::on_pb_animation_clicked()
     }
 
     cv::namedWindow("Animation");
-    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, TProp, APainter, AState, VRec);
+    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, TProp, ChordL, APainter, AState, VRec);
     AnimBar->show();
 
     APainter = new AnimPainter();
@@ -410,12 +401,6 @@ void MainWindow::loadSettings(string filePath)
         QMessageBox::critical(this, tr("Cannot load settings"), msg, QMessageBox::Ok );
     }
     input_file.close();
-    if (dwidtracks != nullptr)
-    {
-        dwidtracks->close();
-        dwidtracks = new TracksWidget(TProp, this, Mdt);
-        dwidtracks->show();
-    }
     if (dwrenderprop != nullptr)
     {
         dwrenderprop->close();
@@ -500,4 +485,14 @@ void MainWindow::on_actionSetup_block_layers_triggered()
     }
     Bls = new BlockLayerSetup(Mdt, TProp, this);
     Bls->show();
+}
+
+void MainWindow::on_actionSetup_chord_layers_triggered()
+{
+    if (Cls != nullptr)
+    {
+        Cls->close();
+    }
+    Cls = new ChordLayerSetup(Mdt, ChordL, this);
+    Cls->show();
 }

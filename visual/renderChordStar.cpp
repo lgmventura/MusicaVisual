@@ -1,8 +1,8 @@
 #include "renderChordStar.h"
 
-void renderChordStar(chord chord, chord::circle type, cv::Mat mat, cv::Point centre, int diameter, int turn) // no need to pass by reference or return mat, since cv::Mat is already a reference
+void renderChordStar(chord chord, chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool *tracks, int turn) // no need to pass by reference or return mat, since cv::Mat is already a reference
 {
-    std::set<float> angles = chord.getAnglesDeg(type);
+    std::set<float> angles = chord.getAnglesDeg(type, tracks);
 
     for (std::set<float>::iterator ptr = angles.begin(); ptr != angles.end(); ++ptr)
     {

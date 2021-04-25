@@ -29,6 +29,7 @@
 
 #include "ui/trackssetup.h"
 #include "ui/blocklayersetup.h"
+#include "ui/chordlayersetup.h"
 #include "ui/rendersetup.h"
 #include "ui/animationbar.h"
 #include "ui/about.h"
@@ -76,8 +77,6 @@ private slots:
 
     void on_actionSave_as_triggered();
 
-    void on_actionTracks_triggered();
-
     void on_actionRendering_Properties_triggered();
 
     void on_toolButton_clicked();
@@ -106,16 +105,19 @@ private slots:
 
     void on_actionSetup_block_layers_triggered();
 
+    void on_actionSetup_chord_layers_triggered();
+
 private:
     Ui::MainWindow *ui;
     BlockLayerSetup *Bls = nullptr;
-    TracksWidget *dwidtracks;
+    ChordLayerSetup *Cls = nullptr;
     RenderWidget *dwrenderprop = nullptr;
     About *aboutDiag = nullptr;
     Help *helpDiag_1 = nullptr;
     MusicData *Mdt = nullptr;
     VideoRecorder *VRec = nullptr;
     TracksP *TProp;
+    ChordLayers *ChordL;
     RenderP *RProp;
     AnimState *AState;
     AnimPainter *APainter;

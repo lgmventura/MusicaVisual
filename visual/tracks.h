@@ -39,7 +39,7 @@ public:
     short track_blur[128] = {0};
     short interconnect[128] = {0};
     short colorScheme[128] = {0};
-    int max_connect_dist = 100;
+    int max_connect_dist = 100; // toDo: transfer this to rendersetup and give the user the possibility of editing it there
     int maxBlur = 20;
 
 public: // member functions

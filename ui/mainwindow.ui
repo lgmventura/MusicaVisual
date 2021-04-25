@@ -192,6 +192,7 @@
      <string>Edit</string>
     </property>
     <addaction name="actionSetup_block_layers"/>
+    <addaction name="actionSetup_chord_layers"/>
     <addaction name="actionRendering_Properties"/>
     <addaction name="separator"/>
     <addaction name="actionSave_settings_as"/>
@@ -287,6 +288,11 @@
   <action name="actionSetup_block_layers">
    <property name="text">
     <string>Setup block layers...</string>
+   </property>
+  </action>
+  <action name="actionSetup_chord_layers">
+   <property name="text">
+    <string>Setup chord layers…</string>
    </property>
   </action>
  </widget>

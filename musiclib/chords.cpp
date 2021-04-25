@@ -64,6 +64,14 @@ std::string pitch::getLetterNameWithOctave(Accidental type)
         return pitch::LetterSharp + "-" + std::to_string(pitch::getOctave());
     }
 }
+int pitch::getMidiTrack()
+{
+    return this->MidiTrack;
+}
+void pitch::setTrack(int track)
+{
+    this->MidiTrack = track;
+}
 
 
 // Chord:
@@ -101,7 +109,7 @@ void chord::calculateName() // here it's where "the stick sings" - we have to us
 {
 
 }
-std::set<float> chord::getAnglesDeg(circle type) // idea: implement other temperaments
+std::set<float> chord::getAnglesDeg(circle type, bool *tracks, bool includeUnsetTracks) // idea: implement other temperaments
 {
     std::set<float> angles;
     if (type == circle::circleOfSemitones)
@@ -109,8 +117,16 @@ std::set<float> chord::getAnglesDeg(circle type) // idea: implement other temper
         for (std::set<pitch>::iterator pt = chord::Pitches.begin(); pt != chord::Pitches.end(); ++pt)
         {
             pitch p = *pt;
-            float angle = p.getDistanceFromLastC()*360.0/12.0;
-            angles.insert(angle);
+            if (p.getMidiTrack() == -1 && includeUnsetTracks == true)
+            {
+                float angle = p.getDistanceFromLastC()*360.0/12.0;
+                angles.insert(angle);
+            }
+            else if (tracks[p.getMidiTrack()] == true)
+            {
+                float angle = p.getDistanceFromLastC()*360.0/12.0;
+                angles.insert(angle);
+            }
         }
     }
     else if (type == circle::circleOfFifths)
@@ -118,8 +134,16 @@ std::set<float> chord::getAnglesDeg(circle type) // idea: implement other temper
         for (std::set<pitch>::iterator pt = chord::Pitches.begin(); pt != chord::Pitches.end(); ++pt)
         {
             pitch p = *pt;
-            float angle = fmod(p.getDistanceFromLastC()*7*360.0/12.0, 360.0); // fmod = modulus with floats
-            angles.insert(angle);
+            if (p.getMidiTrack() == -1 && includeUnsetTracks == true)
+            {
+                float angle = fmod(p.getDistanceFromLastC()*7*360.0/12.0, 360.0); // fmod = modulus with floats
+                angles.insert(angle);
+            }
+            else if (tracks[p.getMidiTrack()] == true)
+            {
+                float angle = fmod(p.getDistanceFromLastC()*7*360.0/12.0, 360.0); // fmod = modulus with floats
+                angles.insert(angle);
+            }
         }
     }
     return angles;
@@ -138,14 +162,14 @@ chords::chords() // nothing in the contructor
 
 }
 
-int chords::process_chords(std::list <MidiNote> notes, bool* tracks) // basically the main loop, but only to run python and get the list of chords
+int chords::process_chords(std::list <MidiNote> notes, bool includeTrackInfo = true) // basically the main loop, but only to run python and get the list of chords
 {
     for (std::list<MidiNote>::iterator it=notes.begin() ; it != notes.end(); ++it) // Run the list forwards
     {
         //bool in_track = (std::find(tracks.begin(), tracks.end(), (*it).track) != tracks.end()); // check if note is in the list of tracks to be considered
         //if ((*it).is_note == 1 && in_track )// && startMidiTime -50 < (*it).t_off && endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
         //std::vector<bool> vtracks; vtracks.reserve(tracks.size()); vtracks.insert(vtracks.end(), tracks.begin(), tracks.end());
-        if ((*it).is_note == 1 && tracks[(*it).track] == true)
+        if ((*it).is_note == 1)
         {
             chords::Start_end_times.insert((*it).t_on); // every time a note begins, we have a new chord
             chords::Start_end_times.insert((*it).t_off);
@@ -165,12 +189,16 @@ int chords::process_chords(std::list <MidiNote> notes, bool* tracks) // basicall
             //bool in_track = (std::find(tracks.begin(), tracks.end(), (*it).track) != tracks.end()); // check if note is in the list of tracks to be considered
             //if ((*it).is_note == 1 && in_track )// && startMidiTime -50 < (*it).t_off && endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
             //std::vector<bool> vtracks; vtracks.reserve(tracks.size()); vtracks.insert(vtracks.end(), tracks.begin(), tracks.end());
-            if ((*it).is_note == 1 && tracks[(*it).track] == true)
+            if ((*it).is_note == 1)
             {
                 if ((*it).t_on <= *start_end_time && (*it).t_off > *start_end_time) // check if the current note pointed by it is in the chord
                 {
                     //current_chord.insertPitch((*it).pitch); // insert pitch in the current chord
                     pitch p = pitch((*it).pitch);
+                    if (includeTrackInfo == true)
+                    {
+                        p.setTrack((*it).track);
+                    }
                     current_chord.Chord.insertPitch(p);
                     current_chord.Start_time = *(1+start_end_time); // actually it corresponds to the next start_end_time, so summing 1 to the pointer
                 }

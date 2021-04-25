@@ -8,6 +8,7 @@
 
 //Include project files
 #include "tracks.h"
+#include "chordlayers.h"
 #include "videorecorder.h"
 #include "musicdata.h"
 #include "chords.h"
@@ -37,7 +38,6 @@ public:
     int note_names_where = 0;
     int turn_chord_circle = 0;
     bool chord_names = 0;
-    bool chord_analysis[128] = {[0 ... 127] = 1}; // ToDo: improve this
     bool chord_star = 0;
     bool accidentalSharp = 0; // 0 for flat, 1 for sharp
     chord::circle chord_star_type = chord::circleOfSemitones;
@@ -68,7 +68,7 @@ public:
     int win_width;
     int win_height;
     void note_blocks_paint( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
-    void blocks_paint(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, TracksP, RenderP, VideoRecorder*);
+    void blocks_paint(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, TracksP, ChordLayers chordL, RenderP, VideoRecorder*);
 };
 
 #endif // ANIMATION_H

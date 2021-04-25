@@ -21,7 +21,6 @@
  */
 
 #include "playthread.h"
-#include <QtCore>
 
 #include <iostream>
 
@@ -54,6 +53,6 @@ void PlayThread::run()
 
         this->msleep(1000/fps);
 
-        this->wait();
+        //this->wait();
     }
 }
