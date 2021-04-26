@@ -67,8 +67,10 @@ public:
     int xpos;
     int win_width;
     int win_height;
-    void note_blocks_paint( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
-    void blocks_paint(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, TracksP, ChordLayers chordL, RenderP, VideoRecorder*);
+    void paintBlocksNoShading( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
+    void paintBlocks(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, TracksP, RenderP);
+    void paintChords(MusicData mdt, cv::Mat, int, int, int, int, ChordLayers chordL, RenderP rProp);
+    void appendFrame(cv::Mat image, VideoRecorder* vRec);
 };
 
 #endif // ANIMATION_H

@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="3">
-    <widget class="QSlider" name="horizontalSlider">
+    <widget class="QSlider" name="hSlider_zoom">
      <property name="maximum">
       <number>40000</number>
      </property>
@@ -25,28 +25,28 @@
     </widget>
    </item>
    <item row="0" column="4">
-    <widget class="QSpinBox" name="spinBox">
+    <widget class="QSpinBox" name="spb_zoom">
      <property name="maximum">
       <number>40000</number>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="pb_play">
      <property name="text">
       <string>&gt;</string>
      </property>
     </widget>
    </item>
    <item row="1" column="2">
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="pb_pause">
      <property name="text">
       <string>II</string>
      </property>
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QSlider" name="horizontalSlider_2">
+    <widget class="QSlider" name="hSlider_playback">
      <property name="maximum">
       <number>40000</number>
      </property>
@@ -56,14 +56,14 @@
     </widget>
    </item>
    <item row="1" column="4">
-    <widget class="QSpinBox" name="spinBox_2">
+    <widget class="QSpinBox" name="spb_playback">
      <property name="maximum">
       <number>40000</number>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="pb_rewind">
      <property name="text">
       <string>&lt;&lt;</string>
      </property>
@@ -77,7 +77,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="pb_recVideo">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -110,9 +110,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>horizontalSlider</sender>
+   <sender>hSlider_zoom</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>spinBox</receiver>
+   <receiver>spb_zoom</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -126,9 +126,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>spinBox</sender>
+   <sender>spb_zoom</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider</receiver>
+   <receiver>hSlider_zoom</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -142,9 +142,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>horizontalSlider_2</sender>
+   <sender>hSlider_playback</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>spinBox_2</receiver>
+   <receiver>spb_playback</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -158,9 +158,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>spinBox_2</sender>
+   <sender>spb_playback</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_2</receiver>
+   <receiver>hSlider_playback</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">

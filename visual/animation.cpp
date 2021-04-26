@@ -6,7 +6,7 @@ RenderP::RenderP()
 }
 
 
-void AnimPainter::note_blocks_paint(cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height)
+void AnimPainter::paintBlocksNoShading(cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height)
 {
     cv::Point pt1, pt2;
     double x1, x2, y1, y2;
@@ -27,7 +27,7 @@ void AnimPainter::note_blocks_paint(cv::Mat image, MusicData mdt, char* window_n
     }
 }
 
-void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height, TracksP tProp, ChordLayers chordL, RenderP rProp, VideoRecorder *vRec) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
+void AnimPainter::paintBlocks(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height, TracksP tProp, RenderP rProp) // this function is called for every frame. startMidiTime is the time in the left side of the window, endMidiTime, at the right. These depend on playback position and zoom.
 {
     int zoom = endMidiTime - startMidiTime;
     int curr_pos_middle = (startMidiTime + (zoom)/2);
@@ -1043,7 +1043,38 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
         }
     }
 
+    // =========== Including separate layers ==========
+    if (rProp.sep_render[0])
+    {
+        if (rProp.blur_size[0] > 0 && rProp.blur_size[1] > 0)
+            cv::boxFilter(img_playing_notes, img_playing_notes, -1, cv::Size(rProp.blur_size[0], rProp.blur_size[1]));
+        image = image + img_playing_notes;
+    }
+    if (rProp.sep_render[1])
+    {
+        for (int j = 0; j < (mdt.NTracks); j++)
+        {
+            if (tProp.track_blur[j] > 0)
+                cv::boxFilter(img_buffer_sep_tracks[j], img_buffer_sep_tracks[j], -1, cv::Size(tProp.track_blur[j], tProp.track_blur[j]));
+            image = image + img_buffer_sep_tracks[j];
+            img_buffer_sep_tracks[j] = cv::Mat::zeros(window_height, window_width, CV_8UC3);
+            //cv::add(image, img_buffer_sep_tracks[j], image); // this should do the same job as image = image + img_buffer_sep_tracks[j];
 
+        }
+    }
+    //img_buffer_sep_tracks.clear();
+    if (rProp.sep_render[2])
+    {
+        if (rProp.blur_size_movnotes[0] > 0 && rProp.blur_size_movnotes[1] > 0)
+            cv::boxFilter(img_moving_notes, img_moving_notes, -1, cv::Size(rProp.blur_size_movnotes[0], rProp.blur_size_movnotes[1]));
+        image = image + img_moving_notes;
+    }
+}
+
+void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, int endMidiTime, int window_width, int window_height, ChordLayers chordL, RenderP rProp)
+{
+    int zoom = endMidiTime - startMidiTime;
+    int curr_pos_middle = (startMidiTime + (zoom)/2);
 
     // ============ Displaying note names ==============
     if (rProp.note_names && rProp.note_names_where == 0) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
@@ -1103,34 +1134,11 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
         }
 
     }
+}
 
-    // =========== Including separate layers ==========
-    if (rProp.sep_render[0])
-    {
-        if (rProp.blur_size[0] > 0 && rProp.blur_size[1] > 0)
-            cv::boxFilter(img_playing_notes, img_playing_notes, -1, cv::Size(rProp.blur_size[0], rProp.blur_size[1]));
-        image = image + img_playing_notes;
-    }
-    if (rProp.sep_render[1])
-    {
-        for (int j = 0; j < (mdt.NTracks); j++)
-        {
-            if (tProp.track_blur[j] > 0)
-                cv::boxFilter(img_buffer_sep_tracks[j], img_buffer_sep_tracks[j], -1, cv::Size(tProp.track_blur[j], tProp.track_blur[j]));
-            image = image + img_buffer_sep_tracks[j];
-            img_buffer_sep_tracks[j] = cv::Mat::zeros(window_height, window_width, CV_8UC3);
-            //cv::add(image, img_buffer_sep_tracks[j], image); // this should do the same job as image = image + img_buffer_sep_tracks[j];
-
-        }
-    }
-    //img_buffer_sep_tracks.clear();
-    if (rProp.sep_render[2])
-    {
-        if (rProp.blur_size_movnotes[0] > 0 && rProp.blur_size_movnotes[1] > 0)
-            cv::boxFilter(img_moving_notes, img_moving_notes, -1, cv::Size(rProp.blur_size_movnotes[0], rProp.blur_size_movnotes[1]));
-        image = image + img_moving_notes;
-    }
-    if (vRec->RecordVideo == 1 && vRec != nullptr)
+void AnimPainter::appendFrame(cv::Mat image, VideoRecorder *vRec)
+{
+    if (vRec != nullptr)
     {
         vRec->writeFrame(image);
     }

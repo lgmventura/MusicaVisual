@@ -69,19 +69,19 @@ public:
     ~AnimationBar();
 
 private slots:
-    void on_horizontalSlider_2_valueChanged(int value);
+    void on_hSlider_playback_valueChanged(int value);
 
-    void on_horizontalSlider_valueChanged(int value);
+    void on_hSlider_zoom_valueChanged(int value);
 
-    void on_pushButton_2_clicked();
+    void on_pb_play_clicked();
 
-    void on_pushButton_3_clicked();
+    void on_pb_pause_clicked();
 
-    void on_pushButton_clicked();
+    void on_pb_rewind_clicked();
 
 //    void on_pushButton_4_clicked();
 
-    void on_pushButton_4_toggled(bool checked);
+    void on_pb_recVideo_toggled(bool checked);
 
 public slots:
     void onNumberChanged(int num);

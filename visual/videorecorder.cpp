@@ -22,6 +22,14 @@ void VideoRecorder::createVideoWriter()
 
 void VideoRecorder::writeFrame(cv::Mat frame)
 {
+    if (this->RecordVideo == true)
+    {
+        this->Video.write(frame);
+    }
+}
+
+void VideoRecorder::writeFrameBypassCheck(cv::Mat frame)
+{
     this->Video.write(frame);
 }
 

@@ -80,18 +80,18 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     this->APainter = aPainter;
     this->AState = aState;
     this->VRec = vRec;
-    ui->horizontalSlider->setMaximum(mdt->TotalTime);
-    ui->horizontalSlider_2->setMaximum(mdt->TotalTime);
-    ui->spinBox->setMaximum(mdt->TotalTime);
-    ui->spinBox_2->setMaximum(mdt->TotalTime);
+    ui->hSlider_zoom->setMaximum(mdt->TotalTime);
+    ui->hSlider_playback->setMaximum(mdt->TotalTime);
+    ui->spb_zoom->setMaximum(mdt->TotalTime);
+    ui->spb_playback->setMaximum(mdt->TotalTime);
 
-    ui->spinBox->setMinimum(mdt->Tpq);
-    ui->horizontalSlider->setMinimum(mdt->Tpq);
+    ui->spb_zoom->setMinimum(mdt->Tpq);
+    ui->hSlider_zoom->setMinimum(mdt->Tpq);
 
-    ui->spinBox->setValue(64*mdt->Tpq);
-    ui->horizontalSlider->setValue(64*mdt->Tpq);
-    ui->spinBox_2->setValue(0);
-    ui->horizontalSlider_2->setValue(0);
+    ui->spb_zoom->setValue(64*mdt->Tpq);
+    ui->hSlider_zoom->setValue(64*mdt->Tpq);
+    ui->spb_playback->setValue(0);
+    ui->hSlider_playback->setValue(0);
 
     ui->label_2->setText(QString::fromStdString(vRec->CodecFourCC));
 
@@ -113,29 +113,34 @@ AnimationBar::~AnimationBar()
 }
 
 
-void AnimationBar::on_horizontalSlider_valueChanged(int value)
+void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 {
     AState->setZoom(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    APainter->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *ChordL, *RProp, VRec);
+    // obs.: image is passed per value, but in OpenCV, this value is actually a pointer to the actual data (matrix), so the function does modify the data!
+    APainter->paintBlocks(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *RProp);
+    APainter->paintChords(*Mdt, *image, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *ChordL, *RProp);
+    APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);
 
     if (RProp->extra_time[0] == 1)
     {
-        ui->horizontalSlider_2->setMinimum(-value/2);
-        ui->spinBox_2->setMinimum(-value/2);
+        ui->hSlider_playback->setMinimum(-value/2);
+        ui->spb_playback->setMinimum(-value/2);
     }
     if (RProp->extra_time[1] == 1)
     {
-        ui->horizontalSlider_2->setMaximum(Mdt->TotalTime+value/2);
-        ui->spinBox_2->setMaximum(Mdt->TotalTime+value/2);
+        ui->hSlider_playback->setMaximum(Mdt->TotalTime+value/2);
+        ui->spb_playback->setMaximum(Mdt->TotalTime+value/2);
     }
 }
-void AnimationBar::on_horizontalSlider_2_valueChanged(int value)
+void AnimationBar::on_hSlider_playback_valueChanged(int value)
 {
     AState->setXpos(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    APainter->blocks_paint(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *ChordL, *RProp, VRec);
+    APainter->paintBlocks(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *RProp);
+    APainter->paintChords(*Mdt, *image, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *ChordL, *RProp);
+    APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);
 }
 
@@ -145,22 +150,22 @@ void AnimationBar::onNumberChanged(int num)
     std::list<TempoChange>::iterator it=Mdt->Tempos.end();
     it--; // This has to be done at the beginning to avoid trash!
     for (; it != Mdt->Tempos.begin(); --it) // Run the  tempo change list backwards
-        if ((*it).t_on <= ui->spinBox_2->value()) break; // If the current (spinBox_2) time is greater than the t_on from the tempo change, found the current tempo!
+        if ((*it).t_on <= ui->spb_playback->value()) break; // If the current (spinBox_2) time is greater than the t_on from the tempo change, found the current tempo!
     double pace = ((double)Mdt->Tpq*1000000.0/(double)(*it).new_tempo/fps);// + 0.5); // The +0.5 is for correct rounding and the 192.0 should be the PPQ, but actually it can be other value.
     if (pace > 150) pace = 2; // improve this. The problem: the first new_tempo is wrongly read to be equal to tpq (pointer issue, I think)
     //std::cout << tpq << ' ' << (*it).new_tempo << ", start: " << (*it).t_on << "; size: " << tempos->size() << std::endl;
     AState->CurrentTime = AState->CurrentTime + pace;
     //ui->spinBox_2->setValue(ui->spinBox_2->value() + pace);// + 1);
-    ui->spinBox_2->setValue(AState->CurrentTime);// + 1);
-    if (ui->spinBox_2->value() == Mdt->TotalTime)
+    ui->spb_playback->setValue(AState->CurrentTime);// + 1);
+    if (ui->spb_playback->value() == Mdt->TotalTime)
         playThread->stop = true;
     playThread->wait(1); // wait with timeout for the next frame to respond
 }
 
-void AnimationBar::on_pushButton_2_clicked()
+void AnimationBar::on_pb_play_clicked()
 {
     playThread->stop = false;
-    AState->CurrentTime = ui->spinBox_2->value();
+    AState->CurrentTime = ui->spb_playback->value();
     playThread->start(QThread::LowPriority);
     //ui->spinBox_2->setValue(ui->spinBox_2->value() + 1000/30);
 //    play = true;
@@ -176,14 +181,14 @@ void AnimationBar::on_pushButton_2_clicked()
 //    }
 }
 
-void AnimationBar::on_pushButton_3_clicked()
+void AnimationBar::on_pb_pause_clicked()
 {
     playThread->stop = true;
 }
 
-void AnimationBar::on_pushButton_clicked()
+void AnimationBar::on_pb_rewind_clicked()
 {
-    ui->spinBox_2->setValue(0);
+    ui->spb_playback->setValue(0);
     AState->CurrentTime = 0;
 }
 
@@ -193,12 +198,12 @@ void AnimationBar::on_pushButton_clicked()
 //    *videoFileName = qfsd->getSaveFileName().toStdString();
 //}
 
-void AnimationBar::on_pushButton_4_toggled(bool checked)
+void AnimationBar::on_pb_recVideo_toggled(bool checked)
 {
     VRec->RecordVideo = checked;
 }
 
 void AnimationBar::setRecButtonEnabled(bool value)
 {
-    ui->pushButton_4->setEnabled(value);
+    ui->pb_recVideo->setEnabled(value);
 }

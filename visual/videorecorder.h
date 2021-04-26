@@ -18,11 +18,12 @@ public:
 private:
     cv::Size        VideoDimensions;
     cv::VideoWriter Video;
-    bool            Ready;
+    //bool            Ready;
 public:
     void setVideoDim(int size_x, int size_y);
     void createVideoWriter();
-    void writeFrame(cv::Mat frame);
+    void writeFrame(cv::Mat frame); // will do only if RecordVideo is true
+    void writeFrameBypassCheck(cv::Mat frame);
     void releaseVideo();
     std::string getFileExtension();
 };

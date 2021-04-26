@@ -207,7 +207,7 @@ void MainWindow::on_pb_noteBlocks_clicked()
     cv::Mat *image_win1 = new cv::Mat;
     *image_win1 = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
 
-    APainter->note_blocks_paint(*image_win1, *Mdt, (char*) "Note blocks", 0, Mdt->TotalTime, window_width, window_height);
+    APainter->paintBlocksNoShading(*image_win1, *Mdt, (char*) "Note blocks", 0, Mdt->TotalTime, window_width, window_height);
 
     cv::namedWindow("Note blocks");
     cv::imshow("Note blocks", *image_win1);
