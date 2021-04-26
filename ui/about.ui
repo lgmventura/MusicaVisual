@@ -40,7 +40,8 @@
     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
  
  * Thanks to Craiggsappmidi (sapp.org) for the library used here. Very, very, very helpful on working with midi messages: http://midifile.sapp.org/class/MidiMessage/
- * Thanks to OpenCV library used as well to work with images and videos.</string>
+ * Thanks to OpenCV library used as well to work with images and videos.
+ * Thank to the Qt framework to make this high-end GUI possible.</string>
      </property>
     </widget>
    </item>

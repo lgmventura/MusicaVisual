@@ -36,7 +36,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
     cv::Point pt1_prev[mdt.NTracks], pt2_prev[mdt.NTracks], pt3_prev[mdt.NTracks]; // these points are used for storing the previous respective points to make "moving notes" possible averaging current position/size with last position/size. There must be one for each track so that they are kept independent, i.e., moving notes in one track don't influence mov. notes in another (same idea as for interconn. lines).
     cv::Point ptos_prev[mdt.NTracks][4];
     int radius_prev[mdt.NTracks];// = 0;
-    for (int i = 0; i < mdt.NTracks; i++) // start lines at zero. If not set, a rubish value may appear.
+    for (unsigned int i = 0; i < mdt.NTracks; i++) // start lines at zero. If not set, a rubish value may appear.
     {
         pt5[i].x = 0;
         pt5[i].y = 0;
@@ -71,7 +71,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
             //std::cout << pt1.x << ' ' << pt1.y << ": " << pt2.x << ' ' << pt2.y << '\n';
             if (true) //(std::abs(pt1.x) < x_max && std::abs(pt1.y) < y_max && std::abs(pt2.x) < x_max && std::abs(pt2.y) < y_max);// && (*it).duration < max_duration) // This "if" is just to bypass an issue (certainly about big doubles being coverted to int), what causes random boxes appearing on the screen when one zooms in very close.
             {
-                for (unsigned short tnum = 0; tnum < mdt.NTracks; tnum++)
+                for (unsigned int tnum = 0; tnum < mdt.NTracks; tnum++)
                 {
                     // -------------------------- Draw Interconnected Lines -------------------------
                     if ((*it).track == tnum && tProp.active[tnum] == true && tProp.interconnect[tnum] == 1) // All tracks - rectangle
@@ -1021,7 +1021,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
         {
             for (int i = 0; i < pitch_span + 1; i++)
             {
-                short ii = (i - basePitchRef)%12;
+                int ii = (i - basePitchRef)%12;
                 if (ii == 1 || ii == 3 || ii == 5 || ii == 8 || ii == 10)
                 {
                     int hline_y = (float)window_height/2 - note_height*(pitch_span)/2 + (note_height*i) - rProp.vertShift - rProp.hlines_offset*note_height - rProp.half_shift*note_height/2;
@@ -1033,7 +1033,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
         {
             for (int i = 0; i < pitch_span + 1; i++)
             {
-                short ii = (i - basePitchRef)%12;
+                int ii = (i - basePitchRef)%12;
                 if (ii == 0 || ii == 2 || ii == 4 || ii == 6 || ii == 7 || ii == 9 || ii == 11)
                 {
                     int hline_y = (float)window_height/2 - note_height*(pitch_span)/2 + (note_height*i) - rProp.vertShift - rProp.hlines_offset*note_height - rProp.half_shift*note_height/2;
@@ -1113,7 +1113,7 @@ void AnimPainter::blocks_paint(MusicData mdt, cv::Mat image, std::vector <cv::Ma
     }
     if (rProp.sep_render[1])
     {
-        for (short j = 0; j < (mdt.NTracks); j++)
+        for (int j = 0; j < (mdt.NTracks); j++)
         {
             if (tProp.track_blur[j] > 0)
                 cv::boxFilter(img_buffer_sep_tracks[j], img_buffer_sep_tracks[j], -1, cv::Size(tProp.track_blur[j], tProp.track_blur[j]));
