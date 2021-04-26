@@ -78,6 +78,8 @@ RenderWidget::RenderWidget(RenderP *rProp, QWidget *parent, MusicData *mdt, Vide
     ui->widget_hlcolour->setPalette(pal_h);
     ui->widget_vlcolour->setPalette(pal_v);
 
+    ui->spb_maxDistInterLines->setValue(RProp->max_connect_dist);
+
     // Tab 2: render settings:
     ui->spinBox_2->setValue(RProp->blur_size[0]);
     ui->spinBox_5->setValue(RProp->blur_size[1]);
@@ -359,3 +361,8 @@ std::map<string, int> RenderWidMaps::CMB_FOURCC_VK =
     {"MJPG", 2},
     {"",     3}
 };
+
+void RenderWidget::on_spb_maxDistInterLines_valueChanged(int arg1)
+{
+    this->RProp->max_connect_dist = arg1;
+}

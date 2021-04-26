@@ -80,7 +80,7 @@ void AnimPainter::paintBlocks(MusicData mdt, cv::Mat image, std::vector <cv::Mat
                         y3 = (float)window_height/2 - (float)window_height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*rProp.vertRange/50.0 - rProp.vertShift;
                         pt3.x = f2int_safe(x3); // Center x
                         pt3.y = f2int_safe(y3); // Center y
-                        if (abs(pt3.x - pt5[tnum].x) < tProp.max_connect_dist && pt5[tnum] != cv::Point(0,0))
+                        if (abs(pt3.x - pt5[tnum].x) < rProp.max_connect_dist && pt5[tnum] != cv::Point(0,0))
                             if ( ! rProp.sep_render[1])
                                 cv::line( image, pt3, pt5[tnum], {(double)tProp.getCv(tnum,2)/4,  (double)tProp.getCv(tnum,1)/4,  (double)tProp.getCv(tnum,0)/4}, 1, lineType );
                             else

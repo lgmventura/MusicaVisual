@@ -115,6 +115,8 @@ private slots:
 
     void on_cmb_videoCodec_currentIndexChanged(int index);
 
+    void on_spb_maxDistInterLines_valueChanged(int arg1);
+
 private:
     Ui::RenderWidget *ui;
     RenderP *RProp;

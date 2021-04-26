@@ -21,19 +21,20 @@ public:
     int vertRange = 40;
     int vertShift = 0;
     bool lines[4] = {1,0,0,0}; // {central line, vlines from time signatures, manual, from metronome track}
-    unsigned short beat_measure_manual[2] = {4,2}; // {numerator, denominator} = {x, 2^y}
+    unsigned int beat_measure_manual[2] = {4,2}; // {numerator, denominator} = {x, 2^y}
     bool sep_render[3] = {0,0,0};
-    short blur_size[2] = {0,0};
-    short blur_size_movnotes[2] = {0,0};
+    int blur_size[2] = {0,0};
+    int blur_size_movnotes[2] = {0,0};
     bool extra_time[2] = {0,1};
     bool hlines = 0;
-    short hlines_type = 0;
-    short hlines_colour[3] = {50,50,50};
-    short hlines_n = 12;
-    short hlines_offset = 0;
-    short vlines_colour[3] = {50,50,50};
+    int hlines_type = 0;
+    int hlines_colour[3] = {50,50,50};
+    int hlines_n = 12;
+    int hlines_offset = 0;
+    int vlines_colour[3] = {50,50,50};
     int vlines_track_n = 0;
     bool half_shift = 0;
+    int max_connect_dist = 100;
     bool note_names = 0;
     int note_names_where = 0;
     int turn_chord_circle = 0;
