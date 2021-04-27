@@ -1,13 +1,13 @@
-#ifndef TRACKS_H
-#define TRACKS_H
+#ifndef BLOCKLAYERS_H
+#define BLOCKLAYERS_H
 
 #include "utils/colour.h"
 #include <string>
 
-class TracksP // ATTENTION: TracksP (class) or tracksproperties (objects) and RenderP (class) and renderproperties (object) have to be of a fixed static size. Otherwise, edit -> save/load settings won't work!
+class BlockLayers // ATTENTION: TracksP (class) or tracksproperties (objects) and RenderP (class) and renderproperties (object) have to be of a fixed static size. Otherwise, edit -> save/load settings won't work!
 {
 public:
-    TracksP();
+    BlockLayers();
     int tColours[128][3]= { // pre-initializing the first 24 tracks, idea: use an ini file.
         {60, 60, 240} ,   //1 (index 0)
         {0, 120, 120} ,   //2
@@ -66,6 +66,9 @@ public:
     int colorScheme[128] = {0};
     int maxBlur = 20;
 
+    float hZoomMult = 1;
+    float vZoomMult = 1;
+
 public: // member functions
     rgb getColour(int track, int pitch);
     int getCv(int a, int b) {return (tColours[a][b]);}
@@ -88,4 +91,4 @@ public:
     const static std::string Interconnection[2];
 };
 
-#endif // TRACKS_H
+#endif // BLOCKLAYERS_H

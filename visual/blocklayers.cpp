@@ -1,11 +1,11 @@
-#include "tracks.h"
+#include "blocklayers.h"
 
-TracksP::TracksP()
+BlockLayers::BlockLayers()
 {
 
 }
 
-rgb TracksP::getColour(int track, int pitch)
+rgb BlockLayers::getColour(int track, int pitch)
 {
     if (this->colorScheme[track] == 0) // Just one color for the track
     {

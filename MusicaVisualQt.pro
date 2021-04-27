@@ -22,6 +22,7 @@ SOURCES += main.cpp\
     ui/blocklayersetup.cpp \
     ui/colourwidget.cpp \
     ui/help.cpp \
+    ui/layersetup.cpp \
     ui/mainwindow.cpp \
     ui/playthread.cpp \
     ui/rendersetup.cpp \
@@ -35,9 +36,10 @@ SOURCES += main.cpp\
     csappmidi/src-library/Binasc.cpp \
     utils/colour.cpp \
     visual/animation.cpp \
+    visual/blocklayers.cpp \
     visual/chordlayers.cpp \
+    visual/layer.cpp \
     visual/renderChordStar.cpp \
-    visual/tracks.cpp \
     visual/videorecorder.cpp
 
 HEADERS  += \
@@ -50,6 +52,7 @@ HEADERS  += \
     ui/blocklayersetup.h \
     ui/colourwidget.h \
     ui/help.h \
+    ui/layersetup.h \
     ui/mainwindow.h \
     ui/playthread.h \
     ui/rendersetup.h \
@@ -69,9 +72,10 @@ HEADERS  += \
     csappmidi/include/Options.h \
     utils/colour.h \
     visual/animation.h \
+    visual/blocklayers.h \
     visual/chordlayers.h \
+    visual/layer.h \
     visual/renderChordStar.h \
-    visual/tracks.h \
     visual/videorecorder.h
 
 FORMS    += \
@@ -79,6 +83,7 @@ FORMS    += \
     ui/animationbar.ui \
     ui/blocklayersetup.ui \
     ui/help.ui \
+    ui/layersetup.ui \
     ui/mainwindow.ui \
     ui/rendersetup.ui \
     ui/trackssetup.ui \

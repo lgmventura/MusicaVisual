@@ -63,12 +63,16 @@ MainWindow::MainWindow(QWidget *parent) :
     this->dwrenderprop = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
     this->Bls = nullptr;
     this->Cls = nullptr;
+    this->Lstp = nullptr;
     this->Mdt = new MusicData(); // create object MusicData
     this->VRec = new VideoRecorder(720, 480, 30); // dimensions, fps etc. will be eventually changed later
-    this->TProp = new TracksP();
+    this->BlockL = new BlockLayers();
     this->ChordL = new ChordLayers();
     this->RProp = new RenderP();
+    this->Layers = new std::list<Layer*>;
 
+    Layer *layer0 = new Layer();
+    this->Layers->push_back(layer0);
 }
 
 MainWindow::~MainWindow()
@@ -243,7 +247,7 @@ void MainWindow::on_pb_animation_clicked()
     }
 
     cv::namedWindow("Animation");
-    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, TProp, ChordL, APainter, AState, VRec);
+    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, BlockL, ChordL, APainter, AState, VRec);
     AnimBar->show();
 
     APainter = new AnimPainter();
@@ -368,7 +372,7 @@ void MainWindow::on_actionSave_settings_as_triggered()
 void MainWindow::saveSettings(string filePath)
 {
     ofstream output_file(filePath, ios::binary);
-    output_file.write(reinterpret_cast<char*>(TProp),sizeof(*TProp));
+    output_file.write(reinterpret_cast<char*>(BlockL),sizeof(*BlockL));
     output_file.write(reinterpret_cast<char*>(RProp),sizeof(*RProp));
     output_file.close();
 }
@@ -392,7 +396,7 @@ void MainWindow::loadSettings(string filePath)
     ifstream input_file(filePath, ios::binary);
     try
     {
-        input_file.read(reinterpret_cast<char*>(TProp),sizeof(*TProp));
+        input_file.read(reinterpret_cast<char*>(BlockL),sizeof(*BlockL));
         input_file.read(reinterpret_cast<char*>(RProp),sizeof(*RProp));
         cout << "Settings file could be correctly interpreted.";
     }
@@ -416,7 +420,7 @@ void MainWindow::loadSettings(string filePath)
     if (Bls != nullptr)
     {
         Bls->close();
-        Bls = new BlockLayerSetup(Mdt, TProp, this);
+        Bls = new BlockLayerSetup(Mdt, BlockL, this);
         Bls->show();
     }
 }
@@ -489,7 +493,7 @@ void MainWindow::on_actionSetup_block_layers_triggered()
     {
         Bls->close();
     }
-    Bls = new BlockLayerSetup(Mdt, TProp, this);
+    Bls = new BlockLayerSetup(Mdt, BlockL, this);
     Bls->show();
 }
 
@@ -502,4 +506,15 @@ void MainWindow::on_actionSetup_chord_layers_triggered()
     Cls = new ChordLayerSetup(Mdt, ChordL, this);
     Cls->resize(640, 480);
     Cls->show();
+}
+
+void MainWindow::on_actionSetup_layers_triggered()
+{
+    if (Lstp != nullptr)
+    {
+        Lstp->close();
+    }
+    Lstp = new LayerSetup(Layers, this);
+    Lstp->resize(640, 480);
+    Lstp->show();
 }

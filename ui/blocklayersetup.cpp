@@ -2,14 +2,14 @@
 #include "ui_blocklayersetup.h"
 
 
-BlockLayerSetup::BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent) :
+BlockLayerSetup::BlockLayerSetup(MusicData *mdt, BlockLayers *tProp, QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::BlockLayerSetup)
 {
     ui->setupUi(this);
 
     Mdt = mdt;
-    TProp = tProp;
+    BlockL = tProp;
 
 
 
@@ -50,7 +50,7 @@ void BlockLayerSetup::drawUi()
         QCheckBox *cb_trackActive = new QCheckBox(trackName, mainWidget);
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
-        cb_trackActive->setChecked(TProp->active[iTrack]);
+        cb_trackActive->setChecked(BlockL->active[iTrack]);
         QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { trackVisibilityChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeTrackVisibility(int)), this, SLOT(trackVisibilityChanged(int)));
         Cb_trackActive->push_back(cb_trackActive);
@@ -67,7 +67,7 @@ void BlockLayerSetup::drawUi()
 //        wid_colour->setPalette(pal);
 //        wid_colour->setAutoFillBackground(true);
         ColourWidget *wid_colour = new ColourWidget(mainWidget);
-        wid_colour->setBackgroundColour(TProp->getCv(iTrack,0), TProp->getCv(iTrack,1), TProp->getCv(iTrack,2));
+        wid_colour->setBackgroundColour(BlockL->getCv(iTrack,0), BlockL->getCv(iTrack,1), BlockL->getCv(iTrack,2));
         layout->addWidget(wid_colour, iTrack, 1, 1, 1, Qt::AlignLeft);
         wid_colour->setMinimumHeight(rowH);
         wid_colour->setMinimumWidth(2*rowH);
@@ -85,7 +85,7 @@ void BlockLayerSetup::drawUi()
         }
         layout->addWidget(cmb_colScheme, iTrack, 2, 1, 1, Qt::AlignLeft);
         cmb_colScheme->setMinimumWidth(4*rowH);
-        cmb_colScheme->setCurrentIndex(TProp->colorScheme[iTrack]);
+        cmb_colScheme->setCurrentIndex(BlockL->colorScheme[iTrack]);
         Cmb_colScheme->push_back(cmb_colScheme);
         QObject::connect(cmb_colScheme, qOverload<int>(&QComboBox::currentIndexChanged), [this, iTrack] { colourSchemeChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeColourScheme(int)), this, SLOT(colourSchemeChanged(int)));
@@ -102,7 +102,7 @@ void BlockLayerSetup::drawUi()
         }
         layout->addWidget(cmb_shape, iTrack, 3, 1, 1, Qt::AlignLeft);
         cmb_shape->setMinimumWidth(4*rowH);
-        cmb_shape->setCurrentIndex(TProp->shape[iTrack]);
+        cmb_shape->setCurrentIndex(BlockL->shape[iTrack]);
         Cmb_shape->push_back(cmb_shape);
         QObject::connect(cmb_shape, qOverload<int>(&QComboBox::currentIndexChanged), [this, iTrack] { shapeChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeShape(int)), this, SLOT(shapeChanged(int)));
@@ -118,21 +118,21 @@ void BlockLayerSetup::drawUi()
         }
         layout->addWidget(cmb_interconnect, iTrack, 4, 1, 1, Qt::AlignLeft);
         cmb_interconnect->setMinimumWidth(4*rowH);
-        cmb_interconnect->setCurrentIndex(TProp->interconnect[iTrack]);
+        cmb_interconnect->setCurrentIndex(BlockL->interconnect[iTrack]);
         Cmb_interconnect->push_back(cmb_interconnect);
         QObject::connect(cmb_interconnect, qOverload<int>(&QComboBox::currentIndexChanged), [this, iTrack] { interconnectionsChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeInterconnections(int)), this, SLOT(interconnectionsChanged(int)));
 
         // Add dial for blur:
         QDial *dial_blur = new QDial(mainWidget);
-        dial_blur->setMaximum(TProp->maxBlur);
-        dial_blur->setValue(TProp->track_blur[iTrack]);
+        dial_blur->setMaximum(BlockL->maxBlur);
+        dial_blur->setValue(BlockL->track_blur[iTrack]);
         layout->addWidget(dial_blur, iTrack, 5, 1, 1, Qt::AlignLeft);
 
         // Add spinbox for precise blur:
         QSpinBox *spb_blur = new QSpinBox(mainWidget);
-        spb_blur->setMaximum(TProp->maxBlur);
-        spb_blur->setValue(TProp->track_blur[iTrack]);
+        spb_blur->setMaximum(BlockL->maxBlur);
+        spb_blur->setValue(BlockL->track_blur[iTrack]);
         layout->addWidget(spb_blur, iTrack, 6, 1, 1, Qt::AlignLeft);
         Spb_blur->push_back(spb_blur);
         QObject::connect(spb_blur, qOverload<int>(&QSpinBox::valueChanged), [this, iTrack] { blurChanged(iTrack); });
@@ -163,13 +163,13 @@ void BlockLayerSetup::updateUi() // send a signal to all ui elements for them to
 void BlockLayerSetup::trackVisibilityChanged(int track)
 {
     bool state = Cb_trackActive->at(track)->isChecked();
-    this->TProp->active[track] = state;
+    this->BlockL->active[track] = state;
 
     // updating checkbox "all tracks" according to how many tracks are visible:
     unsigned int numVisibleTracks = 0;
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
-        if (this->TProp->active[iTrack] == true)
+        if (this->BlockL->active[iTrack] == true)
         {
             numVisibleTracks++;
         }
@@ -194,33 +194,33 @@ void BlockLayerSetup::colourChanged(int track)
     int r = newColour.red();
     int g = newColour.green();
     int b = newColour.blue();
-    this->TProp->setCv(track, 0, r);
-    this->TProp->setCv(track, 1, g);
-    this->TProp->setCv(track, 2, b);
+    this->BlockL->setCv(track, 0, r);
+    this->BlockL->setCv(track, 1, g);
+    this->BlockL->setCv(track, 2, b);
 }
 
 void BlockLayerSetup::colourSchemeChanged(int track)
 {
     int newColScheme = Cmb_colScheme->at(track)->currentIndex();
-    this->TProp->colorScheme[track] = newColScheme;
+    this->BlockL->colorScheme[track] = newColScheme;
 }
 
 void BlockLayerSetup::shapeChanged(int track)
 {
     int newShapeIndex = Cmb_shape->at(track)->currentIndex();
-    this->TProp->shape[track] = newShapeIndex;
+    this->BlockL->shape[track] = newShapeIndex;
 }
 
 void BlockLayerSetup::interconnectionsChanged(int track)
 {
     int newInterconnIndex = Cmb_interconnect->at(track)->currentIndex();
-    this->TProp->interconnect[track] = newInterconnIndex;
+    this->BlockL->interconnect[track] = newInterconnIndex;
 }
 
 void BlockLayerSetup::blurChanged(int track)
 {
     int newBlurValue = Spb_blur->at(track)->value();
-    this->TProp->track_blur[track] = newBlurValue;
+    this->BlockL->track_blur[track] = newBlurValue;
 }
 
 void BlockLayerSetup::allTracksToggled(bool checked)

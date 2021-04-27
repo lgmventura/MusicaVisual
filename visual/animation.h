@@ -7,7 +7,7 @@
 #include <opencv2/imgproc.hpp>
 
 //Include project files
-#include "tracks.h"
+#include "blocklayers.h"
 #include "chordlayers.h"
 #include "videorecorder.h"
 #include "musicdata.h"
@@ -69,7 +69,7 @@ public:
     int win_width;
     int win_height;
     void paintBlocksNoShading( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
-    void paintBlocks(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, TracksP, RenderP);
+    void paintBlocks(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, BlockLayers, RenderP);
     void paintChords(MusicData mdt, cv::Mat, int, int, int, int, ChordLayers chordL, RenderP rProp);
     void appendFrame(cv::Mat image, VideoRecorder* vRec);
 };

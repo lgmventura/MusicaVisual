@@ -8,7 +8,7 @@
 #include <QSpinBox>
 #include <QGridLayout>
 
-#include "visual/tracks.h"
+#include "visual/blocklayers.h"
 #include "musicdata.h"
 #include "ui/colourwidget.h"
 
@@ -21,7 +21,7 @@ class BlockLayerSetup : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit BlockLayerSetup(MusicData *mdt, TracksP *tProp, QWidget *parent = nullptr);
+    explicit BlockLayerSetup(MusicData *mdt, BlockLayers *tProp, QWidget *parent = nullptr);
     ~BlockLayerSetup();
 
     // public functions:
@@ -31,7 +31,7 @@ public:
 private:
     Ui::BlockLayerSetup *ui;
 
-    TracksP *TProp;
+    BlockLayers *BlockL;
     MusicData *Mdt;
 
     // layout:

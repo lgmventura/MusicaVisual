@@ -30,6 +30,7 @@
 #include "ui/trackssetup.h"
 #include "ui/blocklayersetup.h"
 #include "ui/chordlayersetup.h"
+#include "ui/layersetup.h"
 #include "ui/rendersetup.h"
 #include "ui/animationbar.h"
 #include "ui/about.h"
@@ -39,7 +40,7 @@
 #include "midimessages.h"
 #include "musicdata.h"
 #include "visual/videorecorder.h"
-#include "visual/tracks.h"
+#include "visual/blocklayers.h"
 #include "visual/animation.h"
 
 // From musiclib
@@ -107,17 +108,21 @@ private slots:
 
     void on_actionSetup_chord_layers_triggered();
 
+    void on_actionSetup_layers_triggered();
+
 private:
     Ui::MainWindow *ui;
-    BlockLayerSetup *Bls = nullptr;
-    ChordLayerSetup *Cls = nullptr;
+    BlockLayerSetup *Bls;
+    ChordLayerSetup *Cls;
+    LayerSetup *Lstp;
     RenderWidget *dwrenderprop = nullptr;
     About *aboutDiag = nullptr;
     Help *helpDiag_1 = nullptr;
     MusicData *Mdt = nullptr;
     VideoRecorder *VRec = nullptr;
-    TracksP *TProp;
+    BlockLayers *BlockL;
     ChordLayers *ChordL;
+    std::list<Layer*> *Layers;
     RenderP *RProp;
     AnimState *AState;
     AnimPainter *APainter;

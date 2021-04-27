@@ -25,7 +25,7 @@
 
 #include <QDockWidget>
 
-#include "visual/tracks.h"
+#include "visual/blocklayers.h"
 #include "musicdata.h"
 
 namespace Ui {
@@ -37,7 +37,7 @@ class TracksWidget : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit TracksWidget(TracksP *tProp, QWidget *parent = 0, MusicData *mdt = nullptr);
+    explicit TracksWidget(BlockLayers *tProp, QWidget *parent = 0, MusicData *mdt = nullptr);
     ~TracksWidget();
 
 private slots:
@@ -343,7 +343,7 @@ private slots:
 
 private:
     Ui::TracksWidget *ui;
-    TracksP *TProp;
+    BlockLayers *TProp;
     MusicData *Mdt;
 
 //    DialogColorPicker *dcolorpicker;

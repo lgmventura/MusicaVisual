@@ -62,7 +62,7 @@ AnimationBar::AnimationBar(QWidget *parent) :
     // This original contructor is currently not used nor called. Use the below!
 }
 
-AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, TracksP *tProp, ChordLayers *chordL, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec):
+AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, BlockLayers *tProp, ChordLayers *chordL, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec):
     QWidget(parent),
     ui(new Ui::AnimationBar)
 {
@@ -75,7 +75,7 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     this->winName = winName;
     this->fps = fps;
     this->RProp = rProp;
-    this->TProp = tProp;
+    this->BlockL = tProp;
     this->ChordL = chordL;
     this->APainter = aPainter;
     this->AState = aState;
@@ -118,7 +118,7 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
     AState->setZoom(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     // obs.: image is passed per value, but in OpenCV, this value is actually a pointer to the actual data (matrix), so the function does modify the data!
-    APainter->paintBlocks(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *RProp);
+    APainter->paintBlocks(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *BlockL, *RProp);
     APainter->paintChords(*Mdt, *image, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *ChordL, *RProp);
     APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);
@@ -138,7 +138,7 @@ void AnimationBar::on_hSlider_playback_valueChanged(int value)
 {
     AState->setXpos(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    APainter->paintBlocks(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *TProp, *RProp);
+    APainter->paintBlocks(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *BlockL, *RProp);
     APainter->paintChords(*Mdt, *image, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *ChordL, *RProp);
     APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);

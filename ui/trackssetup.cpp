@@ -32,7 +32,7 @@
 //extern TracksP *TProp;
 //extern std::vector <std::string> *Mdt->TrackNames;
 
-TracksWidget::TracksWidget(TracksP *tProp, QWidget *parent, MusicData *mdt) :
+TracksWidget::TracksWidget(BlockLayers *tProp, QWidget *parent, MusicData *mdt) :
     QDockWidget(parent),
     ui(new Ui::TracksWidget)
 {

@@ -50,7 +50,7 @@ public:
     MusicData *Mdt;
     VideoRecorder *VRec;
     RenderP *RProp;
-    TracksP *TProp;
+    BlockLayers *BlockL;
     ChordLayers *ChordL;
     AnimPainter *APainter;
     AnimState *AState;
@@ -64,7 +64,7 @@ public:
 
     PlayThread *playThread;
 
-    AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, TracksP *tProp, ChordLayers *chordL, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec = nullptr);
+    AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, BlockLayers *tProp, ChordLayers *chordL, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec = nullptr);
 
     ~AnimationBar();
 
