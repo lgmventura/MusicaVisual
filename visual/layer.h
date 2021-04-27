@@ -9,13 +9,13 @@ class Layer
 public:
     Layer();
 
-    enum LayerType {BlockLayer, ChordLayer};
+    enum LayerType {BlockLayer = 0, ChordLayer = 1};
 
-    std::string Name;
+    std::string Name = "";
 
     bool LayerActive = true;
 
-    LayerType LType;
+    LayerType LType = BlockLayer;
 
     BlockLayers Bl;
     ChordLayers Cl;

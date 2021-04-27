@@ -4,6 +4,7 @@
 #include <QDockWidget>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QLineEdit>
 
 #include "visual/layer.h"
 
@@ -29,10 +30,14 @@ private:
     void initUI();
 
     void insertLayerActiveCheckBox(int row, Layer *layer);
+    void insertLayerNameLineEdit(int row, Layer *layer);
+    void insertLayerTypeComboBox(int row, Layer *layer);
 
 
 private slots:
     void layerActiveChanged(int layer);
+    void layerNameChanged(int layer);
+    void layerTypeChanged(int layer);
 
     void on_pb_addLayer_clicked();
 
