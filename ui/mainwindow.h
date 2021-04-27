@@ -122,7 +122,7 @@ private:
     VideoRecorder *VRec = nullptr;
     BlockLayers *BlockL;
     ChordLayers *ChordL;
-    std::list<Layer*> *Layers;
+    std::list<Layer> *Layers;
     RenderP *RProp;
     AnimState *AState;
     AnimPainter *APainter;

@@ -1,7 +1,7 @@
 #include "layersetup.h"
 #include "ui_layersetup.h"
 
-LayerSetup::LayerSetup(std::list<Layer*> *layers, QWidget *parent) :
+LayerSetup::LayerSetup(std::list<Layer> *layers, QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::LayerSetup)
 {
@@ -25,50 +25,52 @@ void LayerSetup::initUI()
     ui->tableWidget->insertColumn(2); // For
 
     // initilizing rows for each layer:
-    std::list<Layer*>::iterator it = Layers->begin();
+    std::list<Layer>::iterator it = Layers->begin();
     for (int iRow = 0; it != this->Layers->end(); it++, iRow++)
     {
         // getting current layer:
-        Layer *currLayer = *it;
+        Layer currLayer = *it;
 
         // inserting row:
         ui->tableWidget->insertRow(iRow);
 
         // creating "blocks active" checkbox:
-        this->insertLayerActiveCheckBox(iRow, currLayer);
+        this->insertLayerActiveCheckBox(iRow, &currLayer);
 
     }
 }
 
 void LayerSetup::layerActiveChanged(int layer)
 {
-    bool state = this->Cb_layerActive[layer]->isChecked();
+    QCheckBox *cb = (QCheckBox*) ui->tableWidget->cellWidget(layer, 0);
+    bool state = cb->isChecked();
 
-    std::list<Layer*>::iterator it = Layers->begin();
+    std::list<Layer>::iterator it = Layers->begin();
     std::advance(it, layer); // go to layer position
-    (*it)->LayerActive = state;
+    (*it).LayerActive = state;
 }
 
 void LayerSetup::on_pb_addLayer_clicked()
 {
-    Layer *newLayer = new Layer();
+    Layer newLayer;
     int row = ui->tableWidget->currentRow();
-    std::list<Layer*>::iterator it = Layers->begin();
+    std::list<Layer>::iterator it = Layers->begin();
     for (int iPos = 0; iPos < row; iPos++) { it++; }
     this->Layers->insert(it, newLayer);
     ui->tableWidget->insertRow(row);
 
     // creating "blocks active" checkbox:
-    this->insertLayerActiveCheckBox(row, newLayer);
+    this->insertLayerActiveCheckBox(row, &newLayer);
 }
 
 
 void LayerSetup::on_pb_removeLayer_clicked()
 {
-    int pos = ui->tableWidget->currentRow();
-    std::list<Layer*>::iterator it = Layers->begin();
+    int row = ui->tableWidget->currentRow();
+    std::list<Layer>::iterator it = Layers->begin();
+    std::advance(it, row);
     this->Layers->erase(it);
-    ui->tableWidget->removeRow(pos);
+    ui->tableWidget->removeRow(row);
 }
 
 void LayerSetup::insertLayerActiveCheckBox(int row, Layer *currLayer)
@@ -78,5 +80,4 @@ void LayerSetup::insertLayerActiveCheckBox(int row, Layer *currLayer)
     QObject::connect(cb_layerActive, &QCheckBox::toggled, [this, row] { layerActiveChanged(row); });
     //QObject::connect(this, SIGNAL(changeTrackVisibility(int)), this, SLOT(trackVisibilityChanged(int)));
     ui->tableWidget->setCellWidget(row, 0, cb_layerActive);
-    Cb_layerActive.push_back(cb_layerActive);
 }

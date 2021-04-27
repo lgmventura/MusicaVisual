@@ -17,23 +17,18 @@ class LayerSetup : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit LayerSetup(std::list<Layer*> *layers, QWidget *parent = nullptr);
+    explicit LayerSetup(std::list<Layer> *layers, QWidget *parent = nullptr);
     ~LayerSetup();
 
 private:
     Ui::LayerSetup *ui;
 
-    std::list<Layer*> *Layers;
+    std::list<Layer> *Layers;
 
-    // UI element vectors:
-    std::vector<QCheckBox*> Cb_layerActive;
-    // not needed for the name, because the lineEdit widget is the standard for QTableWidget
-    std::vector<QComboBox*> Cmb_layerType;
 
     void initUI();
 
     void insertLayerActiveCheckBox(int row, Layer *layer);
-    void removeLayerActiveCheckBox(int row, Layer *layer);
 
 
 private slots:

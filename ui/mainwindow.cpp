@@ -69,9 +69,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->BlockL = new BlockLayers();
     this->ChordL = new ChordLayers();
     this->RProp = new RenderP();
-    this->Layers = new std::list<Layer*>;
+    this->Layers = new std::list<Layer>;
 
-    Layer *layer0 = new Layer();
+    Layer layer0;
     this->Layers->push_back(layer0);
 }
 
