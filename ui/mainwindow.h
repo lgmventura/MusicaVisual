@@ -104,16 +104,10 @@ private slots:
 
     void loadSettings(string filePath);
 
-    void on_actionSetup_block_layers_triggered();
-
-    void on_actionSetup_chord_layers_triggered();
-
     void on_actionSetup_layers_triggered();
 
 private:
     Ui::MainWindow *ui;
-    BlockLayerSetup *Bls;
-    ChordLayerSetup *Cls;
     LayerSetup *Lstp;
     RenderWidget *dwrenderprop = nullptr;
     About *aboutDiag = nullptr;

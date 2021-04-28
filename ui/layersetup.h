@@ -7,6 +7,9 @@
 #include <QLineEdit>
 
 #include "visual/layer.h"
+#include "musicdata.h"
+#include "ui/blocklayersetup.h"
+#include "ui/chordlayersetup.h"
 
 
 namespace Ui {
@@ -18,13 +21,17 @@ class LayerSetup : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit LayerSetup(std::list<Layer> *layers, QWidget *parent = nullptr);
+    explicit LayerSetup(std::list<Layer> *layers, MusicData *mdt, QWidget *parent = nullptr);
     ~LayerSetup();
 
 private:
     Ui::LayerSetup *ui;
 
     std::list<Layer> *Layers;
+    MusicData *Mdt;
+
+    BlockLayerSetup *Bls;
+    ChordLayerSetup *Cls;
 
 
     void initUI();
@@ -32,12 +39,14 @@ private:
     void insertLayerActiveCheckBox(int row, Layer *layer);
     void insertLayerNameLineEdit(int row, Layer *layer);
     void insertLayerTypeComboBox(int row, Layer *layer);
+    void insertLayerSetupPButton(int row, Layer *layer);
 
 
 private slots:
     void layerActiveChanged(int layer);
     void layerNameChanged(int layer);
     void layerTypeChanged(int layer);
+    void layerEditTriggered(int layer);
 
     void on_pb_addLayer_clicked();
 

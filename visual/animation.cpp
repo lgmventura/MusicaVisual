@@ -1136,6 +1136,23 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
     }
 }
 
+void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height, std::list<Layer> layers, RenderP renderS)
+{
+    std::list<Layer>::iterator it = layers.begin();
+    for(int iLayer = 0; it != layers.end(); it++, iLayer++)
+    {
+        // (*it) is now the layer of the current iteration
+        if ((*it).LType == Layer::LayerType::BlockLayer)
+        {
+            this->paintBlocks(mdt, image, img_buffer_sep_tracks, startMidiTime, endMidiTime, window_width, window_height, (*it).Bl, renderS);
+        }
+        else if ((*it).LType == Layer::LayerType::ChordLayer)
+        {
+            this->paintChords(mdt, image, startMidiTime, endMidiTime, window_width, window_height, (*it).Cl, renderS);
+        }
+    }
+}
+
 void AnimPainter::appendFrame(cv::Mat image, VideoRecorder *vRec)
 {
     if (vRec != nullptr)

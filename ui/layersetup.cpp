@@ -1,13 +1,16 @@
 #include "layersetup.h"
 #include "ui_layersetup.h"
 
-LayerSetup::LayerSetup(std::list<Layer> *layers, QWidget *parent) :
+LayerSetup::LayerSetup(std::list<Layer> *layers, MusicData *mdt, QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::LayerSetup)
 {
     ui->setupUi(this);
 
     this->Layers = layers;
+    this->Mdt = mdt;
+    this->Bls = nullptr;
+    this->Cls = nullptr;
 
     this->initUI();
 }
@@ -23,6 +26,7 @@ void LayerSetup::initUI()
     ui->tableWidget->insertColumn(0); // For checkboxes
     ui->tableWidget->insertColumn(1); // For names
     ui->tableWidget->insertColumn(2); // For layer type
+    ui->tableWidget->insertColumn(3); // For pushbutton edit layer
 
     // initilizing rows for each layer:
     std::list<Layer>::iterator it = Layers->begin();
@@ -42,6 +46,9 @@ void LayerSetup::initUI()
 
         // inserting layer type dropdown menu:
         this->insertLayerTypeComboBox(iRow, &currLayer);
+
+        // inserting layer edit push button:
+        this->insertLayerSetupPButton(iRow, &currLayer);
 
     }
     ui->tableWidget->resizeColumnsToContents();
@@ -77,6 +84,38 @@ void LayerSetup::layerTypeChanged(int layer)
     (*it).LType = Layer::LayerType(typeIndex);
 }
 
+void LayerSetup::layerEditTriggered(int layer)
+{
+    int row = ui->tableWidget->currentRow();
+
+    QComboBox *cmbx = (QComboBox*) ui->tableWidget->cellWidget(row, 2);
+    int typeIndex = cmbx->currentIndex();
+
+    std::list<Layer>::iterator it = this->Layers->begin();
+    std::advance(it, row); // not it points to the current layer
+
+    if (typeIndex == Layer::LayerType::BlockLayer)
+    {
+        if (Bls != nullptr)
+        {
+            Bls->close();
+        }
+        // set the current layer Bl object and the mainWindow as parent, otherwise, they don't move:
+        Bls = new BlockLayerSetup(Mdt, &it->Bl, this->parentWidget());
+        Bls->show();
+    }
+    else if (typeIndex == Layer::LayerType::ChordLayer)
+    {
+        if (Cls != nullptr)
+        {
+            Cls->close();
+        }
+        Cls = new ChordLayerSetup(Mdt, &it->Cl, this->parentWidget());
+        Cls->resize(640, 480);
+        Cls->show();
+    }
+}
+
 void LayerSetup::on_pb_addLayer_clicked()
 {
     Layer newLayer;
@@ -95,6 +134,9 @@ void LayerSetup::on_pb_addLayer_clicked()
 
     // inserting layer type dropdown menu:
     this->insertLayerTypeComboBox(row, &newLayer);
+
+    // inserting layer edit push button:
+    this->insertLayerSetupPButton(row, &newLayer);
 }
 
 
@@ -139,4 +181,14 @@ void LayerSetup::insertLayerTypeComboBox(int row, Layer *layer)
     cmb_layerType->setCurrentIndex(currentType);
     QObject::connect(cmb_layerType, qOverload<int>(&QComboBox::currentIndexChanged), [this, row] { layerTypeChanged(row); });
     ui->tableWidget->setCellWidget(row, 2, cmb_layerType);
+}
+
+void LayerSetup::insertLayerSetupPButton(int row, Layer *layer)
+{
+    QPushButton *pb_editLayer = new QPushButton();
+    QString qPbName = QString::fromStdString("Edit…");
+    pb_editLayer->setText(qPbName);
+
+    QObject::connect(pb_editLayer, &QPushButton::clicked, [this, row] { layerEditTriggered(row); });
+    ui->tableWidget->setCellWidget(row, 3, pb_editLayer);
 }

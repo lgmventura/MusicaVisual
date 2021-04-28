@@ -21,7 +21,7 @@ class BlockLayerSetup : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit BlockLayerSetup(MusicData *mdt, BlockLayers *tProp, QWidget *parent = nullptr);
+    explicit BlockLayerSetup(MusicData *mdt, BlockLayers *blockL, QWidget *parent = nullptr);
     ~BlockLayerSetup();
 
     // public functions:

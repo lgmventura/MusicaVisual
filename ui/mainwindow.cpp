@@ -61,8 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //TracksP tracksproperties;
     setAcceptDrops(true); // accept file droppings to ease the file opening
     this->dwrenderprop = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
-    this->Bls = nullptr;
-    this->Cls = nullptr;
     this->Lstp = nullptr;
     this->Mdt = new MusicData(); // create object MusicData
     this->VRec = new VideoRecorder(720, 480, 30); // dimensions, fps etc. will be eventually changed later
@@ -248,7 +246,7 @@ void MainWindow::on_pb_animation_clicked()
     }
 
     cv::namedWindow("Animation");
-    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, BlockL, ChordL, APainter, AState, VRec);
+    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, Layers, APainter, AState, VRec);
     AnimBar->show();
 
     APainter = new AnimPainter();
@@ -418,12 +416,6 @@ void MainWindow::loadSettings(string filePath)
         dwrenderprop = new RenderWidget(RProp, this, Mdt, VRec);
         dwrenderprop->show();
     }
-    if (Bls != nullptr)
-    {
-        Bls->close();
-        Bls = new BlockLayerSetup(Mdt, BlockL, this);
-        Bls->show();
-    }
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -488,34 +480,13 @@ void MainWindow::on_actionSqueeze_tracks_triggered()
     ui->plainTextEdit->appendPlainText(QString::fromStdString(midiMessagesSqz));
 }
 
-void MainWindow::on_actionSetup_block_layers_triggered()
-{
-    if (Bls != nullptr)
-    {
-        Bls->close();
-    }
-    Bls = new BlockLayerSetup(Mdt, BlockL, this);
-    Bls->show();
-}
-
-void MainWindow::on_actionSetup_chord_layers_triggered()
-{
-    if (Cls != nullptr)
-    {
-        Cls->close();
-    }
-    Cls = new ChordLayerSetup(Mdt, ChordL, this);
-    Cls->resize(640, 480);
-    Cls->show();
-}
-
 void MainWindow::on_actionSetup_layers_triggered()
 {
     if (Lstp != nullptr)
     {
         Lstp->close();
     }
-    Lstp = new LayerSetup(Layers, this);
+    Lstp = new LayerSetup(Layers, Mdt, this);
     Lstp->resize(640, 480);
     Lstp->show();
 }

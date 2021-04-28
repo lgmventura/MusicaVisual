@@ -2,14 +2,14 @@
 #include "ui_blocklayersetup.h"
 
 
-BlockLayerSetup::BlockLayerSetup(MusicData *mdt, BlockLayers *tProp, QWidget *parent) :
+BlockLayerSetup::BlockLayerSetup(MusicData *mdt, BlockLayers *blockL, QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::BlockLayerSetup)
 {
     ui->setupUi(this);
 
     Mdt = mdt;
-    BlockL = tProp;
+    BlockL = blockL;
 
 
 

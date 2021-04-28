@@ -33,7 +33,6 @@
 //wasn't defined, as if we hadn't included the this file, actually.
 #include "musiclib/musicdata.h"
 #include "visual/videorecorder.h"
-#include "trackssetup.h"
 #include "rendersetup.h"
 #include "midimessages.h"
 
@@ -50,8 +49,7 @@ public:
     MusicData *Mdt;
     VideoRecorder *VRec;
     RenderP *RProp;
-    BlockLayers *BlockL;
-    ChordLayers *ChordL;
+    std::list<Layer> *Layers;
     AnimPainter *APainter;
     AnimState *AState;
     cv::Mat *image;
@@ -64,7 +62,7 @@ public:
 
     PlayThread *playThread;
 
-    AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, BlockLayers *tProp, ChordLayers *chordL, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec = nullptr);
+    AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, std::list<Layer> *layers, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec = nullptr);
 
     ~AnimationBar();
 
