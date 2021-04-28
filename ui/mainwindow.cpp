@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->Layers = new std::list<Layer>;
 
     Layer layer0;
-    layer0.Name = "Layer 1";
+    layer0.Name = "Layer 0";
     this->Layers->push_back(layer0);
 }
 

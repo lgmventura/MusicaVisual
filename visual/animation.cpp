@@ -1157,11 +1157,11 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
     for(int iLayer = 0; it != layers.end(); it++, iLayer++)
     {
         // (*it) is now the layer of the current iteration
-        if ((*it).LType == Layer::LayerType::BlockLayer)
+        if ((*it).LType == Layer::LayerType::BlockLayer && (*it).LayerActive == true)
         {
             this->paintBlocks(mdt, image, img_buffer_sep_tracks, startMidiTime, endMidiTime, window_width, window_height, (*it).Bl, renderS);
         }
-        else if ((*it).LType == Layer::LayerType::ChordLayer)
+        else if ((*it).LType == Layer::LayerType::ChordLayer && (*it).LayerActive == true)
         {
             this->paintChords(mdt, image, startMidiTime, endMidiTime, window_width, window_height, (*it).Cl, renderS);
         }

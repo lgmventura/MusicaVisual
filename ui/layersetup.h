@@ -40,6 +40,8 @@ private:
     void insertLayerNameLineEdit(int row, Layer *layer);
     void insertLayerTypeComboBox(int row, Layer *layer);
     void insertLayerSetupPButton(int row, Layer *layer);
+    void connectTableWidgets();
+    void disconnectTabWidgets();
 
 
 private slots:

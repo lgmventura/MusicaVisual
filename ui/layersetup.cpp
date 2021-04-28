@@ -52,6 +52,7 @@ void LayerSetup::initUI()
 
     }
     ui->tableWidget->resizeColumnsToContents();
+    this->connectTableWidgets();
 }
 
 void LayerSetup::layerActiveChanged(int layer)
@@ -102,6 +103,8 @@ void LayerSetup::layerEditTriggered(int layer)
         }
         // set the current layer Bl object and the mainWindow as parent, otherwise, they don't move:
         Bls = new BlockLayerSetup(Mdt, &it->Bl, this->parentWidget());
+        QString qWindowTitle = "Block layer setup for " + QString::fromStdString((*it).Name);
+        Bls->setWindowTitle(qWindowTitle);
         Bls->show();
     }
     else if (typeIndex == Layer::LayerType::ChordLayer)
@@ -111,6 +114,8 @@ void LayerSetup::layerEditTriggered(int layer)
             Cls->close();
         }
         Cls = new ChordLayerSetup(Mdt, &it->Cl, this->parentWidget());
+        QString qWindowTitle = "Chord layer setup for " + QString::fromStdString((*it).Name);
+        Cls->setWindowTitle(qWindowTitle);
         Cls->resize(640, 480);
         Cls->show();
     }
@@ -119,6 +124,8 @@ void LayerSetup::layerEditTriggered(int layer)
 void LayerSetup::on_pb_addLayer_clicked()
 {
     Layer newLayer;
+    int numLayers = Layers->size();
+    newLayer.Name = "Layer " + std::to_string(numLayers);
     int row = ui->tableWidget->currentRow();
     if (row == -1) {row = 0;} // if all were deleted, currentRow returns -1
     std::list<Layer>::iterator it = Layers->begin();
@@ -137,6 +144,9 @@ void LayerSetup::on_pb_addLayer_clicked()
 
     // inserting layer edit push button:
     this->insertLayerSetupPButton(row, &newLayer);
+
+    // connecting:
+    this->connectTableWidgets();
 }
 
 
@@ -147,14 +157,16 @@ void LayerSetup::on_pb_removeLayer_clicked()
     std::advance(it, row);
     this->Layers->erase(it);
     ui->tableWidget->removeRow(row);
+    this->disconnectTabWidgets();
+    this->connectTableWidgets();
 }
 
-void LayerSetup::insertLayerActiveCheckBox(int row, Layer *currLayer)
+void LayerSetup::insertLayerActiveCheckBox(int row, Layer *layer)
 {
     QCheckBox *cb_layerActive = new QCheckBox();
     cb_layerActive->setStyleSheet("text-align: center; margin-left:44%; margin-right:38%;");
-    cb_layerActive->setChecked(currLayer->LayerActive);
-    QObject::connect(cb_layerActive, &QCheckBox::toggled, [this, row] { layerActiveChanged(row); });
+    cb_layerActive->setChecked(layer->LayerActive);
+
     //QObject::connect(this, SIGNAL(changeTrackVisibility(int)), this, SLOT(trackVisibilityChanged(int)));
     ui->tableWidget->setCellWidget(row, 0, cb_layerActive);
 }
@@ -165,7 +177,7 @@ void LayerSetup::insertLayerNameLineEdit(int row, Layer *layer)
     QString qLayerName = QString::fromStdString(layerName);
     QLineEdit *le_layerName = new QLineEdit(qLayerName);
     le_layerName->setText(qLayerName);
-    QObject::connect(le_layerName, &QLineEdit::editingFinished, [this, row] { layerNameChanged(row); });
+
     //QObject::connect(this, SIGNAL(changeTrackVisibility(int)), this, SLOT(trackVisibilityChanged(int)));
     ui->tableWidget->setCellWidget(row, 1, le_layerName);
 }
@@ -179,7 +191,7 @@ void LayerSetup::insertLayerTypeComboBox(int row, Layer *layer)
     cmb_layerType->addItem("Chords");
 
     cmb_layerType->setCurrentIndex(currentType);
-    QObject::connect(cmb_layerType, qOverload<int>(&QComboBox::currentIndexChanged), [this, row] { layerTypeChanged(row); });
+
     ui->tableWidget->setCellWidget(row, 2, cmb_layerType);
 }
 
@@ -189,6 +201,44 @@ void LayerSetup::insertLayerSetupPButton(int row, Layer *layer)
     QString qPbName = QString::fromStdString("Edit…");
     pb_editLayer->setText(qPbName);
 
-    QObject::connect(pb_editLayer, &QPushButton::clicked, [this, row] { layerEditTriggered(row); });
+
     ui->tableWidget->setCellWidget(row, 3, pb_editLayer);
+}
+
+void LayerSetup::connectTableWidgets()
+{
+    std::list<Layer>::iterator it = Layers->begin();
+    for (int iRow = 0; it != this->Layers->end(); it++, iRow++)
+    {
+        // getting widgets:
+        QCheckBox *cb = (QCheckBox*) ui->tableWidget->cellWidget(iRow, 0);
+        QLineEdit *ledt = (QLineEdit*) ui->tableWidget->cellWidget(iRow, 1);
+        QComboBox *cmbx = (QComboBox*) ui->tableWidget->cellWidget(iRow, 2);
+        QPushButton *pb = (QPushButton*) ui->tableWidget->cellWidget(iRow, 3);
+
+        // connecting them:
+        QObject::connect(cb, &QCheckBox::toggled, [this, iRow] { layerActiveChanged(iRow); });
+        QObject::connect(ledt, &QLineEdit::editingFinished, [this, iRow] { layerNameChanged(iRow); });
+        QObject::connect(cmbx, qOverload<int>(&QComboBox::currentIndexChanged), [this, iRow] { layerTypeChanged(iRow); });
+        QObject::connect(pb, &QPushButton::clicked, [this, iRow] { layerEditTriggered(iRow); });
+    }
+}
+
+void LayerSetup::disconnectTabWidgets()
+{
+    std::list<Layer>::iterator it = Layers->begin();
+    for (int iRow = 0; it != this->Layers->end(); it++, iRow++)
+    {
+        // getting widgets:
+        QCheckBox *cb = (QCheckBox*) ui->tableWidget->cellWidget(iRow, 0);
+        QLineEdit *ledt = (QLineEdit*) ui->tableWidget->cellWidget(iRow, 1);
+        QComboBox *cmbx = (QComboBox*) ui->tableWidget->cellWidget(iRow, 2);
+        QPushButton *pb = (QPushButton*) ui->tableWidget->cellWidget(iRow, 3);
+
+        // connecting them:
+        QObject::disconnect(cb, 0,0,0);
+        QObject::disconnect(ledt, 0,0,0);
+        QObject::disconnect(cmbx, 0,0,0);
+        QObject::disconnect(pb, 0,0,0);
+    }
 }
