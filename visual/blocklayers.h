@@ -66,8 +66,8 @@ public:
     int colorScheme[128] = {0};
     int maxBlur = 20;
 
-    float hZoomMult = 1;
-    float vZoomMult = 1;
+    double hZoomMult = 1;
+    double vZoomMult = 1;
 
 public: // member functions
     rgb getColour(int track, int pitch);

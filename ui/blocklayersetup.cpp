@@ -26,6 +26,10 @@ BlockLayerSetup::~BlockLayerSetup()
 
 void BlockLayerSetup::drawUi()
 {
+    // update existing elements:
+    ui->dspb_hZoomMult->setValue(this->BlockL->hZoomMult);
+    ui->dspb_vZoomMult->setValue(this->BlockL->vZoomMult);
+
     // Setting up layout:
     mainWidget = new QWidget(ui->scrollArea);
     layout = new QGridLayout(mainWidget);
@@ -248,4 +252,14 @@ void BlockLayerSetup::on_cb_allTracks_stateChanged(int arg1)
         return;
     }
     this->allTracksToggled(checked);
+}
+
+void BlockLayerSetup::on_dspb_hZoomMult_valueChanged(double arg1)
+{
+    this->BlockL->hZoomMult = arg1;
+}
+
+void BlockLayerSetup::on_dspb_vZoomMult_valueChanged(double arg1)
+{
+    this->BlockL->vZoomMult = arg1;
 }
