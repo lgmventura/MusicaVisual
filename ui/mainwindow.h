@@ -109,7 +109,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     LayerSetup *Lstp;
-    RenderWidget *dwrenderprop = nullptr;
+    RenderSetup *dwrenderprop = nullptr;
     About *aboutDiag = nullptr;
     Help *helpDiag_1 = nullptr;
     MusicData *Mdt = nullptr;

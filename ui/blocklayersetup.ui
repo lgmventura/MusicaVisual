@@ -18,6 +18,38 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="2">
+     <widget class="QDoubleSpinBox" name="dspb_vZoomMult">
+      <property name="minimum">
+       <double>0.020000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>50.000000000000000</double>
+      </property>
+      <property name="stepType">
+       <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QDoubleSpinBox" name="dspb_hZoomMult">
+      <property name="minimum">
+       <double>0.020000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>50.000000000000000</double>
+      </property>
+      <property name="stepType">
+       <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+      </property>
+      <property name="value">
+       <double>1.000000000000000</double>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="1">
      <widget class="QLabel" name="lb_vZoomMult">
       <property name="text">
@@ -29,6 +61,13 @@
      <widget class="QLabel" name="lb_tracks">
       <property name="text">
        <string>Tracks</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="lb_hZoomMult">
+      <property name="text">
+       <string>Horiz. zoom multiplier:</string>
       </property>
      </widget>
     </item>
@@ -49,23 +88,21 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="2">
-     <widget class="QDoubleSpinBox" name="dspb_vZoomMult">
-      <property name="minimum">
-       <double>0.020000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>50.000000000000000</double>
-      </property>
-      <property name="stepType">
-       <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-      </property>
-      <property name="value">
-       <double>1.000000000000000</double>
+    <item row="0" column="3">
+     <widget class="QCheckBox" name="cb_hLines">
+      <property name="text">
+       <string>H. lines</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="0" colspan="3">
+    <item row="1" column="3">
+     <widget class="QCheckBox" name="cb_vLines">
+      <property name="text">
+       <string>V. lines</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="4">
      <widget class="QScrollArea" name="scrollArea">
       <property name="widgetResizable">
        <bool>true</bool>
@@ -80,29 +117,6 @@
         </rect>
        </property>
       </widget>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLabel" name="lb_hZoomMult">
-      <property name="text">
-       <string>Horiz. zoom multiplier:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QDoubleSpinBox" name="dspb_hZoomMult">
-      <property name="minimum">
-       <double>0.020000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>50.000000000000000</double>
-      </property>
-      <property name="stepType">
-       <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-      </property>
-      <property name="value">
-       <double>1.000000000000000</double>
-      </property>
      </widget>
     </item>
    </layout>

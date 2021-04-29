@@ -38,7 +38,7 @@ private:
 
     // functions:
     void drawUI();
-    void drawTabChordStars();
+    void drawTabTracks();
     void allTracksToggledChordStars(bool checked);
     // other tabs to be implemented
 
@@ -46,6 +46,24 @@ private slots:
     void chordStarTrackActiveChanged(int track);
 
     void on_cb_allTracksChordStars_stateChanged(int arg1);
+
+    void on_dspb_posx_valueChanged(double arg1);
+
+    void on_dspb_posy_valueChanged(double arg1);
+
+    void on_spb_sizew_valueChanged(int arg1);
+
+    void on_spb_sizeh_valueChanged(int arg1);
+
+    void on_cb_type_currentIndexChanged(int index);
+
+    void on_cb_sharpFlat_currentIndexChanged(int index);
+
+    void on_combox_chordStar_currentIndexChanged(int index);
+
+    void on_spb_chordStarOffset_valueChanged(int arg1);
+
+    void on_cb_dispNoteNamesStar_toggled(bool checked);
 
 signals:
     void changeChordStarTrackActive(int track);

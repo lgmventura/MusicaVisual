@@ -34,13 +34,7 @@ public:
     int vlines_track_n = 0;
     bool half_shift = 0;
     int max_connect_dist = 100;
-    bool note_names = 0;
-    int note_names_where = 0;
-    int turn_chord_circle = 0;
-    bool chord_names = 0;
-    bool chord_star = 0;
-    bool accidentalSharp = 0; // 0 for flat, 1 for sharp
-    chord::circle chord_star_type = chord::circleOfSemitones;
+
     cv::LineTypes shapeLineType = cv::LINE_8;
 };
 

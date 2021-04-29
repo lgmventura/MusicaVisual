@@ -955,7 +955,7 @@ void AnimPainter::paintBlocks(MusicData mdt, cv::Mat image, std::vector <cv::Mat
 
                     // ============= Vertical Lines from tracks =============
 
-                    if ((*it).track == tnum && rProp.lines[3] && rProp.vlines_track_n == (int)tnum)
+                    if ((*it).track == tnum && rProp.lines[3] && rProp.vlines_track_n == (int)tnum && blockL.vLines)
                     {
                         cv::line(image, cv::Point(pt1.x, window_height), cv::Point(pt1.x, 0), {(double)(double)rProp.vlines_colour[2]*(*it).vel/128, (double)(double)rProp.vlines_colour[1]*(*it).vel/128, (double)(double)rProp.vlines_colour[0]*(*it).vel/128});
                     }
@@ -969,9 +969,9 @@ void AnimPainter::paintBlocks(MusicData mdt, cv::Mat image, std::vector <cv::Mat
 //    pt3.y = window_height;
 //    pt4.y = 0;
 // =================== Vertical Lines =============
-    if (rProp.lines[0]) // cetered line
+    if (rProp.lines[0] && blockL.vLines) // cetered line
         cv::line(image, cv::Point(window_width/2, window_height), cv::Point(window_width/2, 0), {100,100,100});
-    if (rProp.lines[1]) // vertical lines from time signatures saved in the midi file
+    if (rProp.lines[1] && blockL.vLines) // vertical lines from time signatures saved in the midi file
     {
         std::list<TimeSignature> tsigs = mdt.TSignatures; // for debugging
         TimeSignature tsig_next = TimeSignature(); // next physically, previous with reference to the backward loop:
@@ -991,7 +991,7 @@ void AnimPainter::paintBlocks(MusicData mdt, cv::Mat image, std::vector <cv::Mat
             tsig_next = tsig;
         }
     }
-    if (rProp.lines[2]) // manual time signature, given measure
+    if (rProp.lines[2] && blockL.vLines) // manual time signature, given measure
     {
         int denominator = std::pow(2, rProp.beat_measure_manual[1]);
         for (unsigned int i = 0; i < endMidiTime; i = i + 4*rProp.beat_measure_manual[0]*mdt.Tpq/denominator)
@@ -1002,7 +1002,7 @@ void AnimPainter::paintBlocks(MusicData mdt, cv::Mat image, std::vector <cv::Mat
 
 
 // ==================== Horizontal Lines =============
-    if (rProp.hlines)
+    if (rProp.hlines && blockL.hLines)
     {
         float note_height = (float)window_height*((float)(1.0)/((float)mdt.PitchMax - (float)mdt.PitchMin))*vZoom; // this is the height of a note in pixels, i.e. the vertical space between 2 midi notes in the image
         int basePitchRef = mdt.PitchMax%12; // this is the reference for the pitch
@@ -1090,9 +1090,14 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
 {
     int zoom = endMidiTime - startMidiTime;
     int curr_pos_middle = (startMidiTime + (zoom)/2);
+    int p_x = chordL.x_pos*window_width;
+    int p_y = chordL.y_pos*window_height;
+
+    cv::Point centre = cv::Point(p_x, p_y);
+    int diam = chordL.w;
 
     // ============ Displaying note names ==============
-    if (rProp.note_names && rProp.note_names_where == 0) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
+    if (chordL.CLType == ChordLayers::ChordLayerType::PitchNames) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
     {
         std::list<chordWithTime>::iterator it;
         std::list<chordWithTime>::iterator it_next;
@@ -1103,12 +1108,12 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end())
             {
                 std::string ptStr = "Pitches:";
-                ptStr = chordWT.Chord.getPitchesStr(rProp.accidentalSharp, chordL.ChordStarTrack);
+                ptStr = chordWT.Chord.getPitchesStr(chordL.AccidentalSharp, chordL.ChordStarTrack);
                 cv::putText(image,
                         ptStr,//"Here is some text",
-                        cv::Point(10,30), // Coordinates
+                        centre, // Coordinates
                         cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
-                        1.0, // Scale. 2.0 = 2x bigger
+                        (float) chordL.w/100, // Scale. 2.0 = 2x bigger
                         cv::Scalar(255,255,255), // BGR Color
                         1, // Line Thickness (Optional)
                         cv::LINE_AA); // Anti-alias (Optional)
@@ -1121,7 +1126,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
     // ============ Displaying chord names ============== ToDo
 
     // ============ Displaying circle / star ==============
-    if (rProp.chord_star)
+    if (chordL.CLType == ChordLayers::ChordLayerType::ChordStar)
     {
         std::list<chordWithTime>::iterator it;
         std::list<chordWithTime>::iterator it_next;
@@ -1131,19 +1136,17 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
             chordWithTime chordWT_next = *it_next;
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end()) // if it is the chord currently being played
             {
-                int diam = 100;
-                chord::circle type = rProp.chord_star_type;
-                cv::Point centre = cv::Point(window_width/4, window_height/4);
-                if ( ! (rProp.note_names_where == 1 && rProp.note_names))
+                chord::circle type = chordL.ChordStarType;
+                if ( ! (chordL.NoteNamesOnStar))
                 {
-                    dispChordDisc(type, image, centre, diam, false, rProp.turn_chord_circle, rProp.accidentalSharp);
+                    dispChordDisc(type, image, centre, diam, false, chordL.TurnChordCircle, chordL.AccidentalSharp);
                 }
-                else if (rProp.note_names_where == 1 && rProp.note_names)
+                else if (chordL.NoteNamesOnStar)
                 {
-                    dispChordDisc(type, image, centre, diam, true, rProp.turn_chord_circle, rProp.accidentalSharp);
+                    dispChordDisc(type, image, centre, diam, true, chordL.TurnChordCircle, chordL.AccidentalSharp);
                 }
                 chord currChord = chordWT.Chord;
-                renderChordStar(currChord, type, image, centre, diam, chordL.ChordStarTrack, rProp.turn_chord_circle);
+                renderChordStar(currChord, type, image, centre, diam, chordL.ChordStarTrack, chordL.TurnChordCircle);
             }
 
         }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RenderWidget</class>
- <widget class="QDockWidget" name="RenderWidget">
+ <class>RenderSetup</class>
+ <widget class="QDockWidget" name="RenderSetup">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -514,83 +514,6 @@
          <string>Render shapes with antialias</string>
         </property>
        </widget>
-      </widget>
-      <widget class="QWidget" name="tab_6">
-       <attribute name="title">
-        <string>Chord analysis</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="2" column="1">
-         <widget class="QComboBox" name="cmb_dispNoteNamesWhere">
-          <item>
-           <property name="text">
-            <string>as a line</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>on the chord star</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QComboBox" name="combox_chordStar">
-          <item>
-           <property name="text">
-            <string>Circle of semitones</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Circle of fifths</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QComboBox" name="cb_sharpFlat">
-          <item>
-           <property name="text">
-            <string>b</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>#</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QCheckBox" name="cb_dispChordNames">
-          <property name="text">
-           <string>Display chord names</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2">
-         <widget class="QSpinBox" name="spb_chordStarOffset">
-          <property name="maximum">
-           <number>11</number>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QCheckBox" name="cb_dispChordStar">
-          <property name="text">
-           <string>Display chord star</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="cb_dispNoteNames">
-          <property name="text">
-           <string>Display names of notes</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </widget>
       <widget class="QWidget" name="tab_5">
        <attribute name="title">

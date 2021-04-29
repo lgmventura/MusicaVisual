@@ -316,7 +316,7 @@ void MainWindow::on_pb_animation_clicked()
 
 void MainWindow::on_actionRendering_Properties_triggered()
 {
-    dwrenderprop = new RenderWidget(RProp, this, Mdt, VRec);
+    dwrenderprop = new RenderSetup(RProp, this, Mdt, VRec);
     dwrenderprop->show();
 }
 
@@ -413,7 +413,7 @@ void MainWindow::loadSettings(string filePath)
     if (dwrenderprop != nullptr)
     {
         dwrenderprop->close();
-        dwrenderprop = new RenderWidget(RProp, this, Mdt, VRec);
+        dwrenderprop = new RenderSetup(RProp, this, Mdt, VRec);
         dwrenderprop->show();
     }
 }

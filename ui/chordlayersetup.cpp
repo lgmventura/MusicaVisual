@@ -10,7 +10,30 @@ ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, QWidget *p
     this->Mdt = mdt;
     this->ChordL = chordL;
 
+    // updating UI elements:
+    // Tab Type/Size:
+    int numTypes = sizeof(ChordSetupOptions::ChordLayerTypes)/sizeof(ChordSetupOptions::ChordLayerTypes[0]);
+    for (int iType = 0; iType < numTypes; iType++)
+    {
+        QString qItem = QString::fromStdString(ChordSetupOptions::ChordLayerTypes[iType]);
+        ui->cb_type->addItem(qItem);
+    }
+    ui->cb_type->setCurrentIndex(ChordL->CLType);
+    ui->dspb_posx->setValue(this->ChordL->x_pos);
+    ui->dspb_posy->setValue(this->ChordL->y_pos);
+    ui->spb_sizew->setValue(this->ChordL->w);
+    ui->spb_sizeh->setValue(this->ChordL->h);
+
+    // Tab tracks:
     this->drawUI();
+
+    // Tab note names:
+    ui->cb_sharpFlat->setCurrentIndex((int) ChordL->AccidentalSharp);
+
+    // Tab chord star:
+    ui->combox_chordStar->setCurrentIndex(ChordL->ChordStarType);
+    ui->spb_chordStarOffset->setValue(ChordL->TurnChordCircle);
+    ui->cb_dispNoteNamesStar->setChecked(ChordL->NoteNamesOnStar);
 }
 
 ChordLayerSetup::~ChordLayerSetup()
@@ -20,10 +43,10 @@ ChordLayerSetup::~ChordLayerSetup()
 
 void ChordLayerSetup::drawUI()
 {
-    this->drawTabChordStars();
+    this->drawTabTracks();
 }
 
-void ChordLayerSetup::drawTabChordStars()
+void ChordLayerSetup::drawTabTracks()
 {
     // Setting up layout:
     mainWidgetChordStars = new QWidget(ui->scrollChordStars);
@@ -106,4 +129,105 @@ void ChordLayerSetup::on_cb_allTracksChordStars_stateChanged(int arg1)
         return;
     }
     this->allTracksToggledChordStars(checked);
+}
+
+void ChordLayerSetup::on_dspb_posx_valueChanged(double arg1)
+{
+    this->ChordL->x_pos = arg1;
+}
+
+void ChordLayerSetup::on_dspb_posy_valueChanged(double arg1)
+{
+    this->ChordL->y_pos = arg1;
+}
+
+void ChordLayerSetup::on_spb_sizew_valueChanged(int arg1)
+{
+    this->ChordL->w = arg1;
+}
+
+void ChordLayerSetup::on_spb_sizeh_valueChanged(int arg1)
+{
+    this->ChordL->h = arg1;
+}
+
+void ChordLayerSetup::on_cb_type_currentIndexChanged(int index)
+{
+    this->ChordL->CLType = ChordLayers::ChordLayerType(index);
+}
+
+
+//void ChordLayerSetup::on_cb_dispChordNames_toggled(bool checked)
+//{
+//    RProp->chord_names = checked;
+//}
+
+//void ChordLayerSetup::on_cb_dispNoteNames_toggled(bool checked)
+//{
+//    RProp->note_names = checked;
+//}
+
+//void ChordLayerSetup::on_cb_dispChordStar_toggled(bool checked)
+//{
+//    RProp->chord_star = checked;
+//}
+
+//void ChordLayerSetup::on_combox_chordStar_currentIndexChanged(int index)
+//{
+//    if (index == 0)
+//    {
+//        RProp->chord_star_type = chord::circleOfSemitones;
+//    }
+//    else if (index == 1)
+//    {
+//        RProp->chord_star_type = chord::circleOfFifths;
+//    }
+//}
+
+//void ChordLayerSetup::on_cmb_dispNoteNamesWhere_currentIndexChanged(int index)
+//{
+//    RProp->note_names_where = index;
+//}
+
+//void ChordLayerSetup::on_spb_chordStarOffset_valueChanged(int arg1)
+//{
+//    RProp->turn_chord_circle = arg1;
+//}
+
+//void ChordLayerSetup::on_cb_sharpFlat_currentIndexChanged(int index)
+//{
+//    if (index == 0)
+//        RProp->accidentalSharp = false;
+//    else if (index == 1)
+//        RProp->accidentalSharp = true;
+//}
+
+void ChordLayerSetup::on_cb_sharpFlat_currentIndexChanged(int index)
+{
+    if (index == 0)
+            ChordL->AccidentalSharp = false;
+        else if (index == 1)
+            ChordL->AccidentalSharp = true;
+}
+
+void ChordLayerSetup::on_combox_chordStar_currentIndexChanged(int index)
+{
+        if (index == 0)
+        {
+            ChordL->ChordStarType = chord::circleOfSemitones;
+        }
+        else if (index == 1)
+        {
+            ChordL->ChordStarType = chord::circleOfFifths;
+        }
+}
+
+void ChordLayerSetup::on_spb_chordStarOffset_valueChanged(int arg1)
+{
+    ChordL->TurnChordCircle = arg1;
+}
+
+void ChordLayerSetup::on_cb_dispNoteNamesStar_toggled(bool checked)
+{
+    ChordL->NoteNamesOnStar = checked;
 }

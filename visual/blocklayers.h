@@ -66,6 +66,8 @@ public:
     int colorScheme[128] = {0};
     int maxBlur = 20;
 
+    bool hLines = true;
+    bool vLines = true;
     double hZoomMult = 1;
     double vZoomMult = 1;
 

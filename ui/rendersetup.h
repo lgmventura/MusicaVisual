@@ -33,16 +33,16 @@
 #include "visual/videorecorder.h"
 
 namespace Ui {
-class RenderWidget;
+class RenderSetup;
 }
 
-class RenderWidget : public QDockWidget
+class RenderSetup : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit RenderWidget(RenderP *rProp, QWidget *parent = 0, MusicData *mdt = nullptr, VideoRecorder *vRec = nullptr);
-    ~RenderWidget();
+    explicit RenderSetup(RenderP *rProp, QWidget *parent = 0, MusicData *mdt = nullptr, VideoRecorder *vRec = nullptr);
+    ~RenderSetup();
 
 private slots:
     void on_checkBox_toggled(bool checked);
@@ -95,21 +95,7 @@ private slots:
 
     void on_sb_vLineTrack_valueChanged(int arg1);
 
-    void on_cb_dispChordNames_toggled(bool checked);
-
-    void on_cb_dispNoteNames_toggled(bool checked);
-
-    void on_cb_dispChordStar_toggled(bool checked);
-
-    void on_combox_chordStar_currentIndexChanged(int index);
-
-    void on_cmb_dispNoteNamesWhere_currentIndexChanged(int index);
-
-    void on_spb_chordStarOffset_valueChanged(int arg1);
-
     void on_cb_vLineTSig_toggled(bool checked);
-
-    void on_cb_sharpFlat_currentIndexChanged(int index);
 
     void on_cb_AA_toggled(bool checked);
 
@@ -118,7 +104,7 @@ private slots:
     void on_spb_maxDistInterLines_valueChanged(int arg1);
 
 private:
-    Ui::RenderWidget *ui;
+    Ui::RenderSetup *ui;
     RenderP *RProp;
 
     QColor hlines;

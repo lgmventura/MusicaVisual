@@ -29,6 +29,8 @@ void BlockLayerSetup::drawUi()
     // update existing elements:
     ui->dspb_hZoomMult->setValue(this->BlockL->hZoomMult);
     ui->dspb_vZoomMult->setValue(this->BlockL->vZoomMult);
+    ui->cb_hLines->setChecked(this->BlockL->hLines);
+    ui->cb_vLines->setChecked(this->BlockL->vLines);
 
     // Setting up layout:
     mainWidget = new QWidget(ui->scrollArea);
@@ -262,4 +264,14 @@ void BlockLayerSetup::on_dspb_hZoomMult_valueChanged(double arg1)
 void BlockLayerSetup::on_dspb_vZoomMult_valueChanged(double arg1)
 {
     this->BlockL->vZoomMult = arg1;
+}
+
+void BlockLayerSetup::on_cb_hLines_toggled(bool checked)
+{
+    this->BlockL->hLines = checked;
+}
+
+void BlockLayerSetup::on_cb_vLines_toggled(bool checked)
+{
+    this->BlockL->vLines = checked;
 }

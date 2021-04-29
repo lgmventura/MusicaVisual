@@ -64,6 +64,10 @@ private slots:
 
     void on_dspb_vZoomMult_valueChanged(double arg1);
 
+    void on_cb_hLines_toggled(bool checked);
+
+    void on_cb_vLines_toggled(bool checked);
+
 signals:
     void changeTrackVisibility(int track);
     //signal for colour change in the ColourWidget class
