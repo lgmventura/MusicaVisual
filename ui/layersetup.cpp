@@ -23,7 +23,7 @@ LayerSetup::~LayerSetup()
 void LayerSetup::initUI()
 {
     // creating tableWidget:
-    this->tableWidget = new QTableWidgetFlex();
+    this->tableWidget = new QTableWidget();
     ui->gridLayout->addWidget(this->tableWidget, 0, 1, 0, -1);
 
     // initilizing columns:
@@ -167,12 +167,15 @@ void LayerSetup::on_pb_addLayer_clicked()
 void LayerSetup::on_pb_removeLayer_clicked()
 {
     int row = this->tableWidget->currentRow();
-    std::list<Layer>::iterator it = Layers->begin();
-    std::advance(it, row);
-    this->Layers->erase(it);
-    this->tableWidget->removeRow(row);
-    this->disconnectTabWidgets();
-    this->connectTableWidgets();
+    if (row >= 0)
+    {
+        std::list<Layer>::iterator it = Layers->begin();
+        std::advance(it, row);
+        this->Layers->erase(it);
+        this->tableWidget->removeRow(row);
+        this->disconnectTabWidgets();
+        this->connectTableWidgets();
+    }
 }
 
 void LayerSetup::insertLayerActiveCheckBox(int row, Layer *layer)
@@ -221,7 +224,6 @@ void LayerSetup::insertLayerSetupPButton(int row, Layer *layer)
 
 void LayerSetup::moveLayer(int fromRow, int toRow)
 {
-    this->tableWidget->moveRow(fromRow, toRow);
     std::list<Layer>::iterator it = this->Layers->begin();
     std::advance(it, fromRow);
     Layer movedLayer = (*it);
@@ -229,22 +231,15 @@ void LayerSetup::moveLayer(int fromRow, int toRow)
     it = this->Layers->begin();
     std::advance(it, toRow);
     this->Layers->insert(it, movedLayer);
+
+    this->disconnectTabWidgets();
+    for (int iRow = 0; iRow < this->tableWidget->rowCount(); iRow++)
+    {
+        this->tableWidget->removeRow(iRow);
+    }
+    this->initUI();
+    this->tableWidget->selectRow(toRow);
 }
-
-void LayerSetup::moveLayerUpDown(bool up, int fromRow)
-{
-    this->tableWidget->moveRows1Step(up);
-    std::list<Layer>::iterator it = this->Layers->begin();
-    std::advance(it, fromRow);
-    Layer movedLayer = (*it);
-    this->Layers->erase(it);
-    it = this->Layers->begin();
-    int toRow = (up ? fromRow-1 : fromRow+1);
-    std::advance(it, toRow);
-    this->Layers->insert(it, movedLayer);
-}
-
-
 
 
 void LayerSetup::connectTableWidgets()
@@ -290,7 +285,7 @@ void LayerSetup::on_pb_moveUp_clicked()
     int currRow = this->tableWidget->currentRow();
     if (currRow > 0)
     {
-        this->moveLayerUpDown(true, currRow);
+        this->moveLayer(currRow, currRow-1);
     }
 }
 
@@ -298,8 +293,8 @@ void LayerSetup::on_pb_moveDown_clicked()
 {
     int currRow = this->tableWidget->currentRow();
     int numRows = this->tableWidget->rowCount();
-    if (currRow < numRows)
+    if (currRow >= 0 && currRow < numRows - 1)
     {
-        this->moveLayerUpDown(false, currRow);
+        this->moveLayer(currRow, currRow+1);
     }
 }

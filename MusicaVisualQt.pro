@@ -35,7 +35,6 @@ SOURCES += main.cpp\
     csappmidi/src-library/MidiMessage.cpp \
     csappmidi/src-library/Binasc.cpp \
     utils/colour.cpp \
-    utils/qtablewidgetflex.cpp \
     visual/animation.cpp \
     visual/blocklayers.cpp \
     visual/chordlayers.cpp \
@@ -72,7 +71,6 @@ HEADERS  += \
     csappmidi/include/MidiMessage.h \
     csappmidi/include/Options.h \
     utils/colour.h \
-    utils/qtablewidgetflex.h \
     visual/animation.h \
     visual/blocklayers.h \
     visual/chordlayers.h \

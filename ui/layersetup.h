@@ -5,8 +5,8 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QTableWidget>
 
-#include "utils/qtablewidgetflex.h"
 #include "visual/layer.h"
 #include "musicdata.h"
 #include "ui/blocklayersetup.h"
@@ -28,7 +28,7 @@ public:
 private:
     Ui::LayerSetup *ui;
 
-    QTableWidgetFlex *tableWidget;
+    QTableWidget *tableWidget;
 
     std::list<Layer> *Layers;
     MusicData *Mdt;
@@ -44,7 +44,6 @@ private:
     void insertLayerTypeComboBox(int row, Layer *layer);
     void insertLayerSetupPButton(int row, Layer *layer);
     void moveLayer(int fromRow, int toRow);
-    void moveLayerUpDown(bool up, int fromRow);
     void connectTableWidgets();
     void disconnectTabWidgets();
 
