@@ -22,11 +22,15 @@ LayerSetup::~LayerSetup()
 
 void LayerSetup::initUI()
 {
+    // creating tableWidget:
+    this->tableWidget = new QTableWidgetFlex();
+    ui->gridLayout->addWidget(this->tableWidget, 0, 1, 0, -1);
+
     // initilizing columns:
-    ui->tableWidget->insertColumn(0); // For checkboxes
-    ui->tableWidget->insertColumn(1); // For names
-    ui->tableWidget->insertColumn(2); // For layer type
-    ui->tableWidget->insertColumn(3); // For pushbutton edit layer
+    this->tableWidget->insertColumn(0); // For checkboxes
+    this->tableWidget->insertColumn(1); // For names
+    this->tableWidget->insertColumn(2); // For layer type
+    this->tableWidget->insertColumn(3); // For pushbutton edit layer
 
     // initilizing rows for each layer:
     std::list<Layer>::iterator it = Layers->begin();
@@ -36,7 +40,7 @@ void LayerSetup::initUI()
         Layer currLayer = *it;
 
         // inserting row:
-        ui->tableWidget->insertRow(iRow);
+        this->tableWidget->insertRow(iRow);
 
         // creating "blocks active" checkbox:
         this->insertLayerActiveCheckBox(iRow, &currLayer);
@@ -51,13 +55,23 @@ void LayerSetup::initUI()
         this->insertLayerSetupPButton(iRow, &currLayer);
 
     }
-    ui->tableWidget->resizeColumnsToContents();
+    this->tableWidget->resizeColumnsToContents();
     this->connectTableWidgets();
+
+//    this->tableWidget->setDragEnabled(true);
+//    this->tableWidget->setAcceptDrops(true);
+//    this->tableWidget->viewport()->setAcceptDrops(true);
+//    this->tableWidget->setDragDropOverwriteMode(false);
+//    this->tableWidget->setDropIndicatorShown(true);
+
+//    this->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+//    this->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+//    this->tableWidget->setDragDropMode(QAbstractItemView::InternalMove);
 }
 
 void LayerSetup::layerActiveChanged(int layer)
 {
-    QCheckBox *cb = (QCheckBox*) ui->tableWidget->cellWidget(layer, 0);
+    QCheckBox *cb = (QCheckBox*) this->tableWidget->cellWidget(layer, 0);
     bool state = cb->isChecked();
 
     std::list<Layer>::iterator it = Layers->begin();
@@ -67,7 +81,7 @@ void LayerSetup::layerActiveChanged(int layer)
 
 void LayerSetup::layerNameChanged(int layer)
 {
-    QLineEdit *ledt = (QLineEdit*) ui->tableWidget->cellWidget(layer, 1);
+    QLineEdit *ledt = (QLineEdit*) this->tableWidget->cellWidget(layer, 1);
     QString qName = ledt->text();
 
     std::list<Layer>::iterator it = Layers->begin();
@@ -77,7 +91,7 @@ void LayerSetup::layerNameChanged(int layer)
 
 void LayerSetup::layerTypeChanged(int layer)
 {
-    QComboBox *cmbx = (QComboBox*) ui->tableWidget->cellWidget(layer, 2);
+    QComboBox *cmbx = (QComboBox*) this->tableWidget->cellWidget(layer, 2);
     int typeIndex = cmbx->currentIndex();
 
     std::list<Layer>::iterator it = Layers->begin();
@@ -87,9 +101,9 @@ void LayerSetup::layerTypeChanged(int layer)
 
 void LayerSetup::layerEditTriggered(int layer)
 {
-    int row = ui->tableWidget->currentRow();
+    int row = this->tableWidget->currentRow();
 
-    QComboBox *cmbx = (QComboBox*) ui->tableWidget->cellWidget(row, 2);
+    QComboBox *cmbx = (QComboBox*) this->tableWidget->cellWidget(row, 2);
     int typeIndex = cmbx->currentIndex();
 
     std::list<Layer>::iterator it = this->Layers->begin();
@@ -126,12 +140,12 @@ void LayerSetup::on_pb_addLayer_clicked()
     Layer newLayer;
     int numLayers = Layers->size();
     newLayer.Name = "Layer " + std::to_string(numLayers);
-    int row = ui->tableWidget->currentRow();
+    int row = this->tableWidget->currentRow();
     if (row == -1) {row = 0;} // if all were deleted, currentRow returns -1
     std::list<Layer>::iterator it = Layers->begin();
     for (int iPos = 0; iPos < row; iPos++) { it++; }
     this->Layers->insert(it, newLayer);
-    ui->tableWidget->insertRow(row);
+    this->tableWidget->insertRow(row);
 
     // creating "blocks active" checkbox:
     this->insertLayerActiveCheckBox(row, &newLayer);
@@ -152,11 +166,11 @@ void LayerSetup::on_pb_addLayer_clicked()
 
 void LayerSetup::on_pb_removeLayer_clicked()
 {
-    int row = ui->tableWidget->currentRow();
+    int row = this->tableWidget->currentRow();
     std::list<Layer>::iterator it = Layers->begin();
     std::advance(it, row);
     this->Layers->erase(it);
-    ui->tableWidget->removeRow(row);
+    this->tableWidget->removeRow(row);
     this->disconnectTabWidgets();
     this->connectTableWidgets();
 }
@@ -168,7 +182,7 @@ void LayerSetup::insertLayerActiveCheckBox(int row, Layer *layer)
     cb_layerActive->setChecked(layer->LayerActive);
 
     //QObject::connect(this, SIGNAL(changeTrackVisibility(int)), this, SLOT(trackVisibilityChanged(int)));
-    ui->tableWidget->setCellWidget(row, 0, cb_layerActive);
+    this->tableWidget->setCellWidget(row, 0, cb_layerActive);
 }
 
 void LayerSetup::insertLayerNameLineEdit(int row, Layer *layer)
@@ -179,7 +193,7 @@ void LayerSetup::insertLayerNameLineEdit(int row, Layer *layer)
     le_layerName->setText(qLayerName);
 
     //QObject::connect(this, SIGNAL(changeTrackVisibility(int)), this, SLOT(trackVisibilityChanged(int)));
-    ui->tableWidget->setCellWidget(row, 1, le_layerName);
+    this->tableWidget->setCellWidget(row, 1, le_layerName);
 }
 
 void LayerSetup::insertLayerTypeComboBox(int row, Layer *layer)
@@ -192,7 +206,7 @@ void LayerSetup::insertLayerTypeComboBox(int row, Layer *layer)
 
     cmb_layerType->setCurrentIndex(currentType);
 
-    ui->tableWidget->setCellWidget(row, 2, cmb_layerType);
+    this->tableWidget->setCellWidget(row, 2, cmb_layerType);
 }
 
 void LayerSetup::insertLayerSetupPButton(int row, Layer *layer)
@@ -202,8 +216,36 @@ void LayerSetup::insertLayerSetupPButton(int row, Layer *layer)
     pb_editLayer->setText(qPbName);
 
 
-    ui->tableWidget->setCellWidget(row, 3, pb_editLayer);
+    this->tableWidget->setCellWidget(row, 3, pb_editLayer);
 }
+
+void LayerSetup::moveLayer(int fromRow, int toRow)
+{
+    this->tableWidget->moveRow(fromRow, toRow);
+    std::list<Layer>::iterator it = this->Layers->begin();
+    std::advance(it, fromRow);
+    Layer movedLayer = (*it);
+    this->Layers->erase(it);
+    it = this->Layers->begin();
+    std::advance(it, toRow);
+    this->Layers->insert(it, movedLayer);
+}
+
+void LayerSetup::moveLayerUpDown(bool up, int fromRow)
+{
+    this->tableWidget->moveRows1Step(up);
+    std::list<Layer>::iterator it = this->Layers->begin();
+    std::advance(it, fromRow);
+    Layer movedLayer = (*it);
+    this->Layers->erase(it);
+    it = this->Layers->begin();
+    int toRow = (up ? fromRow-1 : fromRow+1);
+    std::advance(it, toRow);
+    this->Layers->insert(it, movedLayer);
+}
+
+
+
 
 void LayerSetup::connectTableWidgets()
 {
@@ -211,10 +253,10 @@ void LayerSetup::connectTableWidgets()
     for (int iRow = 0; it != this->Layers->end(); it++, iRow++)
     {
         // getting widgets:
-        QCheckBox *cb = (QCheckBox*) ui->tableWidget->cellWidget(iRow, 0);
-        QLineEdit *ledt = (QLineEdit*) ui->tableWidget->cellWidget(iRow, 1);
-        QComboBox *cmbx = (QComboBox*) ui->tableWidget->cellWidget(iRow, 2);
-        QPushButton *pb = (QPushButton*) ui->tableWidget->cellWidget(iRow, 3);
+        QCheckBox *cb = (QCheckBox*) this->tableWidget->cellWidget(iRow, 0);
+        QLineEdit *ledt = (QLineEdit*) this->tableWidget->cellWidget(iRow, 1);
+        QComboBox *cmbx = (QComboBox*) this->tableWidget->cellWidget(iRow, 2);
+        QPushButton *pb = (QPushButton*) this->tableWidget->cellWidget(iRow, 3);
 
         // connecting them:
         QObject::connect(cb, &QCheckBox::toggled, [this, iRow] { layerActiveChanged(iRow); });
@@ -230,15 +272,34 @@ void LayerSetup::disconnectTabWidgets()
     for (int iRow = 0; it != this->Layers->end(); it++, iRow++)
     {
         // getting widgets:
-        QCheckBox *cb = (QCheckBox*) ui->tableWidget->cellWidget(iRow, 0);
-        QLineEdit *ledt = (QLineEdit*) ui->tableWidget->cellWidget(iRow, 1);
-        QComboBox *cmbx = (QComboBox*) ui->tableWidget->cellWidget(iRow, 2);
-        QPushButton *pb = (QPushButton*) ui->tableWidget->cellWidget(iRow, 3);
+        QCheckBox *cb = (QCheckBox*) this->tableWidget->cellWidget(iRow, 0);
+        QLineEdit *ledt = (QLineEdit*) this->tableWidget->cellWidget(iRow, 1);
+        QComboBox *cmbx = (QComboBox*) this->tableWidget->cellWidget(iRow, 2);
+        QPushButton *pb = (QPushButton*) this->tableWidget->cellWidget(iRow, 3);
 
         // connecting them:
         QObject::disconnect(cb, 0,0,0);
         QObject::disconnect(ledt, 0,0,0);
         QObject::disconnect(cmbx, 0,0,0);
         QObject::disconnect(pb, 0,0,0);
+    }
+}
+
+void LayerSetup::on_pb_moveUp_clicked()
+{
+    int currRow = this->tableWidget->currentRow();
+    if (currRow > 0)
+    {
+        this->moveLayerUpDown(true, currRow);
+    }
+}
+
+void LayerSetup::on_pb_moveDown_clicked()
+{
+    int currRow = this->tableWidget->currentRow();
+    int numRows = this->tableWidget->rowCount();
+    if (currRow < numRows)
+    {
+        this->moveLayerUpDown(false, currRow);
     }
 }

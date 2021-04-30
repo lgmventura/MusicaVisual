@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 
+#include "utils/qtablewidgetflex.h"
 #include "visual/layer.h"
 #include "musicdata.h"
 #include "ui/blocklayersetup.h"
@@ -27,6 +28,8 @@ public:
 private:
     Ui::LayerSetup *ui;
 
+    QTableWidgetFlex *tableWidget;
+
     std::list<Layer> *Layers;
     MusicData *Mdt;
 
@@ -40,6 +43,8 @@ private:
     void insertLayerNameLineEdit(int row, Layer *layer);
     void insertLayerTypeComboBox(int row, Layer *layer);
     void insertLayerSetupPButton(int row, Layer *layer);
+    void moveLayer(int fromRow, int toRow);
+    void moveLayerUpDown(bool up, int fromRow);
     void connectTableWidgets();
     void disconnectTabWidgets();
 
@@ -56,6 +61,8 @@ private slots:
 
 
 
+    void on_pb_moveUp_clicked();
+    void on_pb_moveDown_clicked();
 };
 
 #endif // LAYERSETUP_H
