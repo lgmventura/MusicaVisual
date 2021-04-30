@@ -64,13 +64,11 @@ MainWindow::MainWindow(QWidget *parent) :
     this->Lstp = nullptr;
     this->Mdt = new MusicData(); // create object MusicData
     this->VRec = new VideoRecorder(720, 480, 30); // dimensions, fps etc. will be eventually changed later
-    this->BlockL = new BlockLayers();
-    this->ChordL = new ChordLayers();
     this->RProp = new RenderP();
     this->Layers = new std::list<Layer>;
 
     Layer layer0;
-    layer0.Name = "Layer 0";
+    layer0.setName("Layer 0");
     this->Layers->push_back(layer0);
 }
 
@@ -370,9 +368,15 @@ void MainWindow::on_actionSave_settings_as_triggered()
 
 void MainWindow::saveSettings(string filePath)
 {
+    int numLayers = Layers->size();
     ofstream output_file(filePath, ios::binary);
-    output_file.write(reinterpret_cast<char*>(BlockL),sizeof(*BlockL));
     output_file.write(reinterpret_cast<char*>(RProp),sizeof(*RProp));
+    output_file.write(reinterpret_cast<char*>(&numLayers),sizeof(int));
+    std::list<Layer>::iterator it = Layers->begin();
+    for (int iLayer = 0; iLayer < numLayers; iLayer++, it++)
+    {
+        output_file.write(reinterpret_cast<char*>(&(*it)),sizeof(*it));
+    }
     output_file.close();
 }
 
@@ -395,8 +399,17 @@ void MainWindow::loadSettings(string filePath)
     ifstream input_file(filePath, ios::binary);
     try
     {
-        input_file.read(reinterpret_cast<char*>(BlockL),sizeof(*BlockL));
+        int numLayers = 0;
         input_file.read(reinterpret_cast<char*>(RProp),sizeof(*RProp));
+        input_file.read(reinterpret_cast<char*>(&numLayers),sizeof(int));
+        Layers->clear();
+        Layer *loadedLayer = new Layer();
+        for (int iLayer = 0; iLayer < numLayers; iLayer++)
+        {
+            input_file.read(reinterpret_cast<char*>(loadedLayer),sizeof(*loadedLayer));
+            this->Layers->push_back(*loadedLayer);
+        }
+
         cout << "Settings file could be correctly interpreted.";
     }
     catch (exception& e)
@@ -415,6 +428,10 @@ void MainWindow::loadSettings(string filePath)
         dwrenderprop->close();
         dwrenderprop = new RenderSetup(RProp, this, Mdt, VRec);
         dwrenderprop->show();
+    }
+    if (Lstp != nullptr)
+    {
+        this->Lstp->refresh();
     }
 }
 

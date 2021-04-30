@@ -8,10 +8,9 @@ class Layer
 {
 public:
     Layer();
+    ~Layer();
 
     enum LayerType {BlockLayer = 0, ChordLayer = 1};
-
-    std::string Name = "";
 
     bool LayerActive = true;
 
@@ -19,6 +18,12 @@ public:
 
     BlockLayers Bl;
     ChordLayers Cl;
+
+    std::string getName();
+    void setName(std::string);
+
+private:
+    char Name[128];
 
     // Ideas for later:
     // int BlendMode;

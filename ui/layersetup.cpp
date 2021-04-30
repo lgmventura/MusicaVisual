@@ -86,7 +86,7 @@ void LayerSetup::layerNameChanged(int layer)
 
     std::list<Layer>::iterator it = Layers->begin();
     std::advance(it, layer); // go to layer position
-    (*it).Name = qName.toStdString();
+    (*it).setName(qName.toStdString());
 }
 
 void LayerSetup::layerTypeChanged(int layer)
@@ -117,7 +117,7 @@ void LayerSetup::layerEditTriggered(int layer)
         }
         // set the current layer Bl object and the mainWindow as parent, otherwise, they don't move:
         Bls = new BlockLayerSetup(Mdt, &it->Bl, this->parentWidget());
-        QString qWindowTitle = "Block layer setup for " + QString::fromStdString((*it).Name);
+        QString qWindowTitle = "Block layer setup for " + QString::fromStdString((*it).getName());
         Bls->setWindowTitle(qWindowTitle);
         Bls->show();
     }
@@ -128,7 +128,7 @@ void LayerSetup::layerEditTriggered(int layer)
             Cls->close();
         }
         Cls = new ChordLayerSetup(Mdt, &it->Cl, this->parentWidget());
-        QString qWindowTitle = "Chord layer setup for " + QString::fromStdString((*it).Name);
+        QString qWindowTitle = "Chord layer setup for " + QString::fromStdString((*it).getName());
         Cls->setWindowTitle(qWindowTitle);
         Cls->resize(640, 480);
         Cls->show();
@@ -139,7 +139,7 @@ void LayerSetup::on_pb_addLayer_clicked()
 {
     Layer newLayer;
     int numLayers = Layers->size();
-    newLayer.Name = "Layer " + std::to_string(numLayers);
+    newLayer.setName("Layer " + std::to_string(numLayers));
     int row = this->tableWidget->currentRow();
     if (row == -1) {row = 0;} // if all were deleted, currentRow returns -1
     std::list<Layer>::iterator it = Layers->begin();
@@ -190,7 +190,7 @@ void LayerSetup::insertLayerActiveCheckBox(int row, Layer *layer)
 
 void LayerSetup::insertLayerNameLineEdit(int row, Layer *layer)
 {
-    std::string layerName = layer->Name;
+    std::string layerName = layer->getName();
     QString qLayerName = QString::fromStdString(layerName);
     QLineEdit *le_layerName = new QLineEdit(qLayerName);
     le_layerName->setText(qLayerName);
@@ -232,12 +232,7 @@ void LayerSetup::moveLayer(int fromRow, int toRow)
     std::advance(it, toRow);
     this->Layers->insert(it, movedLayer);
 
-    this->disconnectTabWidgets();
-    for (int iRow = 0; iRow < this->tableWidget->rowCount(); iRow++)
-    {
-        this->tableWidget->removeRow(iRow);
-    }
-    this->initUI();
+    this->refresh();
     this->tableWidget->selectRow(toRow);
 }
 
@@ -297,4 +292,15 @@ void LayerSetup::on_pb_moveDown_clicked()
     {
         this->moveLayer(currRow, currRow+1);
     }
+}
+
+
+void LayerSetup::refresh()
+{
+    this->disconnectTabWidgets();
+    for (int iRow = 0; iRow < this->tableWidget->rowCount(); iRow++)
+    {
+        this->tableWidget->removeRow(iRow);
+    }
+    this->initUI();
 }

@@ -25,6 +25,8 @@ public:
     explicit LayerSetup(std::list<Layer> *layers, MusicData *mdt, QWidget *parent = nullptr);
     ~LayerSetup();
 
+    void refresh();
+
 private:
     Ui::LayerSetup *ui;
 
