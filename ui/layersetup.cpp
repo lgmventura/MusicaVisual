@@ -244,11 +244,6 @@ void LayerSetup::moveLayer(int fromRow, int toRow)
     }
 
     this->Layers->splice(itTo, *this->Layers, itFrom);
-//    Layer movedLayer = (*it);
-//    this->Layers->erase(it);
-//    it = this->Layers->begin();
-//    std::advance(it, toRow);
-//    this->Layers->insert(it, movedLayer);
 
     this->refresh();
     this->tableWidget->selectRow(toRow);
