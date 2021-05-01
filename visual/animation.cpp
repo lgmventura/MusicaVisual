@@ -1156,8 +1156,8 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
 
 void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat> img_buffer_sep_tracks, int startMidiTime, int endMidiTime, int window_width, int window_height, std::list<Layer> layers, RenderP renderS)
 {
-    std::list<Layer>::iterator it = layers.begin();
-    for(int iLayer = 0; it != layers.end(); it++, iLayer++)
+    std::list<Layer>::reverse_iterator it = layers.rbegin();
+    for(int iLayer = 0; it != layers.rend(); it++, iLayer++)
     {
         // (*it) is now the layer of the current iteration
         if ((*it).LType == Layer::LayerType::BlockLayer && (*it).LayerActive == true)

@@ -231,13 +231,24 @@ void LayerSetup::insertLayerSetupPButton(int row, Layer *layer)
 
 void LayerSetup::moveLayer(int fromRow, int toRow)
 {
-    std::list<Layer>::iterator it = this->Layers->begin();
-    std::advance(it, fromRow);
-    Layer movedLayer = (*it);
-    this->Layers->erase(it);
-    it = this->Layers->begin();
-    std::advance(it, toRow);
-    this->Layers->insert(it, movedLayer);
+    std::list<Layer>::iterator itFrom = this->Layers->begin();
+    std::list<Layer>::iterator itTo = this->Layers->begin();
+    std::advance(itFrom, fromRow);
+    if (fromRow < toRow)
+    {
+        std::advance(itTo, toRow+1);
+    }
+    else
+    {
+        std::advance(itTo, toRow);
+    }
+
+    this->Layers->splice(itTo, *this->Layers, itFrom);
+//    Layer movedLayer = (*it);
+//    this->Layers->erase(it);
+//    it = this->Layers->begin();
+//    std::advance(it, toRow);
+//    this->Layers->insert(it, movedLayer);
 
     this->refresh();
     this->tableWidget->selectRow(toRow);
