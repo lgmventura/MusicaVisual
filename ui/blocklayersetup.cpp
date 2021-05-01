@@ -27,6 +27,7 @@ BlockLayerSetup::~BlockLayerSetup()
 void BlockLayerSetup::drawUi()
 {
     // update existing elements:
+    this->updateCbAllTracks();
     ui->dspb_hZoomMult->setValue(this->BlockL->hZoomMult);
     ui->dspb_vZoomMult->setValue(this->BlockL->vZoomMult);
     ui->cb_hLines->setChecked(this->BlockL->hLines);
@@ -151,7 +152,7 @@ void BlockLayerSetup::drawUi()
     }
 }
 
-void BlockLayerSetup::updateUi() // send a signal to all ui elements for them to update
+void BlockLayerSetup::refreshCurrentUiWidgets() // send a signal to all ui elements for them to update
 {
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
@@ -164,6 +165,12 @@ void BlockLayerSetup::updateUi() // send a signal to all ui elements for them to
     }
 }
 
+void BlockLayerSetup::changeBlockLayer(BlockLayers *newBlockL)
+{
+    this->BlockL = newBlockL;
+    this->drawUi();
+}
+
 // slots for UI elements:
 
 void BlockLayerSetup::trackVisibilityChanged(int track)
@@ -171,27 +178,7 @@ void BlockLayerSetup::trackVisibilityChanged(int track)
     bool state = Cb_trackActive->at(track)->isChecked();
     this->BlockL->active[track] = state;
 
-    // updating checkbox "all tracks" according to how many tracks are visible:
-    unsigned int numVisibleTracks = 0;
-    for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
-    {
-        if (this->BlockL->active[iTrack] == true)
-        {
-            numVisibleTracks++;
-        }
-    }
-    if (numVisibleTracks == 0)
-    {
-        ui->cb_allTracks->setCheckState(Qt::CheckState::Unchecked);
-    }
-    else if (numVisibleTracks == this->Mdt->NTracks)
-    {
-        ui->cb_allTracks->setCheckState(Qt::CheckState::Checked);
-    }
-    else
-    {
-        ui->cb_allTracks->setCheckState(Qt::CheckState::PartiallyChecked);
-    }
+    this->updateCbAllTracks();
 }
 
 void BlockLayerSetup::colourChanged(int track)
@@ -238,6 +225,31 @@ void BlockLayerSetup::allTracksToggled(bool checked)
     }
 }
 
+void BlockLayerSetup::updateCbAllTracks()
+{
+    // updating checkbox "all tracks" according to how many tracks are visible:
+    unsigned int numVisibleTracks = 0;
+    for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
+    {
+        if (this->BlockL->active[iTrack] == true)
+        {
+            numVisibleTracks++;
+        }
+    }
+    if (numVisibleTracks == 0)
+    {
+        ui->cb_allTracks->setCheckState(Qt::CheckState::Unchecked);
+    }
+    else if (numVisibleTracks == this->Mdt->NTracks)
+    {
+        ui->cb_allTracks->setCheckState(Qt::CheckState::Checked);
+    }
+    else
+    {
+        ui->cb_allTracks->setCheckState(Qt::CheckState::PartiallyChecked);
+    }
+}
+
 void BlockLayerSetup::on_cb_allTracks_stateChanged(int arg1)
 {
     bool checked = true;
@@ -254,6 +266,15 @@ void BlockLayerSetup::on_cb_allTracks_stateChanged(int arg1)
         return;
     }
     this->allTracksToggled(checked);
+}
+
+void BlockLayerSetup::on_cb_allTracks_clicked()
+{
+    // we want to see the state "partially checked" when we switch tracks, but we don't want to go through it clicking on the check box.
+    if (ui->cb_allTracks->checkState() == Qt::CheckState::PartiallyChecked)
+    {
+        this->allTracksToggled(true); // skip state partially checked when clicking there.
+    }
 }
 
 void BlockLayerSetup::on_dspb_hZoomMult_valueChanged(double arg1)
@@ -275,3 +296,4 @@ void BlockLayerSetup::on_cb_vLines_toggled(bool checked)
 {
     this->BlockL->vLines = checked;
 }
+

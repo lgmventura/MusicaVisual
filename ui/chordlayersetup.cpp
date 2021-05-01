@@ -9,7 +9,21 @@ ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, QWidget *p
 
     this->Mdt = mdt;
     this->ChordL = chordL;
+}
 
+ChordLayerSetup::~ChordLayerSetup()
+{
+    delete ui;
+}
+
+void ChordLayerSetup::changeChordLayer(ChordLayers *newChordL)
+{
+    this->ChordL = newChordL;
+    this->drawUi();
+}
+
+void ChordLayerSetup::drawUi()
+{
     // updating UI elements:
     // Tab Type/Size:
     int numTypes = sizeof(ChordSetupOptions::ChordLayerTypes)/sizeof(ChordSetupOptions::ChordLayerTypes[0]);
@@ -25,7 +39,7 @@ ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, QWidget *p
     ui->spb_sizeh->setValue(this->ChordL->h);
 
     // Tab tracks:
-    this->drawUI();
+    this->drawTabTracks();
 
     // Tab note names:
     ui->cb_sharpFlat->setCurrentIndex((int) ChordL->AccidentalSharp);
@@ -34,16 +48,6 @@ ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, QWidget *p
     ui->combox_chordStar->setCurrentIndex(ChordL->ChordStarType);
     ui->spb_chordStarOffset->setValue(ChordL->TurnChordCircle);
     ui->cb_dispNoteNamesStar->setChecked(ChordL->NoteNamesOnStar);
-}
-
-ChordLayerSetup::~ChordLayerSetup()
-{
-    delete ui;
-}
-
-void ChordLayerSetup::drawUI()
-{
-    this->drawTabTracks();
 }
 
 void ChordLayerSetup::drawTabTracks()
@@ -74,6 +78,7 @@ void ChordLayerSetup::drawTabTracks()
         Cb_trackActiveChordStars->push_back(cb_trackActive);
         layoutChordStars->addWidget(cb_trackActive, iTrack, 0, 1, 1, Qt::AlignLeft);
     }
+    this->updateCbAllTracks();
 }
 
 void ChordLayerSetup::chordStarTrackActiveChanged(int track)
@@ -81,6 +86,19 @@ void ChordLayerSetup::chordStarTrackActiveChanged(int track)
     bool state = Cb_trackActiveChordStars->at(track)->isChecked();
     this->ChordL->ChordStarTrack[track] = state;
 
+    this->updateCbAllTracks();
+}
+
+void ChordLayerSetup::on_cb_allTracks_clicked()
+{
+    if (ui->cb_allTracks->checkState() == Qt::CheckState::PartiallyChecked)
+    {
+        this->allTracksToggled(true); // skipping state partially checked when clicking the check box
+    }
+}
+
+void ChordLayerSetup::updateCbAllTracks()
+{
     // updating checkbox "all tracks" according to how many tracks are visible:
     unsigned int numVisibleTracks = 0;
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
@@ -90,21 +108,21 @@ void ChordLayerSetup::chordStarTrackActiveChanged(int track)
             numVisibleTracks++;
         }
     }
-    if (numVisibleTracks == 0)
+    if (numVisibleTracks == 0) // no visible tracks
     {
-        ui->cb_allTracksChordStars->setCheckState(Qt::CheckState::Unchecked);
+        ui->cb_allTracks->setCheckState(Qt::CheckState::Unchecked);
     }
-    else if (numVisibleTracks == this->Mdt->NTracks)
+    else if (numVisibleTracks == this->Mdt->NTracks) // all tracks visible
     {
-        ui->cb_allTracksChordStars->setCheckState(Qt::CheckState::Checked);
+        ui->cb_allTracks->setCheckState(Qt::CheckState::Checked);
     }
-    else
+    else // any number in between 0 and N of tracks visible
     {
-        ui->cb_allTracksChordStars->setCheckState(Qt::CheckState::PartiallyChecked);
+        ui->cb_allTracks->setCheckState(Qt::CheckState::PartiallyChecked);
     }
 }
 
-void ChordLayerSetup::allTracksToggledChordStars(bool checked)
+void ChordLayerSetup::allTracksToggled(bool checked)
 {
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
@@ -113,7 +131,7 @@ void ChordLayerSetup::allTracksToggledChordStars(bool checked)
     }
 }
 
-void ChordLayerSetup::on_cb_allTracksChordStars_stateChanged(int arg1)
+void ChordLayerSetup::on_cb_allTracks_stateChanged(int arg1)
 {
     bool checked = true;
     if (arg1 == Qt::CheckState::Unchecked)
@@ -128,7 +146,7 @@ void ChordLayerSetup::on_cb_allTracksChordStars_stateChanged(int arg1)
     {
         return;
     }
-    this->allTracksToggledChordStars(checked);
+    this->allTracksToggled(checked);
 }
 
 void ChordLayerSetup::on_dspb_posx_valueChanged(double arg1)
@@ -231,3 +249,4 @@ void ChordLayerSetup::on_cb_dispNoteNamesStar_toggled(bool checked)
 {
     ChordL->NoteNamesOnStar = checked;
 }
+

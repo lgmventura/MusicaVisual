@@ -21,7 +21,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="type">
        <attribute name="title">
@@ -97,7 +97,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QCheckBox" name="cb_allTracksChordStars">
+         <widget class="QCheckBox" name="cb_allTracks">
           <property name="text">
            <string>All tracks</string>
           </property>

@@ -42,14 +42,18 @@ RenderSetup::RenderSetup(RenderP *rProp, QWidget *parent, MusicData *mdt, VideoR
     this->Mdt = mdt;
     this->VRec = vRec;
 
+    this->refreshUi();
+}
+
+RenderSetup::~RenderSetup()
+{
+    delete ui;
+}
+
+void RenderSetup::refreshUi()
+{
     // Set UI state to current state:
-    ui->lineEdit->setEnabled(false);
-    if (vRec != nullptr)
-        ui->lineEdit->setText(QString::fromStdString(vRec->CodecFourCC));
-    else
-    {
-        ui->cmb_videoCodec->setEnabled(false); // no valid video object (will crash if accessed)
-    }
+
     // Tab 0: vertical range/shift
     ui->spinBox_3->setValue(RProp->vertRange);
     ui->spinBox_4->setValue(RProp->vertShift);
@@ -94,14 +98,6 @@ RenderSetup::RenderSetup(RenderP *rProp, QWidget *parent, MusicData *mdt, VideoR
     else if (RProp->shapeLineType == cv::LINE_AA)
         ui->cb_AA->setChecked(true);
 
-//    // Tab 3: chord analysis:
-//    ui->cb_sharpFlat->setCurrentIndex(RProp->accidentalSharp);
-//    ui->cb_dispChordStar->setChecked(RProp->chord_star);
-//    ui->cb_dispNoteNames->setChecked(RProp->note_names);
-//    ui->cb_dispChordNames->setChecked(RProp->chord_names);
-//    ui->combox_chordStar->setCurrentIndex(RProp->chord_star_type);
-//    ui->cmb_dispNoteNamesWhere->setCurrentIndex(RProp->note_names_where);
-//    ui->spb_chordStarOffset->setValue(RProp->turn_chord_circle);
 
     // Tab 4: extra time:
     ui->checkBox_6->setChecked(RProp->extra_time[0]);
@@ -109,14 +105,15 @@ RenderSetup::RenderSetup(RenderP *rProp, QWidget *parent, MusicData *mdt, VideoR
 
     // Tab 5: render video codec::
     ui->cmb_videoCodec->setCurrentIndex(RenderWidMaps::CMB_FOURCC_VK[VRec->CodecFourCC]);
-
-
+    ui->lineEdit->setEnabled(false);
+    if (this->VRec != nullptr)
+        ui->lineEdit->setText(QString::fromStdString(this->VRec->CodecFourCC));
+    else
+    {
+        ui->cmb_videoCodec->setEnabled(false); // no valid video object (will crash if accessed)
+    }
 }
 
-RenderSetup::~RenderSetup()
-{
-    delete ui;
-}
 
 void RenderSetup::on_checkBox_toggled(bool checked)
 {

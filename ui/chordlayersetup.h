@@ -21,6 +21,7 @@ public:
     explicit ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, QWidget *parent = nullptr);
     ~ChordLayerSetup();
 
+    void changeChordLayer(ChordLayers *newChordL);
 private:
     Ui::ChordLayerSetup *ui;
 
@@ -37,15 +38,18 @@ private:
     std::vector<QCheckBox*> *Cb_trackActiveChordStars;
 
     // functions:
-    void drawUI();
+    void drawUi();
     void drawTabTracks();
-    void allTracksToggledChordStars(bool checked);
-    // other tabs to be implemented
+
+    void allTracksToggled(bool checked);
+    void updateCbAllTracks();
 
 private slots:
     void chordStarTrackActiveChanged(int track);
 
-    void on_cb_allTracksChordStars_stateChanged(int arg1);
+    void on_cb_allTracks_stateChanged(int arg1);
+
+    void on_cb_allTracks_clicked();
 
     void on_dspb_posx_valueChanged(double arg1);
 

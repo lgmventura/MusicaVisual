@@ -44,6 +44,8 @@ public:
     explicit RenderSetup(RenderP *rProp, QWidget *parent = 0, MusicData *mdt = nullptr, VideoRecorder *vRec = nullptr);
     ~RenderSetup();
 
+    void refreshUi();
+
 private slots:
     void on_checkBox_toggled(bool checked);
 

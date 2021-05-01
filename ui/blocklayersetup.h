@@ -26,7 +26,8 @@ public:
 
     // public functions:
     void drawUi();
-    void updateUi();
+    void refreshCurrentUiWidgets();
+    void changeBlockLayer(BlockLayers *newBlockL);
 
 private:
     Ui::BlockLayerSetup *ui;
@@ -49,6 +50,7 @@ private:
 
     // private functions:
     void allTracksToggled(bool checked);
+    void updateCbAllTracks();
 
 private slots:
     void trackVisibilityChanged(int track);
@@ -59,6 +61,8 @@ private slots:
     void blurChanged(int track);
 
     void on_cb_allTracks_stateChanged(int arg1);
+
+    void on_cb_allTracks_clicked();
 
     void on_dspb_hZoomMult_valueChanged(double arg1);
 

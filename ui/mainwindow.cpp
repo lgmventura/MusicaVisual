@@ -314,7 +314,10 @@ void MainWindow::on_pb_animation_clicked()
 
 void MainWindow::on_actionRendering_Properties_triggered()
 {
-    dwrenderprop = new RenderSetup(RProp, this, Mdt, VRec);
+    if (dwrenderprop == nullptr)
+    {
+        dwrenderprop = new RenderSetup(RProp, this, Mdt, VRec);
+    }
     dwrenderprop->show();
 }
 
@@ -425,9 +428,7 @@ void MainWindow::loadSettings(string filePath)
     input_file.close();
     if (dwrenderprop != nullptr)
     {
-        dwrenderprop->close();
-        dwrenderprop = new RenderSetup(RProp, this, Mdt, VRec);
-        dwrenderprop->show();
+        dwrenderprop->refreshUi();
     }
     if (Lstp != nullptr)
     {
@@ -499,11 +500,11 @@ void MainWindow::on_actionSqueeze_tracks_triggered()
 
 void MainWindow::on_actionSetup_layers_triggered()
 {
-    if (Lstp != nullptr)
+    if (Lstp == nullptr)
     {
-        Lstp->close();
+        Lstp = new LayerSetup(Layers, Mdt, this);
+        Lstp->resize(640, 480);
     }
-    Lstp = new LayerSetup(Layers, Mdt, this);
-    Lstp->resize(640, 480);
+    Lstp->refresh();
     Lstp->show();
 }

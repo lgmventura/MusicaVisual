@@ -111,26 +111,33 @@ void LayerSetup::layerEditTriggered(int layer)
 
     if (typeIndex == Layer::LayerType::BlockLayer)
     {
-        if (Bls != nullptr)
+        if (Bls == nullptr)
         {
-            Bls->close();
+            Bls = new BlockLayerSetup(Mdt, &it->Bl, this->parentWidget());
+        }
+        else
+        {
+            Bls->changeBlockLayer(&it->Bl);
         }
         // set the current layer Bl object and the mainWindow as parent, otherwise, they don't move:
-        Bls = new BlockLayerSetup(Mdt, &it->Bl, this->parentWidget());
         QString qWindowTitle = "Block layer setup for " + QString::fromStdString((*it).getName());
         Bls->setWindowTitle(qWindowTitle);
         Bls->show();
     }
     else if (typeIndex == Layer::LayerType::ChordLayer)
     {
-        if (Cls != nullptr)
+        if (Cls == nullptr)
         {
-            Cls->close();
+            Cls = new ChordLayerSetup(Mdt, &it->Cl, this->parentWidget());
+            Cls->resize(640, 480);
         }
-        Cls = new ChordLayerSetup(Mdt, &it->Cl, this->parentWidget());
+        else
+        {
+            Cls->changeChordLayer(&it->Cl);
+        }
+
         QString qWindowTitle = "Chord layer setup for " + QString::fromStdString((*it).getName());
         Cls->setWindowTitle(qWindowTitle);
-        Cls->resize(640, 480);
         Cls->show();
     }
 }
