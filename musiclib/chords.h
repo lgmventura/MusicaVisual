@@ -12,10 +12,10 @@
  * All these vertical lines would be an end of a chord and a begin of a new chord. Given that all these horizontal regions are chords, including empty ones, we can later
  * check if chords have more than 3 elements to be a "real" chord.
  */
-class pitchDict // static
+class PitchDict // static
 {
 private:
-    pitchDict() {}
+    PitchDict() {}
 
 public:
     const static std::string LettersFlat[12];
@@ -34,10 +34,10 @@ public:
 //std::string SolfeggioNamesFlat[12]  = {"Do", "Re bemol", "Re", "Mi bemol", "Mi", "Fa", "Sol bemol", "Sol", "La bemol", "La", "Si bemol", "Si"};
 //std::string SolfeggioNamesSharp[12] = {"Do", "Do sustenido", "Re", "Re sustenido", "Mi", "Fa", "Fa sustenido", "Sol", "Sol sustenido", "La", "La sustenido", "Si"};
 
-class pitch
+class Pitch
 {
 public:
-    pitch(int midi = -1);
+    Pitch(int midi = -1);
 
 // members:
 public:
@@ -59,6 +59,7 @@ private:
 
 // get methods:
 public:
+    int getMidiPitch() {return this->Midi;};
     int getOctave();
     int getDistanceFromLastC();
     std::string getLetterName(Accidental type);
@@ -72,28 +73,28 @@ public:
     bool isValidPitch();
 
 // operators:
-    bool operator<(const pitch &other) const {return pitch::Midi < other.Midi;};
-    bool operator>(const pitch &other) const {return pitch::Midi > other.Midi;};
-    bool operator<=(const pitch &other) const {return pitch::Midi <= other.Midi;};
-    bool operator>=(const pitch &other) const {return pitch::Midi >= other.Midi;};
-    bool operator==(const pitch &other) const {return pitch::Midi == other.Midi;};
+    bool operator<(const Pitch &other) const {return Pitch::Midi < other.Midi;};
+    bool operator>(const Pitch &other) const {return Pitch::Midi > other.Midi;};
+    bool operator<=(const Pitch &other) const {return Pitch::Midi <= other.Midi;};
+    bool operator>=(const Pitch &other) const {return Pitch::Midi >= other.Midi;};
+    bool operator==(const Pitch &other) const {return Pitch::Midi == other.Midi;};
 };
 
 
-class chord
+class Chord
 {
 public:
-    chord();
+    Chord();
     enum circle {circleOfSemitones, circleOfFifths};
 
 private:
-    std::set<pitch> Pitches = {}; // midi pitch 0 to 127.
+    std::set<Pitch> Pitches = {}; // midi pitch 0 to 127.
     std::string Name = "";
 
 public:
     // methods:
-    void insertPitch(pitch pitch);
-    std::set<pitch> getPitches();
+    void insertPitch(Pitch pitch);
+    std::set<Pitch> getPitches();
     std::string getPitchesStr(bool accidentalSharp = false, bool *tracks = new bool[128], bool includeUnsetTracks = true);
     std::string getName();
     std::set<float> getAnglesDeg(circle type, bool *tracks, bool includeUnsetTracks = true); // for visual representation of chords
@@ -102,22 +103,22 @@ private:
     void calculateName();
 };
 
-class chordWithTime
+class ChordWithTime
 {
 public:
-    chordWithTime();
+    ChordWithTime();
 
-    chord Chord;
+    Chord Chord;
     long Start_time;
 };
 
-class chords
+class Chords
 {
 public:
-    chords();
+    Chords();
 
     //std::list<std::string> Chordnamess = {};
-    std::list<chordWithTime> Chords = {};
+    std::list<ChordWithTime> ChordsWTime = {};
     std::set<long> Start_end_times = {}; // every time a new note appears or ends we consider having a new chord. If 2 or more notes start or end at the same time, it is still the same chord, so we have a set
     std::vector<long> VStart_end_times = {}; // this will be sorted
 

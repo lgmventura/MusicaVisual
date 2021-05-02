@@ -1099,12 +1099,12 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
     // ============ Displaying note names ==============
     if (chordL.CLType == ChordLayers::ChordLayerType::PitchNames) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
     {
-        std::list<chordWithTime>::iterator it;
-        std::list<chordWithTime>::iterator it_next;
+        std::list<ChordWithTime>::iterator it;
+        std::list<ChordWithTime>::iterator it_next;
         for (it = mdt.GChords.Chords.begin(), it_next = ++mdt.GChords.Chords.begin(); it_next!=(mdt.GChords.Chords.end()); ++it, ++it_next)
         {
-            chordWithTime chordWT = *it;
-            chordWithTime chordWT_next = *it_next;
+            ChordWithTime chordWT = *it;
+            ChordWithTime chordWT_next = *it_next;
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end())
             {
                 std::string ptStr = "Pitches:";
@@ -1128,15 +1128,15 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
     // ============ Displaying circle / star ==============
     if (chordL.CLType == ChordLayers::ChordLayerType::ChordStar)
     {
-        std::list<chordWithTime>::iterator it;
-        std::list<chordWithTime>::iterator it_next;
+        std::list<ChordWithTime>::iterator it;
+        std::list<ChordWithTime>::iterator it_next;
         for (it = mdt.GChords.Chords.begin(), it_next = ++mdt.GChords.Chords.begin(); it_next!=(mdt.GChords.Chords.end()); ++it, ++it_next) // run through all chords
         {
-            chordWithTime chordWT = *it;
-            chordWithTime chordWT_next = *it_next;
+            ChordWithTime chordWT = *it;
+            ChordWithTime chordWT_next = *it_next;
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end()) // if it is the chord currently being played
             {
-                chord::circle type = chordL.ChordStarType;
+                Chord::circle type = chordL.ChordStarType;
                 if ( ! (chordL.NoteNamesOnStar))
                 {
                     dispChordDisc(type, image, centre, diam, false, chordL.TurnChordCircle, chordL.AccidentalSharp);
@@ -1145,7 +1145,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
                 {
                     dispChordDisc(type, image, centre, diam, true, chordL.TurnChordCircle, chordL.AccidentalSharp);
                 }
-                chord currChord = chordWT.Chord;
+                Chord currChord = chordWT.Chord;
                 renderChordStar(currChord, type, image, centre, diam, chordL.ChordStarTrack, chordL.TurnChordCircle);
             }
 

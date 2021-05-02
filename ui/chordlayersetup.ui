@@ -178,6 +178,11 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tonnetz">
+       <attribute name="title">
+        <string>Tonnetz</string>
+       </attribute>
+      </widget>
      </widget>
     </item>
    </layout>

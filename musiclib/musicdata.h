@@ -20,7 +20,7 @@ public:
     unsigned int              PitchMax = 1, PitchMin = 128; // lowest and highest pitch detected in the midi file
     unsigned int              NTracks = 1; // number of tracks in the midi file
     unsigned int              Tpq; // Ticks per Quarter-Note
-    chords                    GChords; // Chords for chord analysis
+    Chords                    GChords; // Chords for chord analysis
 
     std::vector<std::string>  TrackNames; // = new std::vector<std::string>; // = {"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", "Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", "Track 17", "Track 18", "Track 19", "Track 20", "Track 21", "Track 22", "Track 23", "Track 24"}; // this works, but is variable in size. So save/load settings won't work if put in TracksP.
 

@@ -232,11 +232,11 @@ void ChordLayerSetup::on_combox_chordStar_currentIndexChanged(int index)
 {
         if (index == 0)
         {
-            ChordL->ChordStarType = chord::circleOfSemitones;
+            ChordL->ChordStarType = Chord::circleOfSemitones;
         }
         else if (index == 1)
         {
-            ChordL->ChordStarType = chord::circleOfFifths;
+            ChordL->ChordStarType = Chord::circleOfFifths;
         }
 }
 

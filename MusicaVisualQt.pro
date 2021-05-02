@@ -14,6 +14,8 @@ TEMPLATE = app
 CONFIG += c++17
 
 SOURCES += main.cpp\
+    math/hexagonalgrid.cpp \
+    math/hexagonlib.cpp \
     musiclib/chords.cpp \
     musiclib/importmidi.cpp \
     musiclib/midimessages.cpp \
@@ -40,11 +42,15 @@ SOURCES += main.cpp\
     visual/animation.cpp \
     visual/blocklayers.cpp \
     visual/chordlayers.cpp \
+    visual/eulertonnetz.cpp \
     visual/layer.cpp \
     visual/renderChordStar.cpp \
+    visual/tonnetzrenderer.cpp \
     visual/videorecorder.cpp
 
 HEADERS  += \
+    math/hexagonalgrid.h \
+    math/hexagonlib.h \
     musiclib/chords.h \
     musiclib/importmidi.h \
     musiclib/midimessages.h \
@@ -77,8 +83,10 @@ HEADERS  += \
     visual/animation.h \
     visual/blocklayers.h \
     visual/chordlayers.h \
+    visual/eulertonnetz.h \
     visual/layer.h \
     visual/renderChordStar.h \
+    visual/tonnetzrenderer.h \
     visual/videorecorder.h
 
 FORMS    += \

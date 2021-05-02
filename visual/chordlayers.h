@@ -30,7 +30,7 @@ public:
     // Chord star:
     bool NoteNamesOnStar = false;
     int TurnChordCircle = 0;
-    chord::circle ChordStarType = chord::circleOfSemitones;
+    Chord::circle ChordStarType = Chord::circleOfSemitones;
 };
 
 class ChordSetupOptions
@@ -38,7 +38,7 @@ class ChordSetupOptions
 public:
     ChordSetupOptions();
 
-    const static std::string ChordLayerTypes[2];
+    const static std::string ChordLayerTypes[3];
 };
 
 #endif // CHORDLAYERS_H
