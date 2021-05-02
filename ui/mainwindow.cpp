@@ -45,6 +45,9 @@
 // Include fstream to save and open objects in .dat
 #include <fstream>
 
+// Include files to higher level operations with paths and file extensions
+#include "utils/files.h"
+
 // Include QDropEvent to be able to receive file drops
 #include <QDropEvent>
 #include <QDragEnterEvent>
@@ -255,7 +258,8 @@ void MainWindow::on_pb_animation_clicked()
         {
             this->VRec->setVideoDim(window_width, window_height);
             this->VRec->Fps = ui->dsb_fps->value();
-            this->VRec->OutputPath = ui->edt_videoOutput->text().toStdString() + "." + this->VRec->getFileExtension();
+            string fName = appendExtension(ui->edt_videoOutput->text().toStdString(), this->VRec->getFileExtension());
+            this->VRec->OutputPath = fName;
             // CodecFourCC will be changed directly in object
             this->VRec->createVideoWriter();
             AnimBar->setRecButtonEnabled(true); // video should be ready to be written, activating button
@@ -275,42 +279,6 @@ void MainWindow::on_pb_animation_clicked()
 
     cv::waitKey(0);
 }
-
-//void on_trackbar1(int, void* )
-//{
-//  zoom = (double) zoom_slider/10 ;
-
-//  note_blocks_paint(*image_win2, "Animation", xpos, (int)total_time/zoom_slider + xpos, ui->spinBox->value(), ui->spinBox_2->value());
-//}
-//void on_trackbar2(int, void* )
-//{
-//  xpos = (double) xpos_slider; //beta_slider_max ;
-
-//  //cout << beta << endl;
-
-//  //note_blocks_paint(img, "Animation", startMidiTime + xpos, (int)endMidiTime/zoom_slider + xpos, window_width, window_height);
-//  note_blocks_paint(*image_win2, "Animation", xpos, (int)total_time/zoom_slider + xpos, ui->spinBox->value(), ui->spinBox_2->value());
-//}
-
-//void MainWindow::on_pushButton_3_clicked()
-//{
-//    int window_height = ui->spinBox_2->value();
-//    int window_width = ui->spinBox->value();
-
-//    cv::Mat *image_win2 = new cv::Mat;
-//    *image_win2 = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-
-//    char TrackbarNameA[20];
-//    sprintf( TrackbarNameA, "Zoom %d", zoom_slider_max );
-//    char TrackbarNameB[20];
-//    sprintf( TrackbarNameB, "Position %d", xpos_slider_max );
-
-//    cv::namedWindow("Animation", 1);
-//    cv::createTrackbar( TrackbarNameA, "Animation", &zoom_slider, zoom_slider_max, on_trackbar1 );
-//    cv::createTrackbar( TrackbarNameB, "Animation", &xpos_slider, xpos_slider_max, on_trackbar2 );
-//    on_trackbar1(zoom_slider, 0 );
-//    on_trackbar2(xpos_slider, 0 );
-//}
 
 void MainWindow::on_actionRendering_Properties_triggered()
 {
@@ -366,7 +334,9 @@ void MainWindow::on_actionSave_settings_as_triggered()
                                                            tr("Save settings"),
                                                            "//home//",
                                                            "Data file (*.dat);;Plain Text File (*.txt);;All Files (*.*)");
-    saveSettings(save_file_name.toStdString());
+    std::string saveFName = save_file_name.toStdString();
+    saveFName = appendExtension(saveFName, "dat");
+    saveSettings(saveFName);
 }
 
 void MainWindow::saveSettings(string filePath)
@@ -479,14 +449,6 @@ void MainWindow::on_actionHow_does_it_work_triggered()
         helpDiag_1->show();
     }
 }
-
-//void print_set(aList) //only for debugging
-//{
-//    for (A const& a : aList)
-//    {
-//        std::cout << a << ' ';
-//    }
-//}
 
 void MainWindow::on_actionSqueeze_tracks_triggered()
 {
