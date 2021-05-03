@@ -24,7 +24,7 @@ public:
     void setGridDiameter(int gridDiam, int maxDist);
 private:
     int cellDiameter = 10;
-    Orientation orientation = Orientation(1,1,1,1,1,1,1,1, 0); // from hexagonlib
+    Orientation orientation = layout_pointy; // from hexagonlib
     Point size = Point(cellDiameter, cellDiameter); // from hexagonlib
     Layout layout = Layout(orientation, size, Point(0,0)); // from hexagonlib
     std::list<Hex> gridPositions = {}; // from hexagonlib

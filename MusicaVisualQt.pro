@@ -14,7 +14,7 @@ TEMPLATE = app
 CONFIG += c++17
 
 SOURCES += main.cpp\
-    math/hexagonalgrid.cpp \
+    math/hexagonlib.cpp \
     musiclib/chords.cpp \
     musiclib/importmidi.cpp \
     musiclib/midimessages.cpp \
@@ -48,7 +48,7 @@ SOURCES += main.cpp\
     visual/videorecorder.cpp
 
 HEADERS  += \
-    math/hexagonalgrid.h \
+    math/hexagonlib.h \
     musiclib/chords.h \
     musiclib/importmidi.h \
     musiclib/midimessages.h \

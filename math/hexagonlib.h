@@ -37,6 +37,8 @@ struct Hex
         {
             return (this->q < rhs.q && this->r < rhs.r && this->s < rhs.s);
         }
+    struct Hex *next;
+    struct Hex *prev;
 };
 
 
