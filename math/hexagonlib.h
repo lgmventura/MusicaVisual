@@ -4,8 +4,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
-#include <algorithm>
-#include <iterator>
+//#include <algorithm>
+//#include <iterator>
 using std::abs;
 using std::max;
 using std::vector;
@@ -19,8 +19,8 @@ using std::vector;
 
 struct Point
 {
-    const double x;
-    const double y;
+    double x;
+    double y;
     Point(double x_, double y_): x(x_), y(y_) {}
 };
 
@@ -33,6 +33,10 @@ struct Hex
     Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {
         if (q + r + s != 0) throw "q + r + s must be 0";
     }
+    bool operator< (const Hex& rhs) const
+        {
+            return (this->q < rhs.q && this->r < rhs.r && this->s < rhs.s);
+        }
 };
 
 
@@ -81,7 +85,7 @@ struct Orientation
 struct Layout
 {
     const Orientation orientation;
-    const Point size;
+    Point size;
     const Point origin;
     Layout(Orientation orientation_, Point size_, Point origin_): orientation(orientation_), size(size_), origin(origin_) {}
 };
@@ -90,78 +94,31 @@ struct Layout
 // Forward declarations
 
 
-Hex hex_add(Hex a, Hex b)
-{
-    return Hex(a.q + b.q, a.r + b.r, a.s + b.s);
-}
+Hex hex_add(Hex a, Hex b);
 
+Hex hex_subtract(Hex a, Hex b);
 
-Hex hex_subtract(Hex a, Hex b)
-{
-    return Hex(a.q - b.q, a.r - b.r, a.s - b.s);
-}
+Hex hex_scale(Hex a, int k);
 
+Hex hex_rotate_left(Hex a);
 
-Hex hex_scale(Hex a, int k)
-{
-    return Hex(a.q * k, a.r * k, a.s * k);
-}
-
-
-Hex hex_rotate_left(Hex a)
-{
-    return Hex(-a.s, -a.q, -a.r);
-}
-
-
-Hex hex_rotate_right(Hex a)
-{
-    return Hex(-a.r, -a.s, -a.q);
-}
-
+Hex hex_rotate_right(Hex a);
 
 const vector<Hex> hex_directions = {Hex(1, 0, -1), Hex(1, -1, 0), Hex(0, -1, 1), Hex(-1, 0, 1), Hex(-1, 1, 0), Hex(0, 1, -1)};
-Hex hex_direction(int direction)
-{
-    return hex_directions[direction];
-}
+Hex hex_direction(int direction);
 
-
-Hex hex_neighbor(Hex hex, int direction)
-{
-    return hex_add(hex, hex_direction(direction));
-}
-
-
+Hex hex_neighbor(Hex hex, int direction);
 const vector<Hex> hex_diagonals = {Hex(2, -1, -1), Hex(1, -2, 1), Hex(-1, -1, 2), Hex(-2, 1, 1), Hex(-1, 2, -1), Hex(1, 1, -2)};
-Hex hex_diagonal_neighbor(Hex hex, int direction)
-{
-    return hex_add(hex, hex_diagonals[direction]);
-}
+Hex hex_diagonal_neighbor(Hex hex, int direction);
 
+int hex_length(Hex hex);
 
-int hex_length(Hex hex)
-{
-    return int((abs(hex.q) + abs(hex.r) + abs(hex.s)) / 2);
-}
-
-
-int hex_distance(Hex a, Hex b)
-{
-    return hex_length(hex_subtract(a, b));
-}
-
-
+int hex_distance(Hex a, Hex b);
 
 Hex hex_round(FractionalHex h);
 
 
-FractionalHex hex_lerp(FractionalHex a, FractionalHex b, double t)
-{
-    return FractionalHex(a.q * (1.0 - t) + b.q * t, a.r * (1.0 - t) + b.r * t, a.s * (1.0 - t) + b.s * t);
-}
-
-
+FractionalHex hex_lerp(FractionalHex a, FractionalHex b, double t);
 vector<Hex> hex_linedraw(Hex a, Hex b);
 
 

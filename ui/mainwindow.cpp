@@ -196,7 +196,7 @@ void MainWindow::on_pb_process_clicked() // Process button
     ui->pb_animation->setEnabled(true);
 
     // Processing chords:
-    chords chords;
+    Chords chords;
     chords.process_chords(this->Mdt->Notes, true);
     Mdt->GChords = chords;
 }

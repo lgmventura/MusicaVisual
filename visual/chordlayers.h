@@ -10,7 +10,7 @@ class ChordLayers
 public:
     ChordLayers();
 
-    enum ChordLayerType {PitchNames, ChordStar};
+    enum ChordLayerType {PitchNames, ChordStar, Tonnetz};
 
     bool ChordStarTrack[128] = { [0 ... 127 ] = 1 };
 

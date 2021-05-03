@@ -1,5 +1,54 @@
 #include "hexagonlib.h"
 
+Hex hex_add(Hex a, Hex b)
+{
+    return Hex(a.q + b.q, a.r + b.r, a.s + b.s);
+}
+
+Hex hex_subtract(Hex a, Hex b)
+{
+    return Hex(a.q - b.q, a.r - b.r, a.s - b.s);
+}
+
+Hex hex_scale(Hex a, int k)
+{
+    return Hex(a.q * k, a.r * k, a.s * k);
+}
+
+Hex hex_rotate_left(Hex a)
+{
+    return Hex(-a.s, -a.q, -a.r);
+}
+
+Hex hex_rotate_right(Hex a)
+{
+    return Hex(-a.r, -a.s, -a.q);
+}
+
+Hex hex_direction(int direction)
+{
+    return hex_directions[direction];
+}
+
+Hex hex_neighbor(Hex hex, int direction)
+{
+    return hex_add(hex, hex_direction(direction));
+}
+
+Hex hex_diagonal_neighbor(Hex hex, int direction)
+{
+    return hex_add(hex, hex_diagonals[direction]);
+}
+
+int hex_length(Hex hex)
+{
+    return int((abs(hex.q) + abs(hex.r) + abs(hex.s)) / 2);
+}
+
+int hex_distance(Hex a, Hex b)
+{
+    return hex_length(hex_subtract(a, b));
+}
 
 
 Hex hex_round(FractionalHex h)
@@ -25,6 +74,12 @@ Hex hex_round(FractionalHex h)
         }
     return Hex(qi, ri, si);
 }
+
+FractionalHex hex_lerp(FractionalHex a, FractionalHex b, double t)
+{
+    return FractionalHex(a.q * (1.0 - t) + b.q * t, a.r * (1.0 - t) + b.r * t, a.s * (1.0 - t) + b.s * t);
+}
+
 
 vector<Hex> hex_linedraw(Hex a, Hex b)
 {
@@ -137,26 +192,6 @@ FractionalHex pixel_to_hex(Layout layout, Point p)
     return FractionalHex(q, r, -q - r);
 }
 
-
-Point hex_corner_offset(Layout layout, int corner)
-{
-    Orientation M = layout.orientation;
-    Point size = layout.size;
-    double angle = 2.0 * M_PI * (M.start_angle - corner) / 6.0;
-    return Point(size.x * cos(angle), size.y * sin(angle));
-}
-
-vector<Point> polygon_corners(Layout layout, Hex h)
-{
-    vector<Point> corners = {};
-    Point center = hex_to_pixel(layout, h);
-    for (int i = 0; i < 6; i++)
-    {
-        Point offset = hex_corner_offset(layout, i);
-        corners.push_back(Point(center.x + offset.x, center.y + offset.y));
-    }
-    return corners;
-}
 
 
 

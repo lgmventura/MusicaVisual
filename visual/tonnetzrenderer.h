@@ -4,6 +4,7 @@
 #include "eulertonnetz.h"
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 class TonnetzRenderer
 {
@@ -17,13 +18,16 @@ public:
     void renderGrid(cv::Mat mat, Shape shape);
     void renderChord(cv::Mat mat, bool *tracks, Shape shape);
 
-    void setCellDiameter(int cellDiam) {this->cellDiameter = cellDiam;};
+    void setCellDiameter(int cellDiam);
     int getCellDiameter() {return this->cellDiameter;};
 
-    void setGridDiameter(int gridDiam, int maxDist) {this->cellDiameter = gridDiam/maxDist;};
+    void setGridDiameter(int gridDiam, int maxDist);
 private:
     int cellDiameter = 10;
-    std::list<Hex> gridPositions;
+    Orientation orientation = Orientation(1,1,1,1,1,1,1,1, 0); // from hexagonlib
+    Point size = Point(cellDiameter, cellDiameter); // from hexagonlib
+    Layout layout = Layout(orientation, size, Point(0,0)); // from hexagonlib
+    std::list<Hex> gridPositions = {}; // from hexagonlib
 };
 
 #endif // TONNETZRENDERER_H

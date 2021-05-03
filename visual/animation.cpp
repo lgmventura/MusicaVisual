@@ -1101,11 +1101,11 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
     {
         std::list<ChordWithTime>::iterator it;
         std::list<ChordWithTime>::iterator it_next;
-        for (it = mdt.GChords.Chords.begin(), it_next = ++mdt.GChords.Chords.begin(); it_next!=(mdt.GChords.Chords.end()); ++it, ++it_next)
+        for (it = mdt.GChords.ChordsWTime.begin(), it_next = ++mdt.GChords.ChordsWTime.begin(); it_next!=(mdt.GChords.ChordsWTime.end()); ++it, ++it_next)
         {
             ChordWithTime chordWT = *it;
             ChordWithTime chordWT_next = *it_next;
-            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end())
+            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.ChordsWTime.begin() && it!=mdt.GChords.ChordsWTime.end())
             {
                 std::string ptStr = "Pitches:";
                 ptStr = chordWT.Chord.getPitchesStr(chordL.AccidentalSharp, chordL.ChordStarTrack);
@@ -1130,11 +1130,11 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
     {
         std::list<ChordWithTime>::iterator it;
         std::list<ChordWithTime>::iterator it_next;
-        for (it = mdt.GChords.Chords.begin(), it_next = ++mdt.GChords.Chords.begin(); it_next!=(mdt.GChords.Chords.end()); ++it, ++it_next) // run through all chords
+        for (it = mdt.GChords.ChordsWTime.begin(), it_next = ++mdt.GChords.ChordsWTime.begin(); it_next!=(mdt.GChords.ChordsWTime.end()); ++it, ++it_next) // run through all chords
         {
             ChordWithTime chordWT = *it;
             ChordWithTime chordWT_next = *it_next;
-            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.Chords.begin() && it!=mdt.GChords.Chords.end()) // if it is the chord currently being played
+            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.ChordsWTime.begin() && it!=mdt.GChords.ChordsWTime.end()) // if it is the chord currently being played
             {
                 Chord::circle type = chordL.ChordStarType;
                 if ( ! (chordL.NoteNamesOnStar))
@@ -1150,7 +1150,22 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
             }
 
         }
+    }
+    else if (chordL.CLType == ChordLayers::ChordLayerType::Tonnetz)
+    {
+        Tnr.prepareGrid(10);
+        Tnr.renderGrid(image, TonnetzRenderer::Shape::Circle);
+        std::list<ChordWithTime>::iterator it;
+        std::list<ChordWithTime>::iterator it_next;
+        for (it = mdt.GChords.ChordsWTime.begin(), it_next = ++mdt.GChords.ChordsWTime.begin(); it_next!=(mdt.GChords.ChordsWTime.end()); ++it, ++it_next) // run through all chords
+        {
+            ChordWithTime chordWT = *it;
+            ChordWithTime chordWT_next = *it_next;
+            if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.ChordsWTime.begin() && it!=mdt.GChords.ChordsWTime.end()) // if it is the chord currently being played
+            {
 
+            }
+        }
     }
 }
 

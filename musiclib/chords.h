@@ -64,7 +64,7 @@ public:
     int getDistanceFromLastC();
     std::string getLetterName(Accidental type);
     std::string getLetterNameWithOctave(Accidental type);
-    int getMidiTrack();
+    int getMidiTrack() const {return this->MidiTrack;};
 
 // set methods:
     void setTrack(int track);
@@ -73,11 +73,11 @@ public:
     bool isValidPitch();
 
 // operators:
-    bool operator<(const Pitch &other) const {return Pitch::Midi < other.Midi;};
-    bool operator>(const Pitch &other) const {return Pitch::Midi > other.Midi;};
-    bool operator<=(const Pitch &other) const {return Pitch::Midi <= other.Midi;};
-    bool operator>=(const Pitch &other) const {return Pitch::Midi >= other.Midi;};
-    bool operator==(const Pitch &other) const {return Pitch::Midi == other.Midi;};
+    bool operator<(const Pitch &other) const {return this->Midi < other.Midi;};
+    bool operator>(const Pitch &other) const {return this->Midi > other.Midi;};
+    bool operator<=(const Pitch &other) const {return this->Midi <= other.Midi;};
+    bool operator>=(const Pitch &other) const {return this->Midi >= other.Midi;};
+    bool operator==(const Pitch &other) const {return this->Midi == other.Midi;};
 };
 
 

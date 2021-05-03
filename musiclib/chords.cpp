@@ -64,10 +64,6 @@ std::string Pitch::getLetterNameWithOctave(Accidental type)
         return Pitch::LetterSharp + "-" + std::to_string(Pitch::getOctave());
     }
 }
-int Pitch::getMidiTrack()
-{
-    return this->MidiTrack;
-}
 void Pitch::setTrack(int track)
 {
     this->MidiTrack = track;
@@ -81,12 +77,12 @@ Chord::Chord() // nothing in the constructor
 }
 void Chord::insertPitch(Pitch pitch)
 {
-    Chord::Pitches.insert(pitch);
+    this->Pitches.insert(pitch);
     //chord::calculateName();
 }
 std::set<Pitch> Chord::getPitches()
 {
-    return Chord::Pitches;
+    return this->Pitches;
 }
 std::string Chord::getPitchesStr(bool accidentalSharp, bool *tracks, bool includeUnsetTracks)
 {

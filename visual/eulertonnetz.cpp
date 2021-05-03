@@ -50,9 +50,10 @@ std::set<Hex> EulerTonnetz::getHexagonsTracks(Chord c, bool *tracks, bool oneOct
     std::set<Pitch> pitches = c.getPitches();
     for (std::set<Pitch>::iterator it = pitches.begin(); it != pitches.end(); it++)
     {
-        if (tracks[(*it).getMidiTrack()] == true)
+        Pitch p = (*it);
+        if (tracks[p.getMidiTrack()] == true)
         {
-            hexagons.insert(this->getHexagon(*it, oneOctave));
+            hexagons.insert(this->getHexagon(p, oneOctave));
         }
     }
 }
