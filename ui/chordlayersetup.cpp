@@ -9,6 +9,8 @@ ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, QWidget *p
 
     this->Mdt = mdt;
     this->ChordL = chordL;
+
+    this->drawUi();
 }
 
 ChordLayerSetup::~ChordLayerSetup()

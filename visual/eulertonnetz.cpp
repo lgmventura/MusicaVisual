@@ -1,5 +1,7 @@
 #include "eulertonnetz.h"
 
+using namespace Hexagon;
+
 EulerTonnetz::EulerTonnetz()
 {
 
@@ -65,4 +67,6 @@ int EulerTonnetz::getMaxDist(int highestPitch, int lowestPitch)
 
     int hcDist = hex_distance(Hex(0,0,0), hHex);
     int lcDist = hex_distance(Hex(0,0,0), lHex);
+
+    return max(hcDist, lcDist);
 }

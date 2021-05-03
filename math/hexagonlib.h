@@ -16,80 +16,106 @@ using std::vector;
 
 
 // Generated code -- CC0 -- No Rights Reserved -- http://www.redblobgames.com/grids/hexagons/
+namespace Hexagon {
 
-struct Point
+class Point2d
 {
+public:
     double x;
     double y;
-    Point(double x_, double y_): x(x_), y(y_) {}
+    //Point2d(double x_, double y_): x(x_), y(y_) {}
+    Point2d(double x, double y)
+    {
+        this->x = x;
+        this->y = y;
+    }
 };
 
 
-struct Hex
+class Hex
 {
-    const int q;
-    const int r;
-    const int s;
-    Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {
+public:
+    int q;
+    int r;
+    int s;
+    Hex(int q, int r, int s) {
+        this->q = q;
+        this->r = r;
+        this->s = s;
         if (q + r + s != 0) throw "q + r + s must be 0";
     }
     bool operator< (const Hex& rhs) const
-        {
-            return (this->q < rhs.q && this->r < rhs.r && this->s < rhs.s);
-        }
-    struct Hex *next;
-    struct Hex *prev;
+    {
+        return (this->q < rhs.q && this->r < rhs.r && this->s < rhs.s);
+    }
 };
 
 
-struct FractionalHex
+class FractionalHex
 {
-    const double q;
-    const double r;
-    const double s;
-    FractionalHex(double q_, double r_, double s_): q(q_), r(r_), s(s_) {
+public:
+    double q;
+    double r;
+    double s;
+    FractionalHex(double q, double r, double s) {
+        this->q = q;
+        this->r = r;
+        this->s = s;
         if (round(q + r + s) != 0) throw "q + r + s must be 0";
     }
 };
 
 
-struct OffsetCoord
+class OffsetCoord
 {
-    const int col;
-    const int row;
-    OffsetCoord(int col_, int row_): col(col_), row(row_) {}
+public:
+    int col;
+    int row;
+    OffsetCoord(int col_, int row_) {
+        this->col = col_;
+        this->row = row_;
+    }
 };
 
 
-struct DoubledCoord
+class DoubledCoord
 {
-    const int col;
-    const int row;
-    DoubledCoord(int col_, int row_): col(col_), row(row_) {}
+public:
+    int col;
+    int row;
+    DoubledCoord(int col_, int row_) {
+        this->col = col_;
+        this->row = row_;
+    }
 };
 
 
-struct Orientation
+class Orientation
 {
-    const double f0;
-    const double f1;
-    const double f2;
-    const double f3;
-    const double b0;
-    const double b1;
-    const double b2;
-    const double b3;
-    const double start_angle;
-    Orientation(double f0_, double f1_, double f2_, double f3_, double b0_, double b1_, double b2_, double b3_, double start_angle_): f0(f0_), f1(f1_), f2(f2_), f3(f3_), b0(b0_), b1(b1_), b2(b2_), b3(b3_), start_angle(start_angle_) {}
+public:
+    Orientation(double f0_, double f1_, double f2_, double f3_, double b0_, double b1_, double b2_, double b3_, double start_angle_);
+
+    double f0;
+    double f1;
+    double f2;
+    double f3;
+    double b0;
+    double b1;
+    double b2;
+    double b3;
+    double start_angle;
 };
 
 
-struct Layout
+class Layout
 {
-    const Orientation orientation;
-    Point size;
-    const Point origin;
-    Layout(Orientation orientation_, Point size_, Point origin_): orientation(orientation_), size(size_), origin(origin_) {}
+public:
+    Layout();
+//    Layout(Orientation orientation_, Point2d size_, Point2d origin_);
+
+    Orientation orientation;
+    Point2d size;
+    Point2d origin;
 };
 
 
@@ -152,15 +178,17 @@ Hex rdoubled_to_cube(DoubledCoord h);
 
 const Orientation layout_pointy = Orientation(sqrt(3.0), sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5);
 const Orientation layout_flat = Orientation(3.0 / 2.0, 0.0, sqrt(3.0) / 2.0, sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, sqrt(3.0) / 3.0, 0.0);
-Point hex_to_pixel(Layout layout, Hex h);
+Point2d hex_to_pixel(Layout layout, Hex h);
 
 
-FractionalHex pixel_to_hex(Layout layout, Point p);
+FractionalHex pixel_to_hex(Layout layout, Point2d p);
 
 
-Point hex_corner_offset(Layout layout, int corner);
+Point2d hex_corner_offset(Layout layout, int corner);
 
 
-vector<Point> polygon_corners(Layout layout, Hex h);
+vector<Point2d> polygon_corners(Layout layout, Hex h);
+
+} // namespace Hexagon
 
 #endif // HEXAGONLIB_H
