@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+namespace HexagonalGrid {
+
 struct Axial
 {
     int q;
@@ -29,8 +31,6 @@ struct Offset
     Offset(int row_, int col_): row(row_), col(col_) {}
     Offset() {}
 };
-
-namespace HexagonalGrid {
 
 Axial cubeToAxial(Cube coord);
 Cube axialToCube(Axial coord);
@@ -59,7 +59,7 @@ public:
     bool operator+(const Hexagon &other);
 
 private:
-    // Axial:
+    // Cube:
     Axial Coord;
 };
 

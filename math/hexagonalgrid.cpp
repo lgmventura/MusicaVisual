@@ -1,5 +1,8 @@
 #include "hexagonalgrid.h"
 
+namespace HexagonalGrid {
+
+
 Axial HexagonalGrid::cubeToAxial(Cube cube)
 {
     Axial axCoord;
@@ -45,9 +48,6 @@ Cube HexagonalGrid::getCubeDist(Cube hexA, Cube hexB)
     Cube dist = Cube(abs(hexA.x - hexB.x), abs(hexA.y - hexB.y), abs(hexA.z - hexB.z));
     return dist;
 }
-
-
-namespace HexagonalGrid {
 
 
 //
