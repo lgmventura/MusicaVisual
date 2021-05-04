@@ -1153,8 +1153,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
     }
     else if (chordL.CLType == ChordLayers::ChordLayerType::Tonnetz)
     {
-        Tnr.prepareGrid(10);
-        Tnr.renderGrid(image, TonnetzRenderer::Shape::Circle);
+        Tnr.renderGrid(image, centre, TonnetzRenderer::Shape::Circle);
         std::list<ChordWithTime>::iterator it;
         std::list<ChordWithTime>::iterator it_next;
         for (it = mdt.GChords.ChordsWTime.begin(), it_next = ++mdt.GChords.ChordsWTime.begin(); it_next!=(mdt.GChords.ChordsWTime.end()); ++it, ++it_next) // run through all chords

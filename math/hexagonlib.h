@@ -18,30 +18,20 @@ using std::vector;
 // Generated code -- CC0 -- No Rights Reserved -- http://www.redblobgames.com/grids/hexagons/
 namespace Hexagon {
 
-class Point2d
+struct Point2d
 {
-public:
     double x;
     double y;
-    //Point2d(double x_, double y_): x(x_), y(y_) {}
-    Point2d(double x, double y)
-    {
-        this->x = x;
-        this->y = y;
-    }
+    Point2d(double x_, double y_): x(x_), y(y_) {}
 };
 
 
-class Hex
+struct Hex
 {
-public:
     int q;
     int r;
     int s;
-    Hex(int q, int r, int s) {
-        this->q = q;
-        this->r = r;
-        this->s = s;
+    Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {
         if (q + r + s != 0) throw "q + r + s must be 0";
     }
     bool operator< (const Hex& rhs) const
@@ -51,50 +41,35 @@ public:
 };
 
 
-class FractionalHex
+struct FractionalHex
 {
-public:
     double q;
     double r;
     double s;
-    FractionalHex(double q, double r, double s) {
-        this->q = q;
-        this->r = r;
-        this->s = s;
+    FractionalHex(double q_, double r_, double s_): q(q_), r(r_), s(s_) {
         if (round(q + r + s) != 0) throw "q + r + s must be 0";
     }
 };
 
 
-class OffsetCoord
+struct OffsetCoord
 {
-public:
     int col;
     int row;
-    OffsetCoord(int col_, int row_) {
-        this->col = col_;
-        this->row = row_;
-    }
+    OffsetCoord(int col_, int row_): col(col_), row(row_) {}
 };
 
 
-class DoubledCoord
+struct DoubledCoord
 {
-public:
     int col;
     int row;
-    DoubledCoord(int col_, int row_) {
-        this->col = col_;
-        this->row = row_;
-    }
+    DoubledCoord(int col_, int row_): col(col_), row(row_) {}
 };
 
 
-class Orientation
+struct Orientation
 {
-public:
-    Orientation(double f0_, double f1_, double f2_, double f3_, double b0_, double b1_, double b2_, double b3_, double start_angle_);
-
     double f0;
     double f1;
     double f2;
@@ -104,19 +79,18 @@ public:
     double b2;
     double b3;
     double start_angle;
+    Orientation(double f0_, double f1_, double f2_, double f3_, double b0_, double b1_, double b2_, double b3_, double start_angle_): f0(f0_), f1(f1_), f2(f2_), f3(f3_), b0(b0_), b1(b1_), b2(b2_), b3(b3_), start_angle(start_angle_) {}
 };
 
 
-class Layout
+struct Layout
 {
-public:
-    Layout();
-//    Layout(Orientation orientation_, Point2d size_, Point2d origin_);
-
     Orientation orientation;
     Point2d size;
     Point2d origin;
+    Layout(Orientation orientation_, Point2d size_, Point2d origin_): orientation(orientation_), size(size_), origin(origin_) {}
 };
+
 
 
 // Forward declarations
@@ -144,7 +118,6 @@ int hex_length(Hex hex);
 int hex_distance(Hex a, Hex b);
 
 Hex hex_round(FractionalHex h);
-
 
 FractionalHex hex_lerp(FractionalHex a, FractionalHex b, double t);
 vector<Hex> hex_linedraw(Hex a, Hex b);
@@ -188,6 +161,11 @@ Point2d hex_corner_offset(Layout layout, int corner);
 
 
 vector<Point2d> polygon_corners(Layout layout, Hex h);
+
+
+std::vector<Hex> hex_ring(Hex centre, int radius);
+
+vector<Hex> hex_spiral(Hex centre, int radius);
 
 } // namespace Hexagon
 

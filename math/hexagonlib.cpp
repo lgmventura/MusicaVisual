@@ -2,26 +2,6 @@
 
 namespace Hexagon {
 
-Orientation::Orientation(double f0_, double f1_, double f2_, double f3_, double b0_, double b1_, double b2_, double b3_, double start_angle_)
-{
-    this->b0 = b0_;
-    this->b1 = b1_;
-    this->b2 = b2_;
-    this->b3 = b3_;
-    this->f0 = f0_;
-    this->f1 = f1_;
-    this->f2 = f2_;
-    this->f3 = f3_;
-    this->start_angle = start_angle_;
-}
-
-//Layout::Layout(Orientation orientation, Point2d size, Point2d origin)
-//{
-//    this->orientation = orientation;
-//    this->origin = origin;
-//    this->size = size;
-//}
-
 Hex hex_add(Hex a, Hex b)
 {
     return Hex(a.q + b.q, a.r + b.r, a.s + b.s);
@@ -214,7 +194,53 @@ FractionalHex pixel_to_hex(Layout layout, Point2d p)
     return FractionalHex(q, r, -q - r);
 }
 
+Point2d hex_corner_offset(Layout layout, int corner)
+{
+    Orientation M = layout.orientation;
+    Point2d size = layout.size;
+    double angle = 2.0 * M_PI * (M.start_angle - corner) / 6.0;
+    return Point2d(size.x * cos(angle), size.y * sin(angle));
+}
 
+vector<Point2d> polygon_corners(Layout layout, Hex h)
+{
+    vector<Point2d> corners = {};
+    Point2d center = hex_to_pixel(layout, h);
+    for (int i = 0; i < 6; i++)
+    {
+        Point2d offset = hex_corner_offset(layout, i);
+        corners.push_back(Point2d(center.x + offset.x, center.y + offset.y));
+    }
+    return corners;
+}
+
+vector<Hex> hex_ring(Hex centre, int radius)
+{
+    vector<Hex> results;
+    Hex cube = hex_add(centre,
+                        hex_scale(hex_direction(4), radius));
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < radius; j++)
+        {
+            results.push_back(cube);
+            cube = hex_neighbor(cube, i);
+        }
+    }
+    return results;
+}
+
+vector<Hex> hex_spiral(Hex centre, int radius)
+{
+    vector<Hex> results;
+    results.push_back(centre);
+        for (int k = 1; k <= radius; k++)
+        {
+            vector<Hex> ring = hex_ring(centre, k);
+            results.insert(results.end(), ring.begin(), ring.end());
+        }
+        return results;
+}
 
 
 //// Tests
