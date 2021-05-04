@@ -1113,7 +1113,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.ChordsWTime.begin() && it!=mdt.GChords.ChordsWTime.end())
             {
                 std::string ptStr = "Pitches:";
-                ptStr = chordWT.Chord.getPitchesStr(chordL.AccidentalSharp, chordL.ChordStarTrack);
+                ptStr = chordWT.Chord.getPitchesStr(chordL.AccidentalSharp, chordL.ChordTracks);
                 cv::putText(image,
                         ptStr,//"Here is some text",
                         centre, // Coordinates
@@ -1151,7 +1151,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
                     dispChordDisc(type, image, centre, diam, true, chordL.TurnChordCircle, chordL.AccidentalSharp);
                 }
                 Chord currChord = chordWT.Chord;
-                renderChordStar(currChord, type, image, centre, diam, chordL.ChordStarTrack, chordL.TurnChordCircle);
+                renderChordStar(currChord, type, image, centre, diam, chordL.ChordTracks, chordL.TurnChordCircle);
             }
 
         }
@@ -1168,7 +1168,8 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
             ChordWithTime chordWT_next = *it_next;
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.ChordsWTime.begin() && it!=mdt.GChords.ChordsWTime.end()) // if it is the chord currently being played
             {
-
+                Chord currChord = chordWT.Chord;
+                TonnetzRenderer::renderChord(currChord, image, centre, chordL.HexLayout, chordL.ChordTracks, chordL.TonnetzShape, chordL.NoteSize, chordL.CentralMidi);
             }
         }
     }

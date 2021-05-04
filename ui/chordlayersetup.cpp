@@ -60,8 +60,11 @@ void ChordLayerSetup::drawUi()
         ui->cmb_tonnetzShape->addItem(qItem);
     }
     ui->cmb_tonnetzShape->setCurrentIndex(ChordL->TonnetzShape);
+    ui->spb_centralMidiPitch->setValue(ChordL->CentralMidi);
     ui->spb_cellSize->setValue(ChordL->CellDiameter);
     ui->spb_gridCellSize->setValue(ChordL->HexLayout.size.x);
+    ui->spb_noteSize->setValue(ChordL->NoteSize);
+    this->calculateTonnetzRadius();
 }
 
 void ChordLayerSetup::drawTabTracks()
@@ -86,7 +89,7 @@ void ChordLayerSetup::drawTabTracks()
         QCheckBox *cb_trackActive = new QCheckBox(trackName, mainWidgetChordStars);
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
-        cb_trackActive->setChecked(ChordL->ChordStarTrack[iTrack]);
+        cb_trackActive->setChecked(ChordL->ChordTracks[iTrack]);
         QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { chordStarTrackActiveChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeChordStarTrackActive(int)), this, SLOT(chordStarTrackActiveChanged(int)));
         Cb_trackActiveChordStars->push_back(cb_trackActive);
@@ -98,7 +101,7 @@ void ChordLayerSetup::drawTabTracks()
 void ChordLayerSetup::chordStarTrackActiveChanged(int track)
 {
     bool state = Cb_trackActiveChordStars->at(track)->isChecked();
-    this->ChordL->ChordStarTrack[track] = state;
+    this->ChordL->ChordTracks[track] = state;
 
     this->updateCbAllTracks();
 }
@@ -117,7 +120,7 @@ void ChordLayerSetup::updateCbAllTracks()
     unsigned int numVisibleTracks = 0;
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
-        if (this->ChordL->ChordStarTrack[iTrack] == true)
+        if (this->ChordL->ChordTracks[iTrack] == true)
         {
             numVisibleTracks++;
         }
@@ -168,8 +171,6 @@ void ChordLayerSetup::calculateTonnetzRadius()
     int maxDist = EulerTonnetz::getMaxDist(Mdt->PitchMax, Mdt->PitchMin, ChordL->CentralMidi);
     this->RBuffer->prepareTonnetzGrid(maxDist);
 }
-
-
 
 void ChordLayerSetup::on_dspb_posx_valueChanged(double arg1)
 {
@@ -292,4 +293,9 @@ void ChordLayerSetup::on_spb_centralMidiPitch_valueChanged(int arg1)
 {
     ChordL->CentralMidi = arg1;
     this->calculateTonnetzRadius();
+}
+
+void ChordLayerSetup::on_spb_noteSize_valueChanged(int arg1)
+{
+    ChordL->NoteSize = arg1;
 }

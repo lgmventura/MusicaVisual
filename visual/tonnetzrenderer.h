@@ -11,7 +11,7 @@ namespace TonnetzRenderer {
 enum Shape {Circle, Hexagon};
 
 void renderGrid(cv::Mat mat, cv::Point centre, std::vector<Hexagon::Hex> GridPositions, int cellDiameter, Hexagon::Layout layout, Shape shape);
-void renderChord(cv::Mat mat, cv::Point centre, bool *tracks, Shape shape);
+void renderChord(Chord currChord, cv::Mat mat, cv::Point centre, Hexagon::Layout layout, bool *tracks, Shape shape, int size, Pitch central = 60);
 
 };
 

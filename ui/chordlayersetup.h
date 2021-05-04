@@ -83,6 +83,8 @@ private slots:
 
     void on_spb_centralMidiPitch_valueChanged(int arg1);
 
+    void on_spb_noteSize_valueChanged(int arg1);
+
 signals:
     void changeChordStarTrackActive(int track);
 };

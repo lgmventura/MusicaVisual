@@ -15,7 +15,7 @@ public:
 
     enum ChordLayerType {PitchNames, ChordStar, Tonnetz};
 
-    bool ChordStarTrack[128] = { [0 ... 127 ] = 1 };
+    bool ChordTracks[128] = { [0 ... 127 ] = 1 };
 
     // Type:
     ChordLayerType CLType = PitchNames;
@@ -38,6 +38,7 @@ public:
     // Tonnetz:
     TonnetzRenderer::Shape TonnetzShape = TonnetzRenderer::Shape::Circle;
     int CellDiameter = 10;
+    int NoteSize = 10;
     int CentralMidi = 60;
     Layout HexLayout = Layout(layout_pointy, Point2d(14, 14), Point2d(0, 0));
 

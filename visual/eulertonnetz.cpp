@@ -26,28 +26,30 @@ Hex EulerTonnetz::getHexagon(Pitch p, bool oneOctave, Pitch central)
     return Hex(x, y, z);
 }
 
-std::set<Hex> EulerTonnetz::getHexagons(Chord c, bool oneOctave, Pitch central)
+std::vector<Hex> EulerTonnetz::getHexagons(Chord c, bool oneOctave, Pitch central)
 {
-    std::set<Hex> hexagons;
+    std::vector<Hex> hexagons;
     std::set<Pitch> pitches = c.getPitches();
     for (std::set<Pitch>::iterator it = pitches.begin(); it != pitches.end(); it++)
     {
-        hexagons.insert(EulerTonnetz::getHexagon(*it, oneOctave, central));
+        hexagons.push_back(EulerTonnetz::getHexagon(*it, oneOctave, central));
     }
+    return hexagons;
 }
 
-std::set<Hex> EulerTonnetz::getHexagonsTracks(Chord c, bool *tracks, bool oneOctave, Pitch central)
+std::vector<Hex> EulerTonnetz::getHexagonsTracks(Chord c, bool *tracks, bool oneOctave, Pitch central)
 {
-    std::set<Hex> hexagons;
+    std::vector<Hex> hexagons;
     std::set<Pitch> pitches = c.getPitches();
     for (std::set<Pitch>::iterator it = pitches.begin(); it != pitches.end(); it++)
     {
         Pitch p = (*it);
         if (tracks[p.getMidiTrack()] == true)
         {
-            hexagons.insert(EulerTonnetz::getHexagon(p, oneOctave, central));
+            hexagons.push_back(EulerTonnetz::getHexagon(p, oneOctave, central));
         }
     }
+    return hexagons;
 }
 
 int EulerTonnetz::getMaxDist(int highestPitch, int lowestPitch, Pitch central)
