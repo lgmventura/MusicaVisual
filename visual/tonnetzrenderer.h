@@ -6,12 +6,17 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
-using namespace Hexagon;
-
 class TonnetzRenderer
 {
+private:
+    int CellDiameter = 10;
+//    Orientation Orient = layout_pointy; // from hexagonlib
+ //   Point2d Size = Point2d(0,0); // from hexagonlib
+//    Layout layout = Layout(layout_pointy, Point(10, 10), Point(0,0)); // from hexagonlib
+    std::list<Hexagon::Hex> gridPositions; // from hexagonlib
+
 public:
-    TonnetzRenderer();
+    TonnetzRenderer(): CellDiameter(10) {};
 
     enum Shape {Circle, Hexagon};
 
@@ -24,12 +29,7 @@ public:
     int getCellDiameter() {return this->CellDiameter;};
 
     void setGridDiameter(int gridDiam, int maxDist);
-private:
-    int CellDiameter = 10;
-//    Orientation Orient = layout_pointy; // from hexagonlib
- //   Point2d Size = Point2d(0,0); // from hexagonlib
-//    Layout layout = Layout(layout_pointy, Point(10, 10), Point(0,0)); // from hexagonlib
-    std::list<Hex> gridPositions; // from hexagonlib
+
 };
 
 

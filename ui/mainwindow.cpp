@@ -246,11 +246,11 @@ void MainWindow::on_pb_animation_clicked()
         img_buffer_sep_tracks->push_back(mat_zeros.clone());
     }
 
+    APainter = new AnimPainter();
+
     cv::namedWindow("Animation");
     AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, Layers, APainter, AState, VRec);
     AnimBar->show();
-
-    APainter = new AnimPainter();
 
     if(ui->edt_videoOutput->text().toStdString().size() > 0)
     {

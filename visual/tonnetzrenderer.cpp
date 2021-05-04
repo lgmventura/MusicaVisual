@@ -2,13 +2,13 @@
 
 using namespace Hexagon;
 
-TonnetzRenderer::TonnetzRenderer()
-{
-//    this->CellDiameter = 10;
-//    this->orientation = layout_pointy;
-//    this->Size = Point2d(10,10);
-//    this->layout = Layout(layout_pointy, Point(10, 10), Point(0, 0));
-}
+//TonnetzRenderer::TonnetzRenderer()
+//{
+////    this->CellDiameter = 10;
+////    this->orientation = layout_pointy;
+////    this->Size = Point2d(10,10);
+////    this->layout = Layout(layout_pointy, Point(10, 10), Point(0, 0));
+//}
 
 void TonnetzRenderer::setCellDiameter(int cellDiam)
 {
@@ -27,7 +27,9 @@ void TonnetzRenderer::setGridDiameter(int gridDiam, int maxDist)
 
 void TonnetzRenderer::prepareGrid(int radius)
 {
-
+//    this->CellDiameter = 10;
+//    std::list<Hex> lh;
+//    this->gridPositions = lh;
     this->gridPositions.clear();
     Hex h = Hex(0,0,0);
     this->gridPositions.push_back(h);

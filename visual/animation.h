@@ -42,13 +42,13 @@ public:
 class AnimState
 {
 public:
-    int zoom;
-    int xpos;
+    int zoom = 1000;
+    int xpos = 0;
     int zoom_slider_max = 100;
     int xpos_slider_max = 200;
-    int zoom_slider;
-    int xpos_slider;
-    double CurrentTime;
+    int zoom_slider = 1000;
+    int xpos_slider = 0;
+    double CurrentTime = 0;
     void setXpos(int x) {xpos = x;}
     void setZoom(int z) {zoom = z;}
 };
@@ -56,12 +56,12 @@ public:
 class AnimPainter
 {
 public:
-    cv::Mat *img;
-    std::vector <cv::Mat> img_buffer_sep_tracks;
-    int zoom;
-    int xpos;
-    int win_width;
-    int win_height;
+//    cv::Mat *img;
+//    std::vector <cv::Mat> img_buffer_sep_tracks;
+//    int zoom;
+//    int xpos;
+//    int win_width;
+//    int win_height;
     TonnetzRenderer Tnr;
     void paintBlocksNoShading( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
     void paintBlocks(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, BlockLayers, RenderP);
