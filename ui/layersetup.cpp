@@ -1,7 +1,7 @@
 #include "layersetup.h"
 #include "ui_layersetup.h"
 
-LayerSetup::LayerSetup(std::list<Layer> *layers, MusicData *mdt, QWidget *parent) :
+LayerSetup::LayerSetup(std::list<Layer> *layers, MusicData *mdt, RenderBuffer *rBuffer, QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::LayerSetup)
 {
@@ -9,6 +9,8 @@ LayerSetup::LayerSetup(std::list<Layer> *layers, MusicData *mdt, QWidget *parent
 
     this->Layers = layers;
     this->Mdt = mdt;
+    this->RBuffer = rBuffer;
+
     this->Bls = nullptr;
     this->Cls = nullptr;
 
@@ -128,7 +130,7 @@ void LayerSetup::layerEditTriggered(int layer)
     {
         if (Cls == nullptr)
         {
-            Cls = new ChordLayerSetup(Mdt, &it->Cl, this->parentWidget());
+            Cls = new ChordLayerSetup(Mdt, &it->Cl, RBuffer, this->parentWidget());
             Cls->resize(640, 480);
         }
         else

@@ -65,10 +65,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setAcceptDrops(true); // accept file droppings to ease the file opening
     this->dwrenderprop = nullptr; // starting the variables as nullpointer because, if we click load_settings, it will attempt to reopen the widgets if they are open (see load_settings function). But if they had never been instantiated, MusicaVisual will crash.
     this->Lstp = nullptr;
+    this->APainter = nullptr;
     this->Mdt = new MusicData(); // create object MusicData
     this->VRec = new VideoRecorder(720, 480, 30); // dimensions, fps etc. will be eventually changed later
     this->RProp = new RenderP();
     this->Layers = new std::list<Layer>;
+    this->RBuffer = new RenderBuffer();
 
     Layer layer0;
     layer0.setName("Layer 0");
@@ -246,7 +248,7 @@ void MainWindow::on_pb_animation_clicked()
         img_buffer_sep_tracks->push_back(mat_zeros.clone());
     }
 
-    APainter = new AnimPainter();
+    APainter = new AnimPainter(this->RBuffer);
 
     cv::namedWindow("Animation");
     AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, Layers, APainter, AState, VRec);
@@ -464,7 +466,7 @@ void MainWindow::on_actionSetup_layers_triggered()
 {
     if (Lstp == nullptr)
     {
-        Lstp = new LayerSetup(Layers, Mdt, this);
+        Lstp = new LayerSetup(Layers, Mdt, RBuffer, this);
         Lstp->resize(640, 480);
     }
     Lstp->refresh();

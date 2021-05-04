@@ -4,19 +4,13 @@
 #include "math/hexagonlib.h"
 #include "musiclib/chords.h"
 
-class EulerTonnetz
-{
-public:
-    EulerTonnetz();
-    EulerTonnetz(Pitch centralMidi);
+namespace EulerTonnetz {
 
-    Pitch CentralMidi = 60;
+Hexagon::Hex getHexagon(Pitch p, bool oneOctave, Pitch central = 60);
+std::set<Hexagon::Hex> getHexagons(Chord c, bool oneOctave, Pitch central = 60);
+std::set<Hexagon::Hex> getHexagonsTracks(Chord c, bool tracks[128], bool oneOctave, Pitch central);
+int getMaxDist(int maxPitch, int minPitch, Pitch central);
 
-    Hexagon::Hex getHexagon(Pitch p, bool oneOctave);
-    std::set<Hexagon::Hex> getHexagons(Chord c, bool oneOctave);
-    std::set<Hexagon::Hex> getHexagonsTracks(Chord c, bool tracks[128], bool oneOctave);
-    int getMaxDist(int maxPitch, int minPitch);
-private:
-};
+}
 
 #endif // EULERTONNETZ_H

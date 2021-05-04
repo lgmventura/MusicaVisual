@@ -2,28 +2,18 @@
 
 using namespace Hexagon;
 
-EulerTonnetz::EulerTonnetz()
-{
-
-}
-
-EulerTonnetz::EulerTonnetz(Pitch centralMidi)
-{
-    this->CentralMidi = centralMidi;
-}
-
-Hex EulerTonnetz::getHexagon(Pitch p, bool oneOctave)
+Hex EulerTonnetz::getHexagon(Pitch p, bool oneOctave, Pitch central)
 {
     int dist = 0;
     if (oneOctave == true)
     {
-        int c1o = this->CentralMidi.getDistanceFromLastC();
+        int c1o = central.getDistanceFromLastC();
         int p1o = p.getDistanceFromLastC();
         dist = p1o - c1o;
     }
     else
     {
-        dist = this->CentralMidi.getMidiPitch() - p.getMidiPitch();
+        dist = central.getMidiPitch() - p.getMidiPitch();
     }
 
     int fifths = dist % 7;
@@ -36,17 +26,17 @@ Hex EulerTonnetz::getHexagon(Pitch p, bool oneOctave)
     return Hex(x, y, z);
 }
 
-std::set<Hex> EulerTonnetz::getHexagons(Chord c, bool oneOctave)
+std::set<Hex> EulerTonnetz::getHexagons(Chord c, bool oneOctave, Pitch central)
 {
     std::set<Hex> hexagons;
     std::set<Pitch> pitches = c.getPitches();
     for (std::set<Pitch>::iterator it = pitches.begin(); it != pitches.end(); it++)
     {
-        hexagons.insert(this->getHexagon(*it, oneOctave));
+        hexagons.insert(EulerTonnetz::getHexagon(*it, oneOctave, central));
     }
 }
 
-std::set<Hex> EulerTonnetz::getHexagonsTracks(Chord c, bool *tracks, bool oneOctave)
+std::set<Hex> EulerTonnetz::getHexagonsTracks(Chord c, bool *tracks, bool oneOctave, Pitch central)
 {
     std::set<Hex> hexagons;
     std::set<Pitch> pitches = c.getPitches();
@@ -55,15 +45,15 @@ std::set<Hex> EulerTonnetz::getHexagonsTracks(Chord c, bool *tracks, bool oneOct
         Pitch p = (*it);
         if (tracks[p.getMidiTrack()] == true)
         {
-            hexagons.insert(this->getHexagon(p, oneOctave));
+            hexagons.insert(EulerTonnetz::getHexagon(p, oneOctave, central));
         }
     }
 }
 
-int EulerTonnetz::getMaxDist(int highestPitch, int lowestPitch)
+int EulerTonnetz::getMaxDist(int highestPitch, int lowestPitch, Pitch central)
 {
-    Hex hHex = this->getHexagon(highestPitch, false);
-    Hex lHex = this->getHexagon(lowestPitch, false);
+    Hex hHex = EulerTonnetz::getHexagon(highestPitch, false, central);
+    Hex lHex = EulerTonnetz::getHexagon(lowestPitch, false, central);
 
     int hcDist = hex_distance(Hex(0,0,0), hHex);
     int lcDist = hex_distance(Hex(0,0,0), lHex);

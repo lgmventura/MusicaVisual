@@ -5,6 +5,10 @@ RenderP::RenderP()
 
 }
 
+AnimPainter::AnimPainter(RenderBuffer *rBuffer)
+{
+    this->RBuffer = rBuffer;
+}
 
 void AnimPainter::paintBlocksNoShading(cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height)
 {
@@ -1095,6 +1099,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
 
     cv::Point centre = cv::Point(p_x, p_y);
     int diam = chordL.w;
+    cv::LineTypes lineType = rProp.shapeLineType;
 
     // ============ Displaying note names ==============
     if (chordL.CLType == ChordLayers::ChordLayerType::PitchNames) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
@@ -1151,9 +1156,10 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
 
         }
     }
+    // ============ Displaying tonnetz ==============
     else if (chordL.CLType == ChordLayers::ChordLayerType::Tonnetz)
     {
-        Tnr.renderGrid(image, centre, TonnetzRenderer::Shape::Circle);
+        TonnetzRenderer::renderGrid(image, centre, RBuffer->TonnetzGridPositions, chordL.CellDiameter, chordL.HexLayout, chordL.TonnetzShape);
         std::list<ChordWithTime>::iterator it;
         std::list<ChordWithTime>::iterator it_next;
         for (it = mdt.GChords.ChordsWTime.begin(), it_next = ++mdt.GChords.ChordsWTime.begin(); it_next!=(mdt.GChords.ChordsWTime.end()); ++it, ++it_next) // run through all chords

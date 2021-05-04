@@ -4,6 +4,9 @@
 #include <string>
 
 #include "chords.h"
+#include "tonnetzrenderer.h"
+
+using namespace Hexagon;
 
 class ChordLayers
 {
@@ -31,6 +34,14 @@ public:
     bool NoteNamesOnStar = false;
     int TurnChordCircle = 0;
     Chord::circle ChordStarType = Chord::circleOfSemitones;
+
+    // Tonnetz:
+    TonnetzRenderer::Shape TonnetzShape = TonnetzRenderer::Shape::Circle;
+    int CellDiameter = 10;
+    int CentralMidi = 60;
+    Layout HexLayout = Layout(layout_pointy, Point2d(14, 14), Point2d(0, 0));
+
+    void setTonnetzGridDiameter(int diameter);
 };
 
 class ChordSetupOptions
@@ -39,6 +50,7 @@ public:
     ChordSetupOptions();
 
     const static std::string ChordLayerTypes[3];
+    const static std::string TonnetzShapes[2];
 };
 
 #endif // CHORDLAYERS_H

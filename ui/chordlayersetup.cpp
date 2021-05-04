@@ -1,7 +1,7 @@
 #include "chordlayersetup.h"
 #include "ui_chordlayersetup.h"
 
-ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, QWidget *parent) :
+ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, RenderBuffer *rBuffer, QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::ChordLayerSetup)
 {
@@ -9,6 +9,8 @@ ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, QWidget *p
 
     this->Mdt = mdt;
     this->ChordL = chordL;
+
+    this->RBuffer = rBuffer;
 
     this->drawUi();
 }
@@ -50,6 +52,16 @@ void ChordLayerSetup::drawUi()
     ui->combox_chordStar->setCurrentIndex(ChordL->ChordStarType);
     ui->spb_chordStarOffset->setValue(ChordL->TurnChordCircle);
     ui->cb_dispNoteNamesStar->setChecked(ChordL->NoteNamesOnStar);
+
+    // Tab Tonnetz:
+    int numShapes = sizeof(ChordSetupOptions::TonnetzShapes)/sizeof(ChordSetupOptions::TonnetzShapes[0]);
+    for (int iShape = 0; iShape < numShapes; iShape++) {
+        QString qItem = QString::fromStdString(ChordSetupOptions::TonnetzShapes[iShape]);
+        ui->cmb_tonnetzShape->addItem(qItem);
+    }
+    ui->cmb_tonnetzShape->setCurrentIndex(ChordL->TonnetzShape);
+    ui->spb_cellSize->setValue(ChordL->CellDiameter);
+    ui->spb_gridCellSize->setValue(ChordL->HexLayout.size.x);
 }
 
 void ChordLayerSetup::drawTabTracks()
@@ -150,6 +162,14 @@ void ChordLayerSetup::on_cb_allTracks_stateChanged(int arg1)
     }
     this->allTracksToggled(checked);
 }
+
+void ChordLayerSetup::calculateTonnetzRadius()
+{
+    int maxDist = EulerTonnetz::getMaxDist(Mdt->PitchMax, Mdt->PitchMin, ChordL->CentralMidi);
+    this->RBuffer->prepareTonnetzGrid(maxDist);
+}
+
+
 
 void ChordLayerSetup::on_dspb_posx_valueChanged(double arg1)
 {
@@ -252,3 +272,24 @@ void ChordLayerSetup::on_cb_dispNoteNamesStar_toggled(bool checked)
     ChordL->NoteNamesOnStar = checked;
 }
 
+
+void ChordLayerSetup::on_cmb_tonnetzShape_currentIndexChanged(int index)
+{
+    ChordL->TonnetzShape = TonnetzRenderer::Shape(index);
+}
+
+void ChordLayerSetup::on_spb_gridCellSize_valueChanged(int arg1)
+{
+    ChordL->setTonnetzGridDiameter(arg1);
+}
+
+void ChordLayerSetup::on_spb_cellSize_valueChanged(int arg1)
+{
+    ChordL->CellDiameter = arg1;
+}
+
+void ChordLayerSetup::on_spb_centralMidiPitch_valueChanged(int arg1)
+{
+    ChordL->CentralMidi = arg1;
+    this->calculateTonnetzRadius();
+}

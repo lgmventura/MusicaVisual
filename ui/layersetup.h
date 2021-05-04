@@ -8,6 +8,7 @@
 #include <QTableWidget>
 
 #include "visual/layer.h"
+#include "visual/renderbuffer.h"
 #include "musicdata.h"
 #include "ui/blocklayersetup.h"
 #include "ui/chordlayersetup.h"
@@ -22,7 +23,7 @@ class LayerSetup : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit LayerSetup(std::list<Layer> *layers, MusicData *mdt, QWidget *parent = nullptr);
+    explicit LayerSetup(std::list<Layer> *layers, MusicData *mdt, RenderBuffer *rBuffer, QWidget *parent = nullptr);
     ~LayerSetup();
 
     void refresh();
@@ -34,6 +35,7 @@ private:
 
     std::list<Layer> *Layers;
     MusicData *Mdt;
+    RenderBuffer *RBuffer;
 
     BlockLayerSetup *Bls;
     ChordLayerSetup *Cls;

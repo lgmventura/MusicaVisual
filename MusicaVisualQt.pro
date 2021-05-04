@@ -44,6 +44,7 @@ SOURCES += main.cpp\
     visual/eulertonnetz.cpp \
     visual/layer.cpp \
     visual/renderChordStar.cpp \
+    visual/renderbuffer.cpp \
     visual/tonnetzrenderer.cpp \
     visual/videorecorder.cpp
 
@@ -84,6 +85,7 @@ HEADERS  += \
     visual/eulertonnetz.h \
     visual/layer.h \
     visual/renderChordStar.h \
+    visual/renderbuffer.h \
     visual/tonnetzrenderer.h \
     visual/videorecorder.h
 

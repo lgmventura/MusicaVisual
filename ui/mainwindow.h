@@ -42,6 +42,7 @@
 #include "visual/videorecorder.h"
 #include "visual/blocklayers.h"
 #include "visual/animation.h"
+#include "visual/renderbuffer.h"
 
 // From musiclib
 #include "chords.h"
@@ -119,6 +120,7 @@ private:
     AnimState *AState;
     AnimPainter *APainter;
     AnimationBar *AnimBar;
+    RenderBuffer *RBuffer;
 };
 
 #endif // MAINWINDOW_H

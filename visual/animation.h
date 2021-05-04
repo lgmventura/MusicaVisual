@@ -9,6 +9,7 @@
 //Include project files
 #include "layer.h"
 #include "videorecorder.h"
+#include "visual/renderbuffer.h"
 #include "musicdata.h"
 #include "chords.h"
 #include "renderChordStar.h"
@@ -56,13 +57,15 @@ public:
 class AnimPainter
 {
 public:
+    AnimPainter(RenderBuffer *rBuffer);
 //    cv::Mat *img;
 //    std::vector <cv::Mat> img_buffer_sep_tracks;
 //    int zoom;
 //    int xpos;
 //    int win_width;
 //    int win_height;
-    TonnetzRenderer Tnr;
+    RenderBuffer *RBuffer;
+
     void paintBlocksNoShading( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
     void paintBlocks(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, BlockLayers, RenderP);
     void paintChords(MusicData mdt, cv::Mat, int, int, int, int, ChordLayers chordL, RenderP rProp);
