@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
+#include <unordered_map>
 //#include <algorithm>
 //#include <iterator>
 using std::abs;
@@ -34,12 +35,24 @@ struct Hex
     Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {
         if (q + r + s != 0) throw "q + r + s must be 0";
     }
-    bool operator< (const Hex& rhs) const
+    bool operator< (const Hex& rhs) const // rhs -> right hand-side
     {
         return (this->q < rhs.q && this->r < rhs.r && this->s < rhs.s);
     }
+    bool operator== (const Hex& rhs) const
+    {
+        return (this->q == rhs.q && this->r == rhs.r && this->s == rhs.s);
+    }
 };
 
+struct Hex_hash
+{
+    template<typename T, typename U>
+    size_t operator() (const Hex &i) const
+    {
+        return std::hash<T>()(i.q, i.r, i.s);
+    }
+};
 
 struct FractionalHex
 {
@@ -166,6 +179,15 @@ vector<Point2d> polygon_corners(Layout layout, Hex h);
 std::vector<Hex> hex_ring(Hex centre, int radius);
 
 vector<Hex> hex_spiral(Hex centre, int radius);
+
+// returns a map from hex "pointing" to another hex, which points to another until we reach
+// the starting hex "Hex start".
+// with custom directions, but given only radius.
+std::unordered_map<Hex, Hex, Hex_hash> hex_path_map(Hex start, int radius, vector<Hex> directions = hex_directions);
+
+// returns a map from hex to int direction (mapped in hex_directions) given the hexagons
+// mapped to the directions of their accessible neighbours.
+std::unordered_map<Hex, int, Hex_hash> hex_path_map(Hex start, std::unordered_map<Hex, vector<int>> hexNeighbours);
 
 } // namespace Hexagon
 

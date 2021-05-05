@@ -242,6 +242,70 @@ vector<Hex> hex_spiral(Hex centre, int radius)
         return results;
 }
 
+// The function below
+// returns a map from hex "pointing" to another hex, which points to another until we reach
+// the starting hex "Hex start".
+// if no direction is given, then it will use hex_directions, which point to the neighbours,
+// looking one by one. If custom directions are given, then, it will only look those directions,
+// analogous to a horse in a chess game, which can jump only in the directions
+// (3,2), (2,3), (-2,3), (3,-2), (-2,-3), ...
+// This only generates a map where there are no obstacles or anything like that. If there are,
+// instead of radius, a graph of hexagon neighbours must be given, e.g., another map where each
+// hex is associated with its valid directions
+std::unordered_map<Hex, Hex, Hex_hash> hex_path_map(Hex start, int radius, vector<Hex> directions)
+{
+    vector<Hex> frontier;
+    frontier.push_back(start);
+    std::unordered_map<Hex, Hex, Hex_hash> came_from; // Hex_hash must be defined for unordered_map to work
+    came_from[start] = Hex(0, 0, 0);
+
+    while ( ! frontier.empty())
+    {
+        Hex current = frontier.back();
+        frontier.pop_back();
+        vector<Hex>::iterator it = directions.begin();
+        for (unsigned int iDir = 0; it != directions.end(); it++, iDir++)
+        {
+            Hex next = hex_add(current, (*it));
+            if (next.q > radius || next.r > radius || next.s > radius)
+                continue; // skip when greater than radius
+            if (came_from.find(next) != came_from.end())
+            {
+                frontier.push_back(next);
+                came_from[next] = current;
+            }
+        }
+    }
+    return came_from;
+}
+
+std::unordered_map<Hex, int, Hex_hash> hex_path_map(Hex start, std::unordered_map<Hex, vector<int>> hexNeighbours)
+{
+    vector<Hex> frontier;
+    frontier.push_back(start);
+    std::unordered_map<Hex, int, Hex_hash> came_from; // Hex_hash must be defined for unordered_map to work
+    came_from[start] = -1;
+
+    while ( ! frontier.empty())
+    {
+        Hex current = frontier.back();
+        frontier.pop_back();
+        //std::unordered_map<Hex, vector<int>>::iterator it = hexNeighbours.begin();
+        vector<int> directionsFromCurrent = hexNeighbours[current];
+        vector<int>::iterator it = directionsFromCurrent.begin();
+        for (unsigned int iHex = 0; it != directionsFromCurrent.end(); it++, iHex++)
+        {
+            Hex next = hex_neighbor(current, (*it));
+            if (came_from.find(next) != came_from.end())
+            {
+                frontier.push_back(next);
+                came_from[next] = (*it);
+            }
+        }
+    }
+    return came_from;
+}
+
 
 //// Tests
 //#include <iostream>

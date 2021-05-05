@@ -16,9 +16,11 @@ Hex EulerTonnetz::getHexagon(Pitch p, bool oneOctave, Pitch central)
         dist = central.getMidiPitch() - p.getMidiPitch();
     }
 
-    int fifths = dist % 7;
-    int majThirds = dist % 4;
-    int minThirds = dist % 3;
+    int fifths = dist / 7;
+    int rest = dist % 7;
+    int majThirds = rest / 4;
+    rest = dist % 4;
+    int minThirds = rest / 3;
 
     int x = +fifths +majThirds;
     int y = -fifths +minThirds;
