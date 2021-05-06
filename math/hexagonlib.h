@@ -43,6 +43,10 @@ struct Hex
     {
         return (this->q == rhs.q && this->r == rhs.r && this->s == rhs.s);
     }
+    bool operator!= (const Hex& rhs) const
+    {
+        return (this->q != rhs.q || this->r != rhs.r || this->s != rhs.s);
+    }
 };
 
 struct Hex_hash
@@ -188,6 +192,12 @@ std::unordered_map<Hex, Hex, Hex_hash> hex_path_map(Hex start, int radius, vecto
 // returns a map from hex to int direction (mapped in hex_directions) given the hexagons
 // mapped to the directions of their accessible neighbours.
 std::unordered_map<Hex, int, Hex_hash> hex_path_map(Hex start, std::unordered_map<Hex, vector<int>> hexNeighbours);
+
+// Reconstruct the path:
+vector<Hex> reconstruct_path(std::unordered_map<Hex, Hex, Hex_hash> map, Hex start, Hex goal);
+
+// given an integer, what is the
+//Hex shortest_sum(int destination, vector<Hex> operands);
 
 } // namespace Hexagon
 

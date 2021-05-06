@@ -306,6 +306,39 @@ std::unordered_map<Hex, int, Hex_hash> hex_path_map(Hex start, std::unordered_ma
     return came_from;
 }
 
+vector<Hex> reconstruct_path(std::unordered_map<Hex, Hex, Hex_hash> came_from, Hex start, Hex goal)
+{
+    Hex current = goal;
+
+    vector<Hex> path;
+    while (current != start)
+    {
+        path.push_back(current);
+        current = came_from[current];
+    }
+    return path;
+}
+
+//
+//Hex shortest_sum(int destination, vector<Hex> directions)
+//{
+//    vector<Hex> frontier;
+//    frontier.push_back(Hex(0,0,0));
+//    std::unordered_map<std::pair<Hex, int>, Hex, Hex_hash> came_from;
+
+//    while ( ! frontier.empty())
+//    {
+//        Hex current = frontier.back();
+//        frontier.pop_back();
+//        vector<Hex>::iterator it = directions.begin();
+//        for (unsigned int iDir = 0; it != directions.end(); it++, iDir++)
+//        {
+//            Hex next = hex_add(current, (*it));
+//            came_from[next] = current;
+//        }
+//    }
+//}
+
 
 //// Tests
 //#include <iostream>
