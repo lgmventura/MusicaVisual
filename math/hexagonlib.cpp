@@ -252,72 +252,72 @@ vector<Hex> hex_spiral(Hex centre, int radius)
 // This only generates a map where there are no obstacles or anything like that. If there are,
 // instead of radius, a graph of hexagon neighbours must be given, e.g., another map where each
 // hex is associated with its valid directions
-std::unordered_map<Hex, Hex, Hex_hash> hex_path_map(Hex start, int radius, vector<Hex> directions)
-{
-    vector<Hex> frontier;
-    frontier.push_back(start);
-    std::unordered_map<Hex, Hex, Hex_hash> came_from; // Hex_hash must be defined for unordered_map to work
-    came_from[start] = Hex(0, 0, 0);
+//std::unordered_map<Hex, Hex, Hex_hash> hex_path_map(Hex start, int radius, vector<Hex> directions)
+//{
+//    vector<Hex> frontier;
+//    frontier.push_back(start);
+//    std::unordered_map<Hex, Hex, Hex_hash> came_from; // Hex_hash must be defined for unordered_map to work
+//    came_from[start] = Hex(0, 0, 0);
 
-    while ( ! frontier.empty())
-    {
-        Hex current = frontier.back();
-        frontier.pop_back();
-        vector<Hex>::iterator it = directions.begin();
-        for (unsigned int iDir = 0; it != directions.end(); it++, iDir++)
-        {
-            Hex next = hex_add(current, (*it));
-            if (next.q > radius || next.r > radius || next.s > radius)
-                continue; // skip when greater than radius
-            if (came_from.find(next) != came_from.end())
-            {
-                frontier.push_back(next);
-                came_from[next] = current;
-            }
-        }
-    }
-    return came_from;
-}
+//    while ( ! frontier.empty())
+//    {
+//        Hex current = frontier.back();
+//        frontier.pop_back();
+//        vector<Hex>::iterator it = directions.begin();
+//        for (unsigned int iDir = 0; it != directions.end(); it++, iDir++)
+//        {
+//            Hex next = hex_add(current, (*it));
+//            if (next.q > radius || next.r > radius || next.s > radius)
+//                continue; // skip when greater than radius
+//            if (came_from.find(next) != came_from.end())
+//            {
+//                frontier.push_back(next);
+//                came_from[next] = current;
+//            }
+//        }
+//    }
+//    return came_from;
+//}
 
-std::unordered_map<Hex, int, Hex_hash> hex_path_map(Hex start, std::unordered_map<Hex, vector<int>> hexNeighbours)
-{
-    vector<Hex> frontier;
-    frontier.push_back(start);
-    std::unordered_map<Hex, int, Hex_hash> came_from; // Hex_hash must be defined for unordered_map to work
-    came_from[start] = -1;
+//std::unordered_map<Hex, int, Hex_hash> hex_path_map(Hex start, std::unordered_map<Hex, vector<int>> hexNeighbours)
+//{
+//    vector<Hex> frontier;
+//    frontier.push_back(start);
+//    std::unordered_map<Hex, int, Hex_hash> came_from; // Hex_hash must be defined for unordered_map to work
+//    came_from[start] = -1;
 
-    while ( ! frontier.empty())
-    {
-        Hex current = frontier.back();
-        frontier.pop_back();
-        //std::unordered_map<Hex, vector<int>>::iterator it = hexNeighbours.begin();
-        vector<int> directionsFromCurrent = hexNeighbours[current];
-        vector<int>::iterator it = directionsFromCurrent.begin();
-        for (unsigned int iHex = 0; it != directionsFromCurrent.end(); it++, iHex++)
-        {
-            Hex next = hex_neighbor(current, (*it));
-            if (came_from.find(next) != came_from.end())
-            {
-                frontier.push_back(next);
-                came_from[next] = (*it);
-            }
-        }
-    }
-    return came_from;
-}
+//    while ( ! frontier.empty())
+//    {
+//        Hex current = frontier.back();
+//        frontier.pop_back();
+//        //std::unordered_map<Hex, vector<int>>::iterator it = hexNeighbours.begin();
+//        vector<int> directionsFromCurrent = hexNeighbours[current];
+//        vector<int>::iterator it = directionsFromCurrent.begin();
+//        for (unsigned int iHex = 0; it != directionsFromCurrent.end(); it++, iHex++)
+//        {
+//            Hex next = hex_neighbor(current, (*it));
+//            if (came_from.find(next) != came_from.end())
+//            {
+//                frontier.push_back(next);
+//                came_from[next] = (*it);
+//            }
+//        }
+//    }
+//    return came_from;
+//}
 
-vector<Hex> reconstruct_path(std::unordered_map<Hex, Hex, Hex_hash> came_from, Hex start, Hex goal)
-{
-    Hex current = goal;
+//vector<Hex> reconstruct_path(std::unordered_map<Hex, Hex, Hex_hash> came_from, Hex start, Hex goal)
+//{
+//    Hex current = goal;
 
-    vector<Hex> path;
-    while (current != start)
-    {
-        path.push_back(current);
-        current = came_from[current];
-    }
-    return path;
-}
+//    vector<Hex> path;
+//    while (current != start)
+//    {
+//        path.push_back(current);
+//        current = came_from[current];
+//    }
+//    return path;
+//}
 
 //
 //Hex shortest_sum(int destination, vector<Hex> directions)

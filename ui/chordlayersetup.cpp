@@ -168,8 +168,7 @@ void ChordLayerSetup::on_cb_allTracks_stateChanged(int arg1)
 
 void ChordLayerSetup::calculateTonnetzRadius()
 {
-    int maxDist = EulerTonnetz::getMaxDist(Mdt->PitchMax, Mdt->PitchMin, ChordL->CentralMidi);
-    this->RBuffer->prepareTonnetzGrid(maxDist);
+    this->RBuffer->prepareTonnetzGrid(Mdt->PitchMin, Mdt->PitchMax, ChordL->CentralMidi);
 }
 
 void ChordLayerSetup::on_dspb_posx_valueChanged(double arg1)

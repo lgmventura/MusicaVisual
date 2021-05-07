@@ -32,6 +32,7 @@ struct Hex
     int q;
     int r;
     int s;
+    Hex() {};
     Hex(int q_, int r_, int s_): q(q_), r(r_), s(s_) {
         if (q + r + s != 0) throw "q + r + s must be 0";
     }
@@ -46,6 +47,18 @@ struct Hex
     bool operator!= (const Hex& rhs) const
     {
         return (this->q != rhs.q || this->r != rhs.r || this->s != rhs.s);
+    }
+    Hex operator+ (const Hex& rhs) const
+    {
+        return (Hex(this->q + rhs.q, this->r + rhs.r, this->s + rhs.s));
+    }
+    Hex operator- (const Hex& rhs) const // binary minus
+    {
+        return (Hex(this->q - rhs.q, this->r - rhs.r, this->s - rhs.s));
+    }
+    Hex operator- () const // unary minus
+    {
+        return (Hex(-this->q, -this->r, -this->s));
     }
 };
 
@@ -187,14 +200,14 @@ vector<Hex> hex_spiral(Hex centre, int radius);
 // returns a map from hex "pointing" to another hex, which points to another until we reach
 // the starting hex "Hex start".
 // with custom directions, but given only radius.
-std::unordered_map<Hex, Hex, Hex_hash> hex_path_map(Hex start, int radius, vector<Hex> directions = hex_directions);
+//std::unordered_map<Hex, Hex, Hex_hash> hex_path_map(Hex start, int radius, vector<Hex> directions = hex_directions);
 
 // returns a map from hex to int direction (mapped in hex_directions) given the hexagons
 // mapped to the directions of their accessible neighbours.
-std::unordered_map<Hex, int, Hex_hash> hex_path_map(Hex start, std::unordered_map<Hex, vector<int>> hexNeighbours);
+//std::unordered_map<Hex, int, Hex_hash> hex_path_map(Hex start, std::unordered_map<Hex, vector<int>> hexNeighbours);
 
 // Reconstruct the path:
-vector<Hex> reconstruct_path(std::unordered_map<Hex, Hex, Hex_hash> map, Hex start, Hex goal);
+//vector<Hex> reconstruct_path(std::unordered_map<Hex, Hex, Hex_hash> map, Hex start, Hex goal);
 
 // given an integer, what is the
 //Hex shortest_sum(int destination, vector<Hex> operands);

@@ -1169,7 +1169,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
             if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && it!=mdt.GChords.ChordsWTime.begin() && it!=mdt.GChords.ChordsWTime.end()) // if it is the chord currently being played
             {
                 Chord currChord = chordWT.Chord;
-                TonnetzRenderer::renderChord(currChord, image, centre, chordL.HexLayout, chordL.ChordTracks, chordL.TonnetzShape, chordL.NoteSize, chordL.CentralMidi);
+                TonnetzRenderer::renderChord(currChord, image, centre, chordL.HexLayout, chordL.ChordTracks, chordL.TonnetzShape, chordL.NoteSize, RBuffer->TonnetzMap, chordL.CentralMidi);
             }
         }
     }

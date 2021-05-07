@@ -38,9 +38,9 @@ void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> Grid
     }
 }
 
-void TonnetzRenderer::renderChord(Chord currChord, cv::Mat mat, cv::Point centre, Hexagon::Layout layout, bool *tracks, Shape shape, int size, Pitch central)
+void TonnetzRenderer::renderChord(Chord currChord, cv::Mat mat, cv::Point centre, Hexagon::Layout layout, bool *tracks, Shape shape, int size, std::unordered_map<int, Hexagon::Hex> eulerTonnerzMap, Pitch central)
 {
-    std::vector<Hex> hexagons = EulerTonnetz::getHexagonsTracks(currChord, tracks, false, central);
+    std::vector<Hex> hexagons = EulerTonnetz::getHexagonsTracks(currChord, tracks, false, eulerTonnerzMap, central);
     if (shape == Shape::Circle)
     {
         std::vector<Hex>::iterator it = hexagons.begin();

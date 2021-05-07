@@ -9,9 +9,10 @@ class RenderBuffer
 public:
     RenderBuffer();
 
+    std::unordered_map<int, Hexagon::Hex> TonnetzMap;
     std::vector<Hexagon::Hex> TonnetzGridPositions; // from hexagonlib
 
-    void prepareTonnetzGrid(int maxDist);
+    void prepareTonnetzGrid(int minPitch, int maxPitch, int centralMidiPitch);
 
 };
 
