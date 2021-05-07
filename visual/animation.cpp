@@ -1122,6 +1122,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
                         cv::Scalar(255,255,255), // BGR Color
                         1, // Line Thickness (Optional)
                         cv::LINE_AA); // Anti-alias (Optional)
+                break; // to do: optimize this! Transfer this search for to outside the paint chords function
             }
 
         }
@@ -1152,6 +1153,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
                 }
                 Chord currChord = chordWT.Chord;
                 renderChordStar(currChord, type, image, centre, diam, chordL.ChordTracks, chordL.TurnChordCircle);
+                break; // to do: optimize this! Transfer this search for to outside the paint chords function
             }
 
         }
@@ -1170,6 +1172,7 @@ void AnimPainter::paintChords(MusicData mdt, cv::Mat image, int startMidiTime, i
             {
                 Chord currChord = chordWT.Chord;
                 TonnetzRenderer::renderChord(currChord, image, centre, chordL.HexLayout, chordL.ChordTracks, chordL.TonnetzShape, chordL.NoteSize, RBuffer->TonnetzMap, chordL.CentralMidi);
+                break; // to do: optimize this! Transfer this search for to outside the paint chords function
             }
         }
     }
