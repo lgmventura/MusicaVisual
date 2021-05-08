@@ -68,7 +68,7 @@ public:
 
     void paintBlocksNoShading( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
     void paintBlocks(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, BlockLayers, RenderP);
-    void paintChords(MusicData mdt, cv::Mat, int, int, int, int, ChordLayers chordL, RenderP rProp);
+    void paintChords(Chord chord, cv::Mat, int, int, ChordLayers chordL, RenderP rProp);
     void paintLayers(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, std::list<Layer> layers, RenderP);
     void appendFrame(cv::Mat image, VideoRecorder* vRec);
 };

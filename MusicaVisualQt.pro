@@ -14,6 +14,7 @@ TEMPLATE = app
 CONFIG += c++17
 
 SOURCES += main.cpp\
+    math/bfs.cpp \
     math/hexagonlib.cpp \
     musiclib/chords.cpp \
     musiclib/importmidi.cpp \
@@ -49,6 +50,7 @@ SOURCES += main.cpp\
     visual/videorecorder.cpp
 
 HEADERS  += \
+    math/bfs.h \
     math/hexagonlib.h \
     musiclib/chords.h \
     musiclib/importmidi.h \

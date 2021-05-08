@@ -30,13 +30,15 @@ void ChordLayerSetup::drawUi()
 {
     // updating UI elements:
     // Tab Type/Size:
+    int cb_type_currIndex = ChordL->CLType;
+    ui->cb_type->clear();
     int numTypes = sizeof(ChordSetupOptions::ChordLayerTypes)/sizeof(ChordSetupOptions::ChordLayerTypes[0]);
     for (int iType = 0; iType < numTypes; iType++)
     {
         QString qItem = QString::fromStdString(ChordSetupOptions::ChordLayerTypes[iType]);
         ui->cb_type->addItem(qItem);
     }
-    ui->cb_type->setCurrentIndex(ChordL->CLType);
+    ui->cb_type->setCurrentIndex(cb_type_currIndex);
     ui->dspb_posx->setValue(this->ChordL->x_pos);
     ui->dspb_posy->setValue(this->ChordL->y_pos);
     ui->spb_sizew->setValue(this->ChordL->w);
@@ -54,12 +56,14 @@ void ChordLayerSetup::drawUi()
     ui->cb_dispNoteNamesStar->setChecked(ChordL->NoteNamesOnStar);
 
     // Tab Tonnetz:
+    int cmb_tonnetzShape_currIndex = ChordL->TonnetzShape;
+    ui->cmb_tonnetzShape->clear();
     int numShapes = sizeof(ChordSetupOptions::TonnetzShapes)/sizeof(ChordSetupOptions::TonnetzShapes[0]);
     for (int iShape = 0; iShape < numShapes; iShape++) {
         QString qItem = QString::fromStdString(ChordSetupOptions::TonnetzShapes[iShape]);
         ui->cmb_tonnetzShape->addItem(qItem);
     }
-    ui->cmb_tonnetzShape->setCurrentIndex(ChordL->TonnetzShape);
+    ui->cmb_tonnetzShape->setCurrentIndex(cmb_tonnetzShape_currIndex);
     ui->spb_centralMidiPitch->setValue(ChordL->CentralMidi);
     ui->spb_cellSize->setValue(ChordL->CellDiameter);
     ui->spb_gridCellSize->setValue(ChordL->HexLayout.size.x);
