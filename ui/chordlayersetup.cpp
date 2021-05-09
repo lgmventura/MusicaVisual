@@ -279,7 +279,7 @@ void ChordLayerSetup::on_cb_dispNoteNamesStar_toggled(bool checked)
 
 void ChordLayerSetup::on_cmb_tonnetzShape_currentIndexChanged(int index)
 {
-    ChordL->TonnetzShape = TonnetzRenderer::Shape(index);
+    ChordL->TonnetzShape = TonnetzOptions::Shape(index);
 }
 
 void ChordLayerSetup::on_spb_gridCellSize_valueChanged(int arg1)
@@ -301,4 +301,15 @@ void ChordLayerSetup::on_spb_centralMidiPitch_valueChanged(int arg1)
 void ChordLayerSetup::on_spb_noteSize_valueChanged(int arg1)
 {
     ChordL->NoteSize = arg1;
+}
+
+
+void ChordLayerSetup::on_cb_noteFadeOut_toggled(bool checked)
+{
+    ChordL->NoteFadeOut = checked;
+}
+
+void ChordLayerSetup::on_checkBox_toggled(bool checked)
+{
+    ChordL->NoteCollapse = checked;
 }

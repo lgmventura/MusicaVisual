@@ -26,6 +26,10 @@ public:
     int w = 100;
     int h = 100;
 
+    // more general options:
+    bool NoteFadeOut = false;
+    bool NoteCollapse = false;
+
     // Note names:
     bool AccidentalSharp = false; // 0 for flat, 1 for sharp
     //bool ChordNames = 0;
@@ -36,7 +40,7 @@ public:
     Chord::circle ChordStarType = Chord::circleOfSemitones;
 
     // Tonnetz:
-    TonnetzRenderer::Shape TonnetzShape = TonnetzRenderer::Shape::Circle;
+    TonnetzOptions::Shape TonnetzShape = TonnetzOptions::Shape::Circle;
     int CellDiameter = 10;
     int NoteSize = 10;
     int CentralMidi = 60;

@@ -1090,7 +1090,7 @@ void AnimPainter::paintBlocks(MusicData mdt, cv::Mat image, std::vector <cv::Mat
     }
 }
 
-void AnimPainter::paintChords(Chord chord, cv::Mat image, int window_width, int window_height, ChordLayers chordL, RenderP rProp)
+void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, int window_width, int window_height, ChordLayers chordL, RenderP rProp)
 {
     int p_x = chordL.x_pos*window_width;
     int p_y = chordL.y_pos*window_height;
@@ -1133,8 +1133,14 @@ void AnimPainter::paintChords(Chord chord, cv::Mat image, int window_width, int 
     // ============ Displaying tonnetz ==============
     else if (chordL.CLType == ChordLayers::ChordLayerType::Tonnetz)
     {
+        TonnetzOptions opt(chordL.TonnetzShape, chordL.ChordTracks, chordL.HexLayout);
+        opt.Central = chordL.CentralMidi;
+        opt.NoteSize = chordL.NoteSize;
+        opt.NoteCollapse = chordL.NoteCollapse;
+        opt.NoteFadeOut = chordL.NoteFadeOut;
+
         TonnetzRenderer::renderGrid(image, centre, RBuffer->TonnetzGridPositions, chordL.CellDiameter, chordL.HexLayout, chordL.TonnetzShape);
-        TonnetzRenderer::renderChord(chord, image, centre, chordL.HexLayout, chordL.ChordTracks, chordL.TonnetzShape, chordL.NoteSize, RBuffer->TonnetzMap, chordL.CentralMidi);
+        TonnetzRenderer::renderChord(chord, chordProgress, image, centre, opt, RBuffer->TonnetzMap);
     }
 }
 
@@ -1161,7 +1167,8 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
                 ChordWithTime chordWT_next = *cit_next;
                 if (curr_pos_middle > chordWT_next.Start_time && (curr_pos_middle < chordWT.Start_time) && cit!=mdt.GChords.ChordsWTime.begin() && cit!=mdt.GChords.ChordsWTime.end())
                 {
-                    this->paintChords((*cit).Chord, image, window_width, window_height, (*lit).Cl, renderS);
+                    float chordProgress = (float)(curr_pos_middle - chordWT.Start_time)/(chordWT_next.Start_time - chordWT.Start_time);
+                    this->paintChords((*cit).Chord, chordProgress, image, window_width, window_height, (*lit).Cl, renderS);
                     break;
                 }
             }

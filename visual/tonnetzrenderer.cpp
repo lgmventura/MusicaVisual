@@ -2,9 +2,16 @@
 
 using namespace Hexagon;
 
-void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> GridPositions, int cellDiameter, Layout layout, Shape shape)
+TonnetzOptions::TonnetzOptions(Shape shape, bool *tracks, Hexagon::Layout layout)
 {
-    if (shape == Shape::Circle)
+    this->Shp = shape;
+    this->Tracks = tracks;
+    this->Layout = layout;
+}
+
+void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> GridPositions, int cellDiameter, Layout layout, TonnetzOptions::Shape shape)
+{
+    if (shape == TonnetzOptions::Shape::Circle)
     {
         std::vector<Hex>::iterator it = GridPositions.begin();
         for (int iHex = 0; it != GridPositions.end(); it++, iHex++)
@@ -17,7 +24,7 @@ void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> Grid
             cv::circle(mat, cvCentre, cellDiameter, cv::Scalar(200,200,200), 1, cv::LineTypes::LINE_AA);
         }
     }
-    else if (shape == Shape::Hexagon)
+    else if (shape == TonnetzOptions::Shape::Hexagon)
     {
         std::vector<Hex>::iterator it = GridPositions.begin();
         for (int iHex = 0; it != GridPositions.end(); it++, iHex++)
@@ -38,28 +45,30 @@ void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> Grid
     }
 }
 
-void TonnetzRenderer::renderChord(Chord currChord, cv::Mat mat, cv::Point centre, Hexagon::Layout layout, bool *tracks, Shape shape, int size, std::unordered_map<int, Hexagon::Hex> eulerTonnerzMap, Pitch central)
+void TonnetzRenderer::renderChord(Chord currChord, float chordProgress, cv::Mat mat, cv::Point centre, TonnetzOptions options, std::unordered_map<int, Hexagon::Hex> eulerTonnerzMap)
 {
-    std::vector<Hex> hexagons = EulerTonnetz::getHexagonsTracks(currChord, tracks, false, eulerTonnerzMap, central);
-    if (shape == Shape::Circle)
+    int size = options.NoteSize - (options.NoteCollapse * chordProgress * options.NoteSize);
+    // toDo: fadeOut
+    std::vector<Hex> hexagons = EulerTonnetz::getHexagonsTracks(currChord, options.Tracks, false, eulerTonnerzMap, options.Central);
+    if (options.Shp == TonnetzOptions::Shape::Circle)
     {
         std::vector<Hex>::iterator it = hexagons.begin();
         for (int iHex = 0; it != hexagons.end(); it++)
         {
             cv::Point cvCentre;
-            Point2d hexCentre = hex_to_pixel(layout, (*it));
+            Point2d hexCentre = hex_to_pixel(options.Layout, (*it));
             cvCentre.x = hexCentre.x;
             cvCentre.y = hexCentre.y;
             cvCentre = cvCentre + centre;
             cv::circle(mat, cvCentre, size, cv::Scalar(180,180,180), cv::LineTypes::FILLED);
         }
     }
-    else if (shape == Shape::Hexagon)
+    else if (options.Shp == TonnetzOptions::Shape::Hexagon)
     {
         std::vector<Hex>::iterator it = hexagons.begin();
         for (int iHex = 0; it != hexagons.end(); it++)
         {
-            std::vector<Point2d> polygon = polygon_corners(layout, (*it));
+            std::vector<Point2d> polygon = polygon_corners(options.Layout, (*it));
             std::vector<Point2d>::iterator jt = polygon.begin();
             std::array<cv::Point, 6> pts;
             for (int k = 0; jt != polygon.end(); jt++, k++)

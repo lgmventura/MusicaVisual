@@ -85,6 +85,10 @@ private slots:
 
     void on_spb_noteSize_valueChanged(int arg1);
 
+    void on_cb_noteFadeOut_toggled(bool checked);
+
+    void on_checkBox_toggled(bool checked);
+
 signals:
     void changeChordStarTrackActive(int track);
 };

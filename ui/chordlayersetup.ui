@@ -28,33 +28,10 @@
         <string>Type and Position</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <widget class="QLabel" name="lb_type">
-          <property name="text">
-           <string>Type:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="cb_type"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="lb_pos">
-          <property name="text">
-           <string>Relative position x, y:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="dspb_posx">
+        <item row="2" column="2">
+         <widget class="QSpinBox" name="spb_sizeh">
           <property name="maximum">
-           <double>1.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.100000000000000</double>
-          </property>
-          <property name="value">
-           <double>0.000000000000000</double>
+           <number>2000</number>
           </property>
          </widget>
         </item>
@@ -75,6 +52,13 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="lb_type">
+          <property name="text">
+           <string>Type:</string>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="1">
          <widget class="QSpinBox" name="spb_sizew">
           <property name="maximum">
@@ -82,10 +66,40 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
-         <widget class="QSpinBox" name="spb_sizeh">
+        <item row="1" column="0">
+         <widget class="QLabel" name="lb_pos">
+          <property name="text">
+           <string>Relative position x, y:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="cb_type"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="dspb_posx">
           <property name="maximum">
-           <number>2000</number>
+           <double>1.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.100000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QCheckBox" name="cb_noteFadeOut">
+          <property name="text">
+           <string>Fade out notes</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QCheckBox" name="checkBox">
+          <property name="text">
+           <string>Collapse notes</string>
           </property>
          </widget>
         </item>
@@ -206,6 +220,13 @@
         <item row="4" column="0">
          <widget class="QComboBox" name="cmb_tonnetzShape"/>
         </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Note size:</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="lb_centralMidiPitch">
           <property name="text">
@@ -218,13 +239,6 @@
         </item>
         <item row="3" column="1">
          <widget class="QSpinBox" name="spb_noteSize"/>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Note size:</string>
-          </property>
-         </widget>
         </item>
        </layout>
       </widget>
