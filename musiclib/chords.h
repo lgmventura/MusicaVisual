@@ -108,7 +108,7 @@ class ChordWithTime
 public:
     ChordWithTime();
 
-    Chord Chord;
+    Chord chord;
     long Start_time;
 };
 

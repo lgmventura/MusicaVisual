@@ -59,7 +59,7 @@ public:
         {80, 100, 160} // 48
         // initialize more if needed, up to 128 (index 127)
     };
-    bool active[128] = { [0 ... 127 ] = 1 };
+    bool active[128] = { [0 ... 127] = 1 };
     int shape[128] = {0};
     int track_blur[128] = {0};
     int interconnect[128] = {0};

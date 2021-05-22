@@ -173,7 +173,7 @@ int Chords::process_chords(std::list <MidiNote> notes, bool includeTrackInfo = t
     for (std::list<MidiNote>::iterator it=notes.begin() ; it != notes.end(); ++it) // Run the list forwards
     {
         //bool in_track = (std::find(tracks.begin(), tracks.end(), (*it).track) != tracks.end()); // check if note is in the list of tracks to be considered
-        //if ((*it).is_note == 1 && in_track )// && startMidiTime -50 < (*it).t_off && endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
+        //if ((*it).is_note == 1 && in_track )// && aw.startMidiTime -50 < (*it).t_off && aw.endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
         //std::vector<bool> vtracks; vtracks.reserve(tracks.size()); vtracks.insert(vtracks.end(), tracks.begin(), tracks.end());
         if ((*it).is_note == 1)
         {
@@ -193,7 +193,7 @@ int Chords::process_chords(std::list <MidiNote> notes, bool includeTrackInfo = t
         for (std::list<MidiNote>::iterator it=notes.begin() ; it != notes.end(); ++it) // Run the list forwards
         {
             //bool in_track = (std::find(tracks.begin(), tracks.end(), (*it).track) != tracks.end()); // check if note is in the list of tracks to be considered
-            //if ((*it).is_note == 1 && in_track )// && startMidiTime -50 < (*it).t_off && endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
+            //if ((*it).is_note == 1 && in_track )// && aw.startMidiTime -50 < (*it).t_off && aw.endMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
             //std::vector<bool> vtracks; vtracks.reserve(tracks.size()); vtracks.insert(vtracks.end(), tracks.begin(), tracks.end());
             if ((*it).is_note == 1)
             {
@@ -205,7 +205,7 @@ int Chords::process_chords(std::list <MidiNote> notes, bool includeTrackInfo = t
                     {
                         p.setTrack((*it).track);
                     }
-                    current_chord.Chord.insertPitch(p);
+                    current_chord.chord.insertPitch(p);
                     current_chord.Start_time = *(1+start_end_time); // actually it corresponds to the next start_end_time, so summing 1 to the pointer
                 }
             }

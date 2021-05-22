@@ -54,6 +54,31 @@ public:
     void setZoom(int z) {zoom = z;}
 };
 
+struct ShapePoints
+{
+    cv::Point pt1, pt2, pt3, pt4;//, pt5;// , pt6;
+    cv::Point pt5[128]; // for the interconnected lines. It has to be a vector of tracks_count length to make lines be connected only with notes within the same track.
+    cv::Point pt1_prev[128], pt2_prev[128], pt3_prev[128]; // these points are used for storing the previous respective points to make "moving notes" possible averaging current position/size with last position/size. There must be one for each track so that they are kept independent, i.e., moving notes in one track don't influence mov. notes in another (same idea as for interconn. lines).
+    cv::Point PtosPrev[128][4];
+    int RadiusPrev[128];// = 0;
+    float x1, x2, y1, y2, x3, y3;
+    int x1_mov, x2_mov, x3_mov, y1_mov, y2_mov, y3_mov;
+
+    ShapePoints() {
+        for (int i = 0; i <128; ++i) {this->pt5[i].x = 0; this->pt5[i].y = 0;}
+    }
+};
+
+struct AnimWindow
+{
+    int StartMidiTime; // midi time in ticks for which block notes start to be visible at the right side
+    int EndMidiTime; // midi time in ticks for which block notes fade out at the left side
+    int Width;
+    int Height;
+    int CurrPosMiddle;
+    float VZoom;
+};
+
 class AnimPainter
 {
 public:
@@ -66,10 +91,11 @@ public:
 //    int win_height;
     RenderBuffer *RBuffer;
 
-    void paintBlocksNoShading( cv::Mat image, MusicData mdt, char* window_name, int startMidiTime, int endMidiTime, int window_width, int window_height);
-    void paintBlocks(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, BlockLayers, RenderP);
-    void paintChords(Chord chord, float chordProgress, cv::Mat, int, int, ChordLayers chordL, RenderP rProp);
-    void paintLayers(MusicData mdt, cv::Mat, std::vector <cv::Mat>, int, int, int, int, std::list<Layer> layers, RenderP);
+    void paintBlocksNoShading( cv::Mat image, MusicData mdt, ShapePoints spts, char* window_name, AnimWindow aw);
+    void paintNotes(MusicData mdt, cv::Mat, std::vector <cv::Mat>, AnimWindow aw, BlockLayers, RenderP);
+    void paintBlocks(std::list<MidiNote>::iterator midiNote_it, MusicData mdt, ShapePoints spts, cv::Mat, cv::Mat image_playing_notes,  cv::Mat img_moving_notes, std::vector <cv::Mat>, AnimWindow aw, BlockLayers, RenderP, cv::LineTypes lineType);
+    void paintChords(Chord chord, float chordProgress, cv::Mat, AnimWindow aw, ChordLayers chordL, RenderP rProp);
+    void paintLayers(MusicData mdt, cv::Mat, std::vector <cv::Mat>, AnimWindow aw, std::list<Layer> layers, RenderP);
     void appendFrame(cv::Mat image, VideoRecorder* vRec);
 };
 

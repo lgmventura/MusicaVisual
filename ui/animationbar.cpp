@@ -117,7 +117,12 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
     AState->setZoom(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     // obs.: image is passed per value, but in OpenCV, this value is actually a pointer to the actual data (matrix), so the function does modify the data!
-    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *Layers, *RProp);
+    AnimWindow aw;
+    aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
+    aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
+    aw.Width = window_width;
+    aw.Height = window_height;
+    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, aw, *Layers, *RProp);
     APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);
 
@@ -136,7 +141,12 @@ void AnimationBar::on_hSlider_playback_valueChanged(int value)
 {
     AState->setXpos(value);
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, AState->xpos - (AState->zoom)/2, AState->xpos + (AState->zoom)/2, window_width, window_height, *Layers, *RProp);
+    AnimWindow aw;
+    aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
+    aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
+    aw.Width = window_width;
+    aw.Height = window_height;
+    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, aw, *Layers, *RProp);
     APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);
 }

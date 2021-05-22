@@ -83,3 +83,34 @@ void TonnetzRenderer::renderChord(Chord currChord, float chordProgress, cv::Mat 
         }
     }
 }
+
+void TonnetzRenderer::renderNote(Pitch note, float noteProgress, cv::Mat mat, cv::Point centre, TonnetzOptions options, std::unordered_map<int, Hexagon::Hex> eulerTonnerzMap)
+{
+    int size = options.NoteSize - (options.NoteCollapse * noteProgress * options.NoteSize);
+    // toDo: fadeOut
+    Hex hex = EulerTonnetz::getHexagon(note, false, eulerTonnerzMap, options.Central);
+    if (options.Shp == TonnetzOptions::Shape::Circle)
+    {
+        cv::Point cvCentre;
+        Point2d hexCentre = hex_to_pixel(options.Layout, (hex));
+        cvCentre.x = hexCentre.x;
+        cvCentre.y = hexCentre.y;
+        cvCentre = cvCentre + centre;
+        cv::circle(mat, cvCentre, size, cv::Scalar(180,180,180), cv::LineTypes::FILLED);
+    }
+    else if (options.Shp == TonnetzOptions::Shape::Hexagon)
+    {
+        std::vector<Point2d> polygon = polygon_corners(options.Layout, (hex));
+        std::vector<Point2d>::iterator jt = polygon.begin();
+        std::array<cv::Point, 6> pts;
+        for (int k = 0; jt != polygon.end(); jt++, k++)
+        {
+            cv::Point p;
+            p.x = (*jt).x;
+            p.y = (*jt).y;
+            p = p + centre;
+            pts.at(k) = p;
+        }
+        cv::fillConvexPoly(mat, pts, cv::Scalar(180,180,180), cv::LineTypes::LINE_AA);
+    }
+}
