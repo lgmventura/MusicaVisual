@@ -29,7 +29,7 @@ void AnimPainter::paintBlocksNoShading(cv::Mat image, MusicData mdt, ShapePoints
     }
 }
 
-void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, AnimWindow aw, BlockLayers blockL, RenderP rProp) // this function is called for every frame. aw.StartMidiTime is the time in the left side of the window, aw.EndMidiTime, at the right. These depend on playback position and zoom.
+void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, AnimWindow aw, BlockLayers blockL, ChordLayers chordL, RenderP rProp, Layer::LayerType ltype) // this function is called for every frame. aw.StartMidiTime is the time in the left side of the window, aw.EndMidiTime, at the right. These depend on playback position and zoom.
 {
     // this function loops through all notes and call corresponding functions to paint them
     // finding current global zoom:
@@ -63,11 +63,921 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
     // Solving this on the generation of the animation window
     cv::LineTypes lineType = rProp.shapeLineType;
 
+    // for chord layer:
+    int p_x = chordL.x_pos*aw.Width;
+    int p_y = chordL.y_pos*aw.Height;
+    cv::Point clCentre = cv::Point(p_x, p_y);
+    TonnetzOptions opt(chordL.TonnetzShape, chordL.ChordTracks, chordL.HexLayout);
+    opt.Central = chordL.CentralMidi;
+    opt.NoteSize = chordL.NoteSize;
+    opt.NoteCollapse = chordL.NoteCollapse;
+    opt.NoteFadeOut = chordL.NoteFadeOut;
+
+    // iterating over all notes:
     for (std::list<MidiNote>::iterator it=mdt.Notes.begin() ; it != mdt.Notes.end(); ++it) // Run the list forwards
     {
+        // taking only notes inside the visible area (tolerance of 50 ticks outside the screen)
         if ((*it).is_note == 1 && aw.StartMidiTime -50 < (*it).t_off && aw.EndMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
         {
-            this->paintBlocks(it, mdt, spts, image, img_playing_notes, img_moving_notes, img_buffer_sep_tracks, aw, blockL, rProp, lineType);
+
+            spts.x1 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_on)/((float)aw.EndMidiTime - (float)aw.StartMidiTime)); // note_on time
+            spts.x2 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_off)/((float)aw.EndMidiTime - (float)aw.StartMidiTime)); // note_off time
+            spts.y1 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+            spts.y2 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 1.0 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+            spts.pt1.x = f2int_safe(spts.x1); //aw.Width*((*it).t_on/(aw.EndMidiTime - aw.StartMidiTime));
+            spts.pt2.x = f2int_safe(spts.x2); //aw.Width*((*it).t_off/(aw.EndMidiTime - aw.StartMidiTime));
+            spts.pt1.y = f2int_safe(spts.y1); //aw.Height*((*it).pitch/(50));
+            spts.pt2.y = f2int_safe(spts.y2);//aw.Height*(((*it).pitch + 1)/(50));
+            //std::cout << (*it).t_on << ' ' << (*it).t_off << ": " << (*it).pitch << '\n';
+            //std::cout << spts.pt1.x << ' ' << spts.pt1.y << ": " << spts.pt2.x << ' ' << spts.pt2.y << '\n';
+            if (ltype == Layer::BlockLayer)
+            {
+                for (unsigned int tnum = 0; tnum < mdt.NTracks; tnum++)
+                {
+                    // -------------------------- Draw Interconnected Lines -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.interconnect[tnum] == 1) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        if (abs(spts.pt3.x - spts.pt5[tnum].x) < rProp.max_connect_dist && spts.pt5[tnum] != cv::Point(0,0))
+                            if ( ! rProp.sep_render[1])
+                                cv::line( image, spts.pt3, spts.pt5[tnum], {(double)blockL.getCv(tnum,2)/4,  (double)blockL.getCv(tnum,1)/4,  (double)blockL.getCv(tnum,0)/4}, 1, lineType );
+                            else
+                                cv::line( img_buffer_sep_tracks[tnum], spts.pt3, spts.pt5[tnum], {(double)blockL.getCv(tnum,2)/4,  (double)blockL.getCv(tnum,1)/4,  (double)blockL.getCv(tnum,0)/4}, 1, lineType );
+                        spts.pt5[tnum].x = f2int_safe(spts.x3); // Center x of the previous note
+                        spts.pt5[tnum].y = f2int_safe(spts.y3); // Center y of the previous note
+                    }
+
+
+
+                    // ------------------------- Draw Rectangles -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 0) // All tracks - rectangle
+                    {
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
+                            else
+                                cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
+                            else
+                                cv::rectangle( img_playing_notes, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
+                            else
+                                cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
+                    }
+
+
+                    // -------------------------- Draw Rhombus -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 1) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt1.y = f2int_safe(spts.y3);
+                        spts.pt2.y = f2int_safe(spts.y3);
+                        spts.pt3.x = f2int_safe(spts.x3);
+                        spts.pt3.y = f2int_safe(spts.y1);
+                        spts.pt4.x = f2int_safe(spts.x3);
+                        spts.pt4.y = f2int_safe(spts.y2);
+                        cv::Point ptos[4];
+                        ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType );
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType );
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType );
+                            else
+                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType );
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType );
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType );
+                    }
+
+
+                    // -------------------------- Draw Ellipses -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 2) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                            else
+                                cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                            else
+                                cv::ellipse( img_playing_notes, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                            else
+                                cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                    }
+
+
+                    // -------------------------- Draw Circles -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 3) // All tracks
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
+                            else
+                                cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::circle( image, spts.pt3, (spts.x2-aw.Width/2+3), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
+                            else
+                                cv::circle( img_playing_notes, spts.pt3, (spts.x2-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
+                            else
+                                cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
+                    }
+
+
+
+
+
+                    // -------------------------- Draw Circles with moving centred circle -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 4) // All tracks
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                            else
+                                cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+
+                        if (spts.pt1.x < aw.Width/2) // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                            else
+                                cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+
+
+                        if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
+                            // this section corresponds to the "moving notes", i.e., the notes being played morphing from the current to the last (or from the next to the current if you prefer to say).
+                            // In general, it works averaging current position and size with the last ones. A very important detail is to store the previous points p1_prev, spts.pt2_prev, ... in the
+                            // corresponding track (so, spts.pt1_prev[tnum], spts.pt2_prev[tnum] etc.), because we don't want the very last note as previous note, but the previous note of the same track!
+                        {
+                            float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
+                            int y_mov = (int) ((float)spts.pt3_prev[tnum].y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev[tnum].y));
+                            int x_mov = aw.Width/2 + spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x));
+                            // Case 1: the distance to the next note is big (not a legato) -> note just fall off
+                            if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
+                                if ( ! rProp.sep_render[2])
+                                    cv::circle( image, spts.pt3_prev[tnum], floor1(spts.pt2_prev[tnum].x-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                                else
+                                    cv::circle( img_moving_notes, spts.pt3_prev[tnum], floor1(spts.pt2_prev[tnum].x-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                            // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
+                            else
+                                if ( ! rProp.sep_render[2])
+                                    cv::circle( image, cv::Point(x_mov, y_mov), floor1(spts.RadiusPrev[tnum] + deriv*((float)radius - (float)spts.RadiusPrev[tnum])), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                                else
+                                    cv::circle( img_moving_notes, cv::Point(x_mov, y_mov), floor1(spts.RadiusPrev[tnum] + deriv*((float)radius - (float)spts.RadiusPrev[tnum])), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+
+                        }
+
+                        spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
+                        spts.pt1_prev[tnum] = spts.pt1;
+                        spts.pt2_prev[tnum] = spts.pt2;
+                        spts.RadiusPrev[tnum] = radius;
+                    }
+
+
+
+                    // -------------------------- Draw Circles with moving centred circle and playing note highlight -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 5) // All tracks
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                            else
+                                cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
+                            else
+                                cv::circle( img_playing_notes, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 2, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                            else
+                                cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+
+
+                        if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
+                        {
+                            float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
+                            int y_mov = (int) ((float)spts.pt3_prev[tnum].y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev[tnum].y));
+                            int x_mov = aw.Width/2 + spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x));
+                            // Case 1: the distance to the next note is big (not a legato) -> note just fall off
+                            if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
+                                if ( ! rProp.sep_render[2])
+                                    cv::circle( image, spts.pt3_prev[tnum], floor1(spts.pt2_prev[tnum].x-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                                else
+                                    cv::circle( img_moving_notes, spts.pt3_prev[tnum], floor1(spts.pt2_prev[tnum].x-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                            // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
+                            else
+                                if ( ! rProp.sep_render[2])
+                                    cv::circle( image, cv::Point(x_mov, y_mov), floor1(spts.RadiusPrev[tnum] + deriv*((float)radius - (float)spts.RadiusPrev[tnum])), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                                else
+                                    cv::circle( img_moving_notes, cv::Point(x_mov, y_mov), floor1(spts.RadiusPrev[tnum] + deriv*((float)radius - (float)spts.RadiusPrev[tnum])), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+
+                        }
+
+                        spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
+                        spts.pt1_prev[tnum] = spts.pt1;
+                        spts.pt2_prev[tnum] = spts.pt2;
+                        spts.RadiusPrev[tnum] = radius;
+                    }
+
+
+
+                    // -------------------------- Draw Rectangles with moving centred rectangle -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 6) // All tracks
+                    {
+    //                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+    //                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + pitch_max)/2)/((float)pitch_max - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+    //                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+    //                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                            else
+                                cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+
+                        else //if (spts.pt1.x <= aw.Width/2) // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/256, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/256, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/256}, 2, 8 );
+                            else
+                                cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/256, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/256, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/256}, 2, 8 );
+
+
+                        if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
+                        {
+                            float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
+                            //int y_mov = (int) ((float)spts.pt3_prev.y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev.y));
+                            spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
+                            spts.y2_mov = (int) spts.y1_mov + spts.y2 - spts.y1; // the difference among them remains the same
+                            //int x_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
+                            spts.x1_mov = aw.Width/2;
+                            spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
+                            // Case 1: the distance to the next note is big (not a legato) -> note just fall off
+                            if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
+                                if ( ! rProp.sep_render[2])
+                                    cv::rectangle( image, cv::Point(- 2 + spts.pt1_prev[tnum].x + deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), 2 + spts.pt1_prev[tnum].y + deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), cv::Point(2 + spts.pt2_prev[tnum].x - deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), - 2 + spts.pt2_prev[tnum].y - deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                else
+                                    cv::rectangle( img_moving_notes, cv::Point(- 2 + spts.pt1_prev[tnum].x + deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), 2 + spts.pt1_prev[tnum].y + deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), cv::Point(2 + spts.pt2_prev[tnum].x - deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), - 2 + spts.pt2_prev[tnum].y - deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                            // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
+                            else
+                                if ( ! rProp.sep_render[2])
+                                    cv::rectangle( image, cv::Point(spts.x1_mov, spts.y1_mov), cv::Point(spts.x2_mov, spts.y2_mov), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                else
+                                    cv::rectangle( img_moving_notes, cv::Point(spts.x1_mov, spts.y1_mov), cv::Point(spts.x2_mov, spts.y2_mov), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+
+                        }
+
+                        //spts.pt3_prev = spts.pt3; // Next centre point = previous
+                        spts.pt1_prev[tnum] = spts.pt1;
+                        spts.pt2_prev[tnum] = spts.pt2;
+    //                        spts.RadiusPrev = radius;
+                    }
+
+
+
+                    // -------------------------- Draw Rectangles with moving centred rectangle and highlighted borders -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 7) // All tracks
+                    {
+    //                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+    //                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + pitch_max)/2)/((float)pitch_max - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+    //                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+    //                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                            else
+                                cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 2, 8 );
+                            else
+                                cv::rectangle( img_playing_notes, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 2, 8 );
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+                            else
+                                cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
+
+
+                        if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
+                        {
+                            float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
+                            //int y_mov = (int) ((float)spts.pt3_prev.y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev.y));
+                            spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
+                            spts.y2_mov = (int) spts.y1_mov + spts.y2 - spts.y1; // the difference among them remains the same
+                            //int x_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
+                            spts.x1_mov = aw.Width/2;
+                            spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
+                            // Case 1: the distance to the next note is big (not a legato) -> note just fall off
+                            if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
+                                if ( ! rProp.sep_render[2])
+                                    cv::rectangle( image, cv::Point(- 2 + spts.pt1_prev[tnum].x + deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), 2 + spts.pt1_prev[tnum].y + deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), cv::Point(2 + spts.pt2_prev[tnum].x - deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), - 2 + spts.pt2_prev[tnum].y - deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                else
+                                    cv::rectangle( img_moving_notes, cv::Point(- 2 + spts.pt1_prev[tnum].x + deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), 2 + spts.pt1_prev[tnum].y + deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), cv::Point(2 + spts.pt2_prev[tnum].x - deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), - 2 + spts.pt2_prev[tnum].y - deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                            // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
+                            else
+                                if ( ! rProp.sep_render[2])
+                                    cv::rectangle( image, cv::Point(spts.x1_mov, spts.y1_mov), cv::Point(spts.x2_mov, spts.y2_mov), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+                                else
+                                    cv::rectangle( img_moving_notes, cv::Point(spts.x1_mov, spts.y1_mov), cv::Point(spts.x2_mov, spts.y2_mov), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+
+                        }
+
+                        //spts.pt3_prev = spts.pt3; // Next centre point = previous
+                        spts.pt1_prev[tnum] = spts.pt1;
+                        spts.pt2_prev[tnum] = spts.pt2;
+    //                        spts.RadiusPrev = radius;
+                    }
+
+
+
+
+                    // -------------------------- Draw Rhombus with moving rhombus -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 8) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt1.y = f2int_safe(spts.y3);
+                        spts.pt2.y = f2int_safe(spts.y3);
+                        spts.pt3.x = f2int_safe(spts.x3);
+                        spts.pt3.y = f2int_safe(spts.y1);
+                        spts.pt4.x = f2int_safe(spts.x3);
+                        spts.pt4.y = f2int_safe(spts.y2);
+                        cv::Point ptos[4];
+                        ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+    //                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+    //                        {
+    //                            if ( ! rProp.sep_render[0])
+    //                                cv::fillConvexPoly( image, ptos, 4, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+    //                            else
+    //                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+    //                        }
+                        if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
+                        {
+                            float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
+                            //
+                            spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
+                            // spts.y2_mov = spts.y1_mov;
+                            spts.y3_mov = spts.y1_mov + spts.y1 - spts.y3; // = (int) ((float)spts.pt3_prev.y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev.y));
+                            int y4_mov = spts.y1_mov - spts.y1 + spts.y3;
+                            //
+                            spts.x1_mov = aw.Width/2;
+                            spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
+                            spts.x3_mov = aw.Width/2 + (spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x)))/2;
+                            //spts.x3_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
+                            // int x4_mov = spts.x3_mov
+                            cv::Point ptos_mov[4];
+                            ptos_mov[0] = cv::Point(spts.x1_mov, spts.y1_mov); ptos_mov[1] = cv::Point(spts.x3_mov, spts.y3_mov); ptos_mov[2] = cv::Point(spts.x2_mov, spts.y1_mov); ptos_mov[3] = cv::Point(spts.x3_mov, y4_mov);
+
+                            // Case 1: the distance to the next note is big (not a legato) -> note just fall off
+                            if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
+                                if ( ! rProp.sep_render[2])
+                                    cv::fillConvexPoly( image, spts.PtosPrev[tnum], 4, {(0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, (0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, (0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
+                                else
+                                    cv::fillConvexPoly( img_moving_notes, spts.PtosPrev[tnum], 4, {(1 - deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, (1 - deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, (1 - deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
+                            // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
+                            else
+                                if ( ! rProp.sep_render[2])
+                                    cv::fillConvexPoly( image, ptos_mov, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                                else
+                                    cv::fillConvexPoly( img_moving_notes, ptos_mov, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+
+                        }
+                        spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
+                        spts.pt1_prev[tnum] = spts.pt1;
+                        spts.pt2_prev[tnum] = spts.pt2;
+                        spts.PtosPrev[tnum][0] = ptos[0];
+                        spts.PtosPrev[tnum][1] = ptos[1];
+                        spts.PtosPrev[tnum][2] = ptos[2];
+                        spts.PtosPrev[tnum][3] = ptos[3];
+                    }
+
+
+
+
+                    // -------------------------- Draw Rhombus with moving rhombus and playing highlight (select sep playing notes render) -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 9) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt1.y = f2int_safe(spts.y3);
+                        spts.pt2.y = f2int_safe(spts.y3);
+                        spts.pt3.x = f2int_safe(spts.x3);
+                        spts.pt3.y = f2int_safe(spts.y1);
+                        spts.pt4.x = f2int_safe(spts.x3);
+                        spts.pt4.y = f2int_safe(spts.y2);
+                        cv::Point ptos[4];
+                        ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                            else
+                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                        }
+                        if (spts.pt1.x <= aw.Width/2) // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+    //                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+    //                        {
+    //                            if ( ! rProp.sep_render[0])
+    //                                cv::fillConvexPoly( image, ptos, 4, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+    //                            else
+    //                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
+    //                        }
+                        if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
+                        {
+                            float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
+                            //
+                            spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
+                            // spts.y2_mov = spts.y1_mov;
+                            spts.y3_mov = spts.y1_mov + spts.y1 - spts.y3; // = (int) ((float)spts.pt3_prev.y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev.y));
+                            int y4_mov = spts.y1_mov - spts.y1 + spts.y3;
+                            //
+                            spts.x1_mov = aw.Width/2;
+                            spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
+                            spts.x3_mov = aw.Width/2 + (spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x)))/2;
+                            //spts.x3_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
+                            // int x4_mov = spts.x3_mov
+                            cv::Point ptos_mov[4];
+                            ptos_mov[0] = cv::Point(spts.x1_mov, spts.y1_mov); ptos_mov[1] = cv::Point(spts.x3_mov, spts.y3_mov); ptos_mov[2] = cv::Point(spts.x2_mov, spts.y1_mov); ptos_mov[3] = cv::Point(spts.x3_mov, y4_mov);
+
+                            // Case 1: the distance to the next note is big (not a legato) -> note just fall off
+                            if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
+                                if ( ! rProp.sep_render[2])
+                                    cv::fillConvexPoly( image, spts.PtosPrev[tnum], 4, {(0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, (0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, (0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
+                                else
+                                    cv::fillConvexPoly( img_moving_notes, spts.PtosPrev[tnum], 4, {(1 - deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, (1 - deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, (1 - deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
+                            // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
+                            else
+                                if ( ! rProp.sep_render[2])
+                                    cv::fillConvexPoly( image, ptos_mov, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                                else
+                                    cv::fillConvexPoly( img_moving_notes, ptos_mov, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+
+                        }
+                        spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
+                        spts.pt1_prev[tnum] = spts.pt1;
+                        spts.pt2_prev[tnum] = spts.pt2;
+                        spts.PtosPrev[tnum][0] = ptos[0];
+                        spts.PtosPrev[tnum][1] = ptos[1];
+                        spts.PtosPrev[tnum][2] = ptos[2];
+                        spts.PtosPrev[tnum][3] = ptos[3];
+                    }
+
+
+
+                    // -------------------------- Draw ellipses with moving centred ellipse -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 10) // All tracks
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                            else
+                                cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+    //                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+    //                        {
+    //                            if ( ! rProp.sep_render[0])
+    //                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+    //                            else
+    //                                cv::ellipse( img_playing_notes, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
+    //                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                            else
+                                cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+
+
+                        if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
+                        {
+                            float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
+                            spts.y3_mov = (int) ((float)spts.pt3_prev[tnum].y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev[tnum].y));
+                            spts.x3_mov = aw.Width/2 + spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x));
+                            spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
+                            spts.y2_mov = (int) spts.y1_mov + spts.y2 - spts.y1; // the difference among them remains the same
+                            //int x_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
+                            spts.x1_mov = aw.Width/2;
+                            //spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
+                            // Case 1: the distance to the next note is big (not a legato) -> note just fall off
+                            if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
+                                if ( ! rProp.sep_render[2])
+                                    cv::ellipse( image, spts.pt3_prev[tnum], cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {(0.5-deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
+                                else
+                                    cv::ellipse( img_moving_notes, spts.pt3_prev[tnum], cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {(0.5-deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
+                            // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
+                            else
+                                if ( ! rProp.sep_render[2])
+                                    cv::ellipse( image, cv::Point(spts.x3_mov, spts.y3_mov), cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
+                                else
+                                    cv::ellipse( img_moving_notes, cv::Point(spts.x3_mov, spts.y3_mov), cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
+
+                        }
+
+                        spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
+                        spts.pt1_prev[tnum] = spts.pt1;
+                        spts.pt2_prev[tnum] = spts.pt2;
+                        spts.RadiusPrev[tnum] = radius;
+                    }
+
+
+
+
+                    // -------------------------- Draw ellipses with moving centred ellipse and highlighted playing note -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 11) // All tracks
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                            else
+                                cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
+                            else
+                                cv::ellipse( img_playing_notes, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                            else
+                                cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+
+
+                        if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
+                        {
+                            float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
+                            spts.y3_mov = (int) ((float)spts.pt3_prev[tnum].y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev[tnum].y));
+                            spts.x3_mov = aw.Width/2 + spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x));
+                            spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
+                            spts.y2_mov = (int) spts.y1_mov + spts.y2 - spts.y1; // the difference among them remains the same
+                            //int x_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
+                            spts.x1_mov = aw.Width/2;
+                            //spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
+                            // Case 1: the distance to the next note is big (not a legato) -> note just fall off
+                            if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
+                                if ( ! rProp.sep_render[2])
+                                    cv::ellipse( image, spts.pt3_prev[tnum], cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {(0.5-deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
+                                else
+                                    cv::ellipse( img_moving_notes, spts.pt3_prev[tnum], cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {(0.5-deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
+                            // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
+                            else
+                                if ( ! rProp.sep_render[2])
+                                    cv::ellipse( image, cv::Point(spts.x3_mov, spts.y3_mov), cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
+                                else
+                                    cv::ellipse( img_moving_notes, cv::Point(spts.x3_mov, spts.y3_mov), cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
+
+                        }
+
+                        spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
+                        spts.pt1_prev[tnum] = spts.pt1;
+                        spts.pt2_prev[tnum] = spts.pt2;
+                        spts.RadiusPrev[tnum] = radius;
+                    }
+
+
+
+
+                    // -------------------------- Draw Circles with size proportional to the velocity -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 12) // All tracks
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        int radius = (*it).vel/2; // size proportion
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                            else
+                                cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::circle( image, spts.pt3, 1.1*radius*(spts.x2-aw.Width/2)/(spts.x2-spts.x1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                            else
+                                cv::circle( img_playing_notes, spts.pt3, 1.1*radius*(spts.x2-aw.Width/2)/(spts.x2-spts.x1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                            else
+                                cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                    }
+
+
+
+                    // -------------------------- Draw Ellipses with height proportional to the velocity -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 13) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                            else
+                                cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                            else
+                                cv::ellipse( img_playing_notes, spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                            else
+                                cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
+                    }
+
+
+                    // -------------------------- Draw Rhombus with height proportional to the velocity -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 14) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt1.y = f2int_safe(spts.y3);
+                        spts.pt2.y = f2int_safe(spts.y3);
+                        spts.pt3.x = f2int_safe(spts.x3);
+                        spts.pt3.y = f2int_safe(spts.y1) + (*it).vel/2;
+                        spts.pt4.x = f2int_safe(spts.x3);
+                        spts.pt4.y = f2int_safe(spts.y2) - (*it).vel/2;
+                        cv::Point ptos[4];
+                        ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                            else
+                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                    }
+
+
+
+                    // -------------------------- Draw Triangles V with height proportional to the velocity -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 15) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt1.y = f2int_safe(spts.y3);
+                        spts.pt2.y = f2int_safe(spts.y3);
+                        spts.pt3.x = f2int_safe(spts.x3);
+                        spts.pt3.y = f2int_safe(spts.y1) + (*it).vel/2;
+                        cv::Point ptos[3];
+                        ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                            else
+                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                    }
+
+
+
+                    // -------------------------- Draw Triangles ^ with height proportional to the velocity -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 16) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt1.y = f2int_safe(spts.y3);
+                        spts.pt2.y = f2int_safe(spts.y3);
+                        spts.pt3.x = f2int_safe(spts.x3);
+                        spts.pt3.y = f2int_safe(spts.y2) - (*it).vel/2;
+                        cv::Point ptos[3];
+                        ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2;
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            if ( ! rProp.sep_render[0])
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                            else
+                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                    }
+
+
+
+
+                    // -------------------------- Draw Triangles |> (forte-piano) -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 17) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt1.y = f2int_safe(spts.y1);
+                        spts.pt2.y = f2int_safe(spts.y2);
+                        spts.pt3.x = f2int_safe(spts.x2);
+                        spts.pt3.y = f2int_safe(spts.y3);
+                        cv::Point ptos[3];
+                        ptos[0] = cv::Point(spts.pt1.x, spts.pt1.y); ptos[1] = spts.pt3; ptos[2] = cv::Point(spts.pt1.x, spts.pt2.y);
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            float nprogress = (float)(spts.x2-aw.Width/2)/(spts.x2-spts.x1);
+                            if ( ! rProp.sep_render[0])
+                                cv::fillConvexPoly( image, ptos, 3, {nprogress*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, nprogress*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, nprogress*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                            else
+                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {nprogress*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, nprogress*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, nprogress*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                    }
+
+
+
+                    // -------------------------- Draw Triangles <| (piano-forte) -------------------------
+                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 18) // All tracks - rectangle
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt1.y = f2int_safe(spts.y1);
+                        spts.pt2.y = f2int_safe(spts.y2);
+                        spts.pt3.x = f2int_safe(spts.x2);
+                        spts.pt3.y = f2int_safe(spts.y3);
+                        cv::Point ptos[3];
+                        ptos[0] = cv::Point(spts.pt1.x, spts.pt3.y); ptos[1] = cv::Point(spts.pt2.x, spts.pt1.y); ptos[2] = cv::Point(spts.pt2.x, spts.pt2.y);
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            float nprogress = 1.5 - (float)(spts.x2-aw.Width/2)/(spts.x2-spts.x1);
+                            if ( ! rProp.sep_render[0])
+                                cv::fillConvexPoly( image, ptos, 3, {nprogress*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, nprogress*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, nprogress*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
+                            else
+                                cv::fillConvexPoly( img_playing_notes, ptos, 3, {nprogress*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, nprogress*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, nprogress*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                            else
+                                cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
+                    }
+
+
+
+
+                    // End shape drawings ------------------------------------------------
+
+
+                    // ============= Vertical Lines from tracks =============
+
+                    if ((*it).track == tnum && rProp.lines[3] && rProp.vlines_track_n == (int)tnum && blockL.vLines)
+                    {
+                        cv::line(image, cv::Point(spts.pt1.x, aw.Height), cv::Point(spts.pt1.x, 0), {(double)(double)rProp.vlines_colour[2]*(*it).vel/128, (double)(double)rProp.vlines_colour[1]*(*it).vel/128, (double)(double)rProp.vlines_colour[0]*(*it).vel/128});
+                    }
+                }
+            }
+            else  // chordLayer
+            {
+                if (chordL.CLType == ChordLayers::ChordLayerType::Tonnetz)
+                {
+                    if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                    {
+                        float noteProgress = (float)(aw.Width/2 - spts.pt1.x)/(spts.pt2.x - spts.pt1.x);
+                        TonnetzRenderer::renderNote((*it).pitch, noteProgress, image, clCentre, opt, RBuffer->TonnetzMap);
+                    }
+                }
+            }
         }
     }
     //    spts.pt3.x = window_width/2;
@@ -192,898 +1102,6 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
         }
 }
 
-void AnimPainter::paintBlocks(std::list<MidiNote>::iterator it, MusicData mdt, ShapePoints spts, cv::Mat image, cv::Mat img_playing_notes, cv::Mat img_moving_notes, std::vector <cv::Mat> img_buffer_sep_tracks, AnimWindow aw, BlockLayers blockL, RenderP rProp, cv::LineTypes lineType) // this function is called for every frame. aw.StartMidiTime is the time in the left side of the window, aw.EndMidiTime, at the right. These depend on playback position and zoom.
-{
-
-        spts.x1 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_on)/((float)aw.EndMidiTime - (float)aw.StartMidiTime)); // note_on time
-        spts.x2 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_off)/((float)aw.EndMidiTime - (float)aw.StartMidiTime)); // note_off time
-        spts.y1 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-        spts.y2 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 1.0 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-        spts.pt1.x = f2int_safe(spts.x1); //aw.Width*((*it).t_on/(aw.EndMidiTime - aw.StartMidiTime));
-        spts.pt2.x = f2int_safe(spts.x2); //aw.Width*((*it).t_off/(aw.EndMidiTime - aw.StartMidiTime));
-        spts.pt1.y = f2int_safe(spts.y1); //aw.Height*((*it).pitch/(50));
-        spts.pt2.y = f2int_safe(spts.y2);//aw.Height*(((*it).pitch + 1)/(50));
-        //std::cout << (*it).t_on << ' ' << (*it).t_off << ": " << (*it).pitch << '\n';
-        //std::cout << spts.pt1.x << ' ' << spts.pt1.y << ": " << spts.pt2.x << ' ' << spts.pt2.y << '\n';
-        if (true) //(std::abs(spts.pt1.x) < x_max && std::abs(spts.pt1.y) < y_max && std::abs(spts.pt2.x) < x_max && std::abs(spts.pt2.y) < y_max);// && (*it).duration < max_duration) // This "if" is just to bypass an issue (certainly about big doubles being coverted to int), what causes random boxes appearing on the screen when one zooms in very close.
-        {
-            for (unsigned int tnum = 0; tnum < mdt.NTracks; tnum++)
-            {
-                // -------------------------- Draw Interconnected Lines -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.interconnect[tnum] == 1) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    if (abs(spts.pt3.x - spts.pt5[tnum].x) < rProp.max_connect_dist && spts.pt5[tnum] != cv::Point(0,0))
-                        if ( ! rProp.sep_render[1])
-                            cv::line( image, spts.pt3, spts.pt5[tnum], {(double)blockL.getCv(tnum,2)/4,  (double)blockL.getCv(tnum,1)/4,  (double)blockL.getCv(tnum,0)/4}, 1, lineType );
-                        else
-                            cv::line( img_buffer_sep_tracks[tnum], spts.pt3, spts.pt5[tnum], {(double)blockL.getCv(tnum,2)/4,  (double)blockL.getCv(tnum,1)/4,  (double)blockL.getCv(tnum,0)/4}, 1, lineType );
-                    spts.pt5[tnum].x = f2int_safe(spts.x3); // Center x of the previous note
-                    spts.pt5[tnum].y = f2int_safe(spts.y3); // Center y of the previous note
-                }
-
-
-
-                // ------------------------- Draw Rectangles -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 0) // All tracks - rectangle
-                {
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
-                        else
-                            cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
-                        else
-                            cv::rectangle( img_playing_notes, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
-                        else
-                            cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
-                }
-
-
-                // -------------------------- Draw Rhombus -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 1) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt1.y = f2int_safe(spts.y3);
-                    spts.pt2.y = f2int_safe(spts.y3);
-                    spts.pt3.x = f2int_safe(spts.x3);
-                    spts.pt3.y = f2int_safe(spts.y1);
-                    spts.pt4.x = f2int_safe(spts.x3);
-                    spts.pt4.y = f2int_safe(spts.y2);
-                    cv::Point ptos[4];
-                    ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType );
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType );
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType );
-                        else
-                            cv::fillConvexPoly( img_playing_notes, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType );
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType );
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType );
-                }
-
-
-                // -------------------------- Draw Ellipses -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 2) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                        else
-                            cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                        else
-                            cv::ellipse( img_playing_notes, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                        else
-                            cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                }
-
-
-                // -------------------------- Draw Circles -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 3) // All tracks
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
-                        else
-                            cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::circle( image, spts.pt3, (spts.x2-aw.Width/2+3), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
-                        else
-                            cv::circle( img_playing_notes, spts.pt3, (spts.x2-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
-                        else
-                            cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
-                }
-
-
-
-
-
-                // -------------------------- Draw Circles with moving centred circle -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 4) // All tracks
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                        else
-                            cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-
-                    if (spts.pt1.x < aw.Width/2) // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                        else
-                            cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-
-
-                    if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
-                        // this section corresponds to the "moving notes", i.e., the notes being played morphing from the current to the last (or from the next to the current if you prefer to say).
-                        // In general, it works averaging current position and size with the last ones. A very important detail is to store the previous points p1_prev, spts.pt2_prev, ... in the
-                        // corresponding track (so, spts.pt1_prev[tnum], spts.pt2_prev[tnum] etc.), because we don't want the very last note as previous note, but the previous note of the same track!
-                    {
-                        float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
-                        int y_mov = (int) ((float)spts.pt3_prev[tnum].y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev[tnum].y));
-                        int x_mov = aw.Width/2 + spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x));
-                        // Case 1: the distance to the next note is big (not a legato) -> note just fall off
-                        if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
-                            if ( ! rProp.sep_render[2])
-                                cv::circle( image, spts.pt3_prev[tnum], floor1(spts.pt2_prev[tnum].x-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                            else
-                                cv::circle( img_moving_notes, spts.pt3_prev[tnum], floor1(spts.pt2_prev[tnum].x-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                        // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
-                        else
-                            if ( ! rProp.sep_render[2])
-                                cv::circle( image, cv::Point(x_mov, y_mov), floor1(spts.RadiusPrev[tnum] + deriv*((float)radius - (float)spts.RadiusPrev[tnum])), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                            else
-                                cv::circle( img_moving_notes, cv::Point(x_mov, y_mov), floor1(spts.RadiusPrev[tnum] + deriv*((float)radius - (float)spts.RadiusPrev[tnum])), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-
-                    }
-
-                    spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
-                    spts.pt1_prev[tnum] = spts.pt1;
-                    spts.pt2_prev[tnum] = spts.pt2;
-                    spts.RadiusPrev[tnum] = radius;
-                }
-
-
-
-                // -------------------------- Draw Circles with moving centred circle and playing note highlight -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 5) // All tracks
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                        else
-                            cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
-                        else
-                            cv::circle( img_playing_notes, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 2, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                        else
-                            cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-
-
-                    if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
-                    {
-                        float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
-                        int y_mov = (int) ((float)spts.pt3_prev[tnum].y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev[tnum].y));
-                        int x_mov = aw.Width/2 + spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x));
-                        // Case 1: the distance to the next note is big (not a legato) -> note just fall off
-                        if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
-                            if ( ! rProp.sep_render[2])
-                                cv::circle( image, spts.pt3_prev[tnum], floor1(spts.pt2_prev[tnum].x-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                            else
-                                cv::circle( img_moving_notes, spts.pt3_prev[tnum], floor1(spts.pt2_prev[tnum].x-aw.Width/2+1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                        // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
-                        else
-                            if ( ! rProp.sep_render[2])
-                                cv::circle( image, cv::Point(x_mov, y_mov), floor1(spts.RadiusPrev[tnum] + deriv*((float)radius - (float)spts.RadiusPrev[tnum])), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                            else
-                                cv::circle( img_moving_notes, cv::Point(x_mov, y_mov), floor1(spts.RadiusPrev[tnum] + deriv*((float)radius - (float)spts.RadiusPrev[tnum])), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-
-                    }
-
-                    spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
-                    spts.pt1_prev[tnum] = spts.pt1;
-                    spts.pt2_prev[tnum] = spts.pt2;
-                    spts.RadiusPrev[tnum] = radius;
-                }
-
-
-
-                // -------------------------- Draw Rectangles with moving centred rectangle -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 6) // All tracks
-                {
-//                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-//                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + pitch_max)/2)/((float)pitch_max - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-//                        spts.pt3.x = f2int_safe(spts.x3); // Center x
-//                        spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
-                        else
-                            cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
-
-                    else //if (spts.pt1.x <= aw.Width/2) // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/256, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/256, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/256}, 2, 8 );
-                        else
-                            cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/256, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/256, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/256}, 2, 8 );
-
-
-                    if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
-                    {
-                        float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
-                        //int y_mov = (int) ((float)spts.pt3_prev.y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev.y));
-                        spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
-                        spts.y2_mov = (int) spts.y1_mov + spts.y2 - spts.y1; // the difference among them remains the same
-                        //int x_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
-                        spts.x1_mov = aw.Width/2;
-                        spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
-                        // Case 1: the distance to the next note is big (not a legato) -> note just fall off
-                        if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
-                            if ( ! rProp.sep_render[2])
-                                cv::rectangle( image, cv::Point(- 2 + spts.pt1_prev[tnum].x + deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), 2 + spts.pt1_prev[tnum].y + deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), cv::Point(2 + spts.pt2_prev[tnum].x - deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), - 2 + spts.pt2_prev[tnum].y - deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-                            else
-                                cv::rectangle( img_moving_notes, cv::Point(- 2 + spts.pt1_prev[tnum].x + deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), 2 + spts.pt1_prev[tnum].y + deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), cv::Point(2 + spts.pt2_prev[tnum].x - deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), - 2 + spts.pt2_prev[tnum].y - deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-                        // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
-                        else
-                            if ( ! rProp.sep_render[2])
-                                cv::rectangle( image, cv::Point(spts.x1_mov, spts.y1_mov), cv::Point(spts.x2_mov, spts.y2_mov), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-                            else
-                                cv::rectangle( img_moving_notes, cv::Point(spts.x1_mov, spts.y1_mov), cv::Point(spts.x2_mov, spts.y2_mov), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-
-                    }
-
-                    //spts.pt3_prev = spts.pt3; // Next centre point = previous
-                    spts.pt1_prev[tnum] = spts.pt1;
-                    spts.pt2_prev[tnum] = spts.pt2;
-//                        spts.RadiusPrev = radius;
-                }
-
-
-
-                // -------------------------- Draw Rectangles with moving centred rectangle and highlighted borders -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 7) // All tracks
-                {
-//                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-//                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + pitch_max)/2)/((float)pitch_max - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-//                        spts.pt3.x = f2int_safe(spts.x3); // Center x
-//                        spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
-                        else
-                            cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, 8 );
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 2, 8 );
-                        else
-                            cv::rectangle( img_playing_notes, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 2, 8 );
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::rectangle( image, spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
-                        else
-                            cv::rectangle( img_buffer_sep_tracks[tnum], spts.pt1, spts.pt2, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, 8 );
-
-
-                    if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
-                    {
-                        float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
-                        //int y_mov = (int) ((float)spts.pt3_prev.y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev.y));
-                        spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
-                        spts.y2_mov = (int) spts.y1_mov + spts.y2 - spts.y1; // the difference among them remains the same
-                        //int x_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
-                        spts.x1_mov = aw.Width/2;
-                        spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
-                        // Case 1: the distance to the next note is big (not a legato) -> note just fall off
-                        if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
-                            if ( ! rProp.sep_render[2])
-                                cv::rectangle( image, cv::Point(- 2 + spts.pt1_prev[tnum].x + deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), 2 + spts.pt1_prev[tnum].y + deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), cv::Point(2 + spts.pt2_prev[tnum].x - deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), - 2 + spts.pt2_prev[tnum].y - deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-                            else
-                                cv::rectangle( img_moving_notes, cv::Point(- 2 + spts.pt1_prev[tnum].x + deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), 2 + spts.pt1_prev[tnum].y + deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), cv::Point(2 + spts.pt2_prev[tnum].x - deriv*(spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x), - 2 + spts.pt2_prev[tnum].y - deriv*(spts.pt2_prev[tnum].y - spts.pt1_prev[tnum].y)), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-                        // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
-                        else
-                            if ( ! rProp.sep_render[2])
-                                cv::rectangle( image, cv::Point(spts.x1_mov, spts.y1_mov), cv::Point(spts.x2_mov, spts.y2_mov), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-                            else
-                                cv::rectangle( img_moving_notes, cv::Point(spts.x1_mov, spts.y1_mov), cv::Point(spts.x2_mov, spts.y2_mov), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-
-                    }
-
-                    //spts.pt3_prev = spts.pt3; // Next centre point = previous
-                    spts.pt1_prev[tnum] = spts.pt1;
-                    spts.pt2_prev[tnum] = spts.pt2;
-//                        spts.RadiusPrev = radius;
-                }
-
-
-
-
-                // -------------------------- Draw Rhombus with moving rhombus -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 8) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt1.y = f2int_safe(spts.y3);
-                    spts.pt2.y = f2int_safe(spts.y3);
-                    spts.pt3.x = f2int_safe(spts.x3);
-                    spts.pt3.y = f2int_safe(spts.y1);
-                    spts.pt4.x = f2int_safe(spts.x3);
-                    spts.pt4.y = f2int_safe(spts.y2);
-                    cv::Point ptos[4];
-                    ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-//                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-//                        {
-//                            if ( ! rProp.sep_render[0])
-//                                cv::fillConvexPoly( image, ptos, 4, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
-//                            else
-//                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
-//                        }
-                    if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
-                    {
-                        float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
-                        //
-                        spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
-                        // spts.y2_mov = spts.y1_mov;
-                        spts.y3_mov = spts.y1_mov + spts.y1 - spts.y3; // = (int) ((float)spts.pt3_prev.y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev.y));
-                        int y4_mov = spts.y1_mov - spts.y1 + spts.y3;
-                        //
-                        spts.x1_mov = aw.Width/2;
-                        spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
-                        spts.x3_mov = aw.Width/2 + (spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x)))/2;
-                        //spts.x3_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
-                        // int x4_mov = spts.x3_mov
-                        cv::Point ptos_mov[4];
-                        ptos_mov[0] = cv::Point(spts.x1_mov, spts.y1_mov); ptos_mov[1] = cv::Point(spts.x3_mov, spts.y3_mov); ptos_mov[2] = cv::Point(spts.x2_mov, spts.y1_mov); ptos_mov[3] = cv::Point(spts.x3_mov, y4_mov);
-
-                        // Case 1: the distance to the next note is big (not a legato) -> note just fall off
-                        if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
-                            if ( ! rProp.sep_render[2])
-                                cv::fillConvexPoly( image, spts.PtosPrev[tnum], 4, {(0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, (0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, (0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
-                            else
-                                cv::fillConvexPoly( img_moving_notes, spts.PtosPrev[tnum], 4, {(1 - deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, (1 - deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, (1 - deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
-                        // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
-                        else
-                            if ( ! rProp.sep_render[2])
-                                cv::fillConvexPoly( image, ptos_mov, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                            else
-                                cv::fillConvexPoly( img_moving_notes, ptos_mov, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-
-                    }
-                    spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
-                    spts.pt1_prev[tnum] = spts.pt1;
-                    spts.pt2_prev[tnum] = spts.pt2;
-                    spts.PtosPrev[tnum][0] = ptos[0];
-                    spts.PtosPrev[tnum][1] = ptos[1];
-                    spts.PtosPrev[tnum][2] = ptos[2];
-                    spts.PtosPrev[tnum][3] = ptos[3];
-                }
-
-
-
-
-                // -------------------------- Draw Rhombus with moving rhombus and playing highlight (select sep playing notes render) -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 9) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt1.y = f2int_safe(spts.y3);
-                    spts.pt2.y = f2int_safe(spts.y3);
-                    spts.pt3.x = f2int_safe(spts.x3);
-                    spts.pt3.y = f2int_safe(spts.y1);
-                    spts.pt4.x = f2int_safe(spts.x3);
-                    spts.pt4.y = f2int_safe(spts.y2);
-                    cv::Point ptos[4];
-                    ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                        else
-                            cv::fillConvexPoly( img_playing_notes, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                    }
-                    if (spts.pt1.x <= aw.Width/2) // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-//                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-//                        {
-//                            if ( ! rProp.sep_render[0])
-//                                cv::fillConvexPoly( image, ptos, 4, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
-//                            else
-//                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 8 );
-//                        }
-                    if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
-                    {
-                        float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
-                        //
-                        spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
-                        // spts.y2_mov = spts.y1_mov;
-                        spts.y3_mov = spts.y1_mov + spts.y1 - spts.y3; // = (int) ((float)spts.pt3_prev.y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev.y));
-                        int y4_mov = spts.y1_mov - spts.y1 + spts.y3;
-                        //
-                        spts.x1_mov = aw.Width/2;
-                        spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
-                        spts.x3_mov = aw.Width/2 + (spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x)))/2;
-                        //spts.x3_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
-                        // int x4_mov = spts.x3_mov
-                        cv::Point ptos_mov[4];
-                        ptos_mov[0] = cv::Point(spts.x1_mov, spts.y1_mov); ptos_mov[1] = cv::Point(spts.x3_mov, spts.y3_mov); ptos_mov[2] = cv::Point(spts.x2_mov, spts.y1_mov); ptos_mov[3] = cv::Point(spts.x3_mov, y4_mov);
-
-                        // Case 1: the distance to the next note is big (not a legato) -> note just fall off
-                        if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
-                            if ( ! rProp.sep_render[2])
-                                cv::fillConvexPoly( image, spts.PtosPrev[tnum], 4, {(0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, (0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, (0.5 - deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
-                            else
-                                cv::fillConvexPoly( img_moving_notes, spts.PtosPrev[tnum], 4, {(1 - deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, (1 - deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, (1 - deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
-                        // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
-                        else
-                            if ( ! rProp.sep_render[2])
-                                cv::fillConvexPoly( image, ptos_mov, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                            else
-                                cv::fillConvexPoly( img_moving_notes, ptos_mov, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-
-                    }
-                    spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
-                    spts.pt1_prev[tnum] = spts.pt1;
-                    spts.pt2_prev[tnum] = spts.pt2;
-                    spts.PtosPrev[tnum][0] = ptos[0];
-                    spts.PtosPrev[tnum][1] = ptos[1];
-                    spts.PtosPrev[tnum][2] = ptos[2];
-                    spts.PtosPrev[tnum][3] = ptos[3];
-                }
-
-
-
-                // -------------------------- Draw ellipses with moving centred ellipse -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 10) // All tracks
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                        else
-                            cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-//                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-//                        {
-//                            if ( ! rProp.sep_render[0])
-//                                cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-//                            else
-//                                cv::ellipse( img_playing_notes, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {tProp.getColour(tnum, (*it).pitch).b*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).g*(*it).vel/64, tProp.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, 8 );
-//                        }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                        else
-                            cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-
-
-                    if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
-                    {
-                        float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
-                        spts.y3_mov = (int) ((float)spts.pt3_prev[tnum].y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev[tnum].y));
-                        spts.x3_mov = aw.Width/2 + spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x));
-                        spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
-                        spts.y2_mov = (int) spts.y1_mov + spts.y2 - spts.y1; // the difference among them remains the same
-                        //int x_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
-                        spts.x1_mov = aw.Width/2;
-                        //spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
-                        // Case 1: the distance to the next note is big (not a legato) -> note just fall off
-                        if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
-                            if ( ! rProp.sep_render[2])
-                                cv::ellipse( image, spts.pt3_prev[tnum], cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {(0.5-deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
-                            else
-                                cv::ellipse( img_moving_notes, spts.pt3_prev[tnum], cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {(0.5-deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
-                        // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
-                        else
-                            if ( ! rProp.sep_render[2])
-                                cv::ellipse( image, cv::Point(spts.x3_mov, spts.y3_mov), cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
-                            else
-                                cv::ellipse( img_moving_notes, cv::Point(spts.x3_mov, spts.y3_mov), cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
-
-                    }
-
-                    spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
-                    spts.pt1_prev[tnum] = spts.pt1;
-                    spts.pt2_prev[tnum] = spts.pt2;
-                    spts.RadiusPrev[tnum] = radius;
-                }
-
-
-
-
-                // -------------------------- Draw ellipses with moving centred ellipse and highlighted playing note -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 11) // All tracks
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    int radius = (spts.x3-spts.x1) < 80 ? (spts.x3-spts.x1) : 80;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                        else
-                            cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
-                        else
-                            cv::ellipse( img_playing_notes, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, 1, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                        else
-                            cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-
-
-                    if (spts.pt1_prev[tnum].x <= aw.Width/2 && spts.pt1.x > aw.Width/2 && spts.pt2_prev[tnum].x + 5 > aw.Width/2) // The note block is inside the center line // no more else if
-                    {
-                        float deriv = (((float)aw.Width/2 - (float)spts.pt1_prev[tnum].x)/((float)spts.pt1.x - (float)spts.pt1_prev[tnum].x));
-                        spts.y3_mov = (int) ((float)spts.pt3_prev[tnum].y + deriv*((float)spts.pt3.y - (float)spts.pt3_prev[tnum].y));
-                        spts.x3_mov = aw.Width/2 + spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev[tnum].x - spts.pt1_prev[tnum].x));
-                        spts.y1_mov = (int) ((float)spts.pt1_prev[tnum].y + deriv*((float)spts.pt1.y - (float)spts.pt1_prev[tnum].y));
-                        spts.y2_mov = (int) spts.y1_mov + spts.y2 - spts.y1; // the difference among them remains the same
-                        //int x_mov = aw.Width/2 + spts.pt3_prev.x - spts.pt1_prev.x + deriv*((spts.pt3.x - spts.pt1.x) - (spts.pt3_prev.x - spts.pt1_prev.x));
-                        spts.x1_mov = aw.Width/2;
-                        //spts.x2_mov = aw.Width/2 + spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x - deriv*((spts.pt2_prev[tnum].x - spts.pt1_prev[tnum].x) - (spts.pt2.x - spts.pt1.x));
-                        // Case 1: the distance to the next note is big (not a legato) -> note just fall off
-                        if (spts.pt1.x - spts.pt2_prev[tnum].x > 5) // next_note t_on and old note t_off are far
-                            if ( ! rProp.sep_render[2])
-                                cv::ellipse( image, spts.pt3_prev[tnum], cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {(0.5-deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
-                            else
-                                cv::ellipse( img_moving_notes, spts.pt3_prev[tnum], cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {(0.5-deriv)*blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, (0.5-deriv)*blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
-                        // Case 2: the end of the current note (prev) is close to the begin of the new note (legato) -> notes connect themselves
-                        else
-                            if ( ! rProp.sep_render[2])
-                                cv::ellipse( image, cv::Point(spts.x3_mov, spts.y3_mov), cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
-                            else
-                                cv::ellipse( img_moving_notes, cv::Point(spts.x3_mov, spts.y3_mov), cv::Size(spts.x3_mov-spts.x1_mov, spts.y3-spts.y2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/64}, -1, lineType);
-
-                    }
-
-                    spts.pt3_prev[tnum] = spts.pt3; // Next centre point = previous
-                    spts.pt1_prev[tnum] = spts.pt1;
-                    spts.pt2_prev[tnum] = spts.pt2;
-                    spts.RadiusPrev[tnum] = radius;
-                }
-
-
-
-
-                // -------------------------- Draw Circles with size proportional to the velocity -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 12) // All tracks
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    int radius = (*it).vel/2; // size proportion
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                        else
-                            cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::circle( image, spts.pt3, 1.1*radius*(spts.x2-aw.Width/2)/(spts.x2-spts.x1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                        else
-                            cv::circle( img_playing_notes, spts.pt3, 1.1*radius*(spts.x2-aw.Width/2)/(spts.x2-spts.x1), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::circle( image, spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                        else
-                            cv::circle( img_buffer_sep_tracks[tnum], spts.pt3, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                }
-
-
-
-                // -------------------------- Draw Ellipses with height proportional to the velocity -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 13) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt3.x = f2int_safe(spts.x3); // Center x
-                    spts.pt3.y = f2int_safe(spts.y3); // Center y
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                        else
-                            cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                        else
-                            cv::ellipse( img_playing_notes, spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::ellipse( image, spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                        else
-                            cv::ellipse( img_buffer_sep_tracks[tnum], spts.pt3, cv::Size(spts.x3-spts.x1, 1 + (*it).vel/2 ), 0, 0, 360, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType);
-                }
-
-
-                // -------------------------- Draw Rhombus with height proportional to the velocity -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 14) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt1.y = f2int_safe(spts.y3);
-                    spts.pt2.y = f2int_safe(spts.y3);
-                    spts.pt3.x = f2int_safe(spts.x3);
-                    spts.pt3.y = f2int_safe(spts.y1) + (*it).vel/2;
-                    spts.pt4.x = f2int_safe(spts.x3);
-                    spts.pt4.y = f2int_safe(spts.y2) - (*it).vel/2;
-                    cv::Point ptos[4];
-                    ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                        else
-                            cv::fillConvexPoly( img_playing_notes, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                }
-
-
-
-                // -------------------------- Draw Triangles V with height proportional to the velocity -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 15) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt1.y = f2int_safe(spts.y3);
-                    spts.pt2.y = f2int_safe(spts.y3);
-                    spts.pt3.x = f2int_safe(spts.x3);
-                    spts.pt3.y = f2int_safe(spts.y1) + (*it).vel/2;
-                    cv::Point ptos[3];
-                    ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                        else
-                            cv::fillConvexPoly( img_playing_notes, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                }
-
-
-
-                // -------------------------- Draw Triangles ^ with height proportional to the velocity -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 16) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt1.y = f2int_safe(spts.y3);
-                    spts.pt2.y = f2int_safe(spts.y3);
-                    spts.pt3.x = f2int_safe(spts.x3);
-                    spts.pt3.y = f2int_safe(spts.y2) - (*it).vel/2;
-                    cv::Point ptos[3];
-                    ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2;
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        if ( ! rProp.sep_render[0])
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                        else
-                            cv::fillConvexPoly( img_playing_notes, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                }
-
-
-
-
-                // -------------------------- Draw Triangles |> (forte-piano) -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 17) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt1.y = f2int_safe(spts.y1);
-                    spts.pt2.y = f2int_safe(spts.y2);
-                    spts.pt3.x = f2int_safe(spts.x2);
-                    spts.pt3.y = f2int_safe(spts.y3);
-                    cv::Point ptos[3];
-                    ptos[0] = cv::Point(spts.pt1.x, spts.pt1.y); ptos[1] = spts.pt3; ptos[2] = cv::Point(spts.pt1.x, spts.pt2.y);
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        float nprogress = (float)(spts.x2-aw.Width/2)/(spts.x2-spts.x1);
-                        if ( ! rProp.sep_render[0])
-                            cv::fillConvexPoly( image, ptos, 3, {nprogress*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, nprogress*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, nprogress*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                        else
-                            cv::fillConvexPoly( img_playing_notes, ptos, 3, {nprogress*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, nprogress*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, nprogress*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                }
-
-
-
-                // -------------------------- Draw Triangles <| (piano-forte) -------------------------
-                if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 18) // All tracks - rectangle
-                {
-                    spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
-                    spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
-                    spts.pt1.y = f2int_safe(spts.y1);
-                    spts.pt2.y = f2int_safe(spts.y2);
-                    spts.pt3.x = f2int_safe(spts.x2);
-                    spts.pt3.y = f2int_safe(spts.y3);
-                    cv::Point ptos[3];
-                    ptos[0] = cv::Point(spts.pt1.x, spts.pt3.y); ptos[1] = cv::Point(spts.pt2.x, spts.pt1.y); ptos[2] = cv::Point(spts.pt2.x, spts.pt2.y);
-                    if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
-                        if ( ! rProp.sep_render[1])
-                            //cv::fillPoly( image, pts, );
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, lineType);
-                    else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
-                    {
-                        float nprogress = 1.5 - (float)(spts.x2-aw.Width/2)/(spts.x2-spts.x1);
-                        if ( ! rProp.sep_render[0])
-                            cv::fillConvexPoly( image, ptos, 3, {nprogress*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, nprogress*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, nprogress*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType);
-                        else
-                            cv::fillConvexPoly( img_playing_notes, ptos, 3, {nprogress*blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, nprogress*blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, nprogress*blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, lineType);
-                    }
-                    else // The note block is after (to the left of) the center line
-                        if ( ! rProp.sep_render[1])
-                            cv::fillConvexPoly( image, ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                        else
-                            cv::fillConvexPoly( img_buffer_sep_tracks[tnum], ptos, 3, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, lineType);
-                }
-
-
-
-
-                // End shape drawings ------------------------------------------------
-
-
-                // ============= Vertical Lines from tracks =============
-
-                if ((*it).track == tnum && rProp.lines[3] && rProp.vlines_track_n == (int)tnum && blockL.vLines)
-                {
-                    cv::line(image, cv::Point(spts.pt1.x, aw.Height), cv::Point(spts.pt1.x, 0), {(double)(double)rProp.vlines_colour[2]*(*it).vel/128, (double)(double)rProp.vlines_colour[1]*(*it).vel/128, (double)(double)rProp.vlines_colour[0]*(*it).vel/128});
-                }
-            }
-        }
-}
-
 void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, AnimWindow aw, ChordLayers chordL, RenderP rProp)
 {
     int p_x = chordL.x_pos*aw.Width;
@@ -1124,17 +1142,10 @@ void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, A
         }
         renderChordStar(chord, type, image, centre, diam, chordL.ChordTracks, chordL.TurnChordCircle);
     }
-    // ============ Displaying tonnetz ==============
+    // ============ Displaying tonnetz in function paint notes, since notes are not interdependent ==============
     else if (chordL.CLType == ChordLayers::ChordLayerType::Tonnetz)
     {
-        TonnetzOptions opt(chordL.TonnetzShape, chordL.ChordTracks, chordL.HexLayout);
-        opt.Central = chordL.CentralMidi;
-        opt.NoteSize = chordL.NoteSize;
-        opt.NoteCollapse = chordL.NoteCollapse;
-        opt.NoteFadeOut = chordL.NoteFadeOut;
-
         TonnetzRenderer::renderGrid(image, centre, RBuffer->TonnetzGridPositions, chordL.CellDiameter, chordL.HexLayout, chordL.TonnetzShape);
-        TonnetzRenderer::renderChord(chord, chordProgress, image, centre, opt, RBuffer->TonnetzMap);
     }
 }
 
@@ -1146,7 +1157,7 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
         // (*it) is now the layer of the current iteration
         if ((*lit).LType == Layer::LayerType::BlockLayer && (*lit).LayerActive == true)
         {
-            this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, renderS);
+            this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, (*lit).Cl, renderS, Layer::BlockLayer);
         }
         else if ((*lit).LType == Layer::LayerType::ChordLayer && (*lit).LayerActive == true)
         {
@@ -1163,6 +1174,7 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
                 {
                     float chordProgress = (float)(aw.CurrPosMiddle - chordWT.Start_time)/(chordWT_next.Start_time - chordWT.Start_time);
                     this->paintChords((*cit).chord, chordProgress, image, aw, (*lit).Cl, renderS);
+                    this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, (*lit).Cl, renderS, Layer::ChordLayer);
                     break;
                 }
             }
