@@ -84,9 +84,10 @@ void TonnetzRenderer::renderChord(Chord currChord, float chordProgress, cv::Mat 
     }
 }
 
-void TonnetzRenderer::renderNote(Pitch note, float noteProgress, cv::Mat mat, cv::Point centre, TonnetzOptions options, std::unordered_map<int, Hexagon::Hex> eulerTonnerzMap)
+void TonnetzRenderer::renderNote(Pitch note, float noteProgress, cv::Mat mat, cv::Point centre, TonnetzOptions options, std::unordered_map<int, Hexagon::Hex> eulerTonnerzMap, rgb colour)
 {
     int size = options.NoteSize - (options.NoteCollapse * noteProgress * options.NoteSize);
+    rgb currentColour = colour * (1 - options.NoteFadeOut * noteProgress);
     // toDo: fadeOut
     Hex hex = EulerTonnetz::getHexagon(note, false, eulerTonnerzMap, options.Central);
     if (options.Shp == TonnetzOptions::Shape::Circle)
@@ -96,7 +97,7 @@ void TonnetzRenderer::renderNote(Pitch note, float noteProgress, cv::Mat mat, cv
         cvCentre.x = hexCentre.x;
         cvCentre.y = hexCentre.y;
         cvCentre = cvCentre + centre;
-        cv::circle(mat, cvCentre, size, cv::Scalar(180,180,180), cv::LineTypes::FILLED);
+        cv::circle(mat, cvCentre, size, cv::Scalar(currentColour.r, currentColour.g, currentColour.b), cv::LineTypes::FILLED);
     }
     else if (options.Shp == TonnetzOptions::Shape::Hexagon)
     {
@@ -111,6 +112,6 @@ void TonnetzRenderer::renderNote(Pitch note, float noteProgress, cv::Mat mat, cv
             p = p + centre;
             pts.at(k) = p;
         }
-        cv::fillConvexPoly(mat, pts, cv::Scalar(180,180,180), cv::LineTypes::LINE_AA);
+        cv::fillConvexPoly(mat, pts, cv::Scalar(currentColour.r, currentColour.g, currentColour.b), cv::LineTypes::LINE_AA);
     }
 }
