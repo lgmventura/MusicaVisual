@@ -28,27 +28,10 @@
         <string>Type and Position</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="2" column="2">
-         <widget class="QSpinBox" name="spb_sizeh">
-          <property name="maximum">
-           <number>2000</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QDoubleSpinBox" name="dspb_posy">
-          <property name="maximum">
-           <double>1.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>0.050000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="lb_size">
+        <item row="3" column="2">
+         <widget class="QCheckBox" name="checkBox">
           <property name="text">
-           <string>Abssolute size w, h:</string>
+           <string>Collapse notes</string>
           </property>
          </widget>
         </item>
@@ -66,15 +49,46 @@
           </property>
          </widget>
         </item>
+        <item row="3" column="1">
+         <widget class="QCheckBox" name="cb_noteFadeOut">
+          <property name="text">
+           <string>Fade out notes</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="lb_size">
+          <property name="text">
+           <string>Abssolute size w, h:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="cb_type"/>
+        </item>
+        <item row="2" column="2">
+         <widget class="QSpinBox" name="spb_sizeh">
+          <property name="maximum">
+           <number>2000</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QDoubleSpinBox" name="dspb_posy">
+          <property name="maximum">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.050000000000000</double>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="lb_pos">
           <property name="text">
            <string>Relative position x, y:</string>
           </property>
          </widget>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="cb_type"/>
         </item>
         <item row="1" column="1">
          <widget class="QDoubleSpinBox" name="dspb_posx">
@@ -89,18 +103,21 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QCheckBox" name="cb_noteFadeOut">
-          <property name="text">
-           <string>Fade out notes</string>
+        <item row="4" column="0" colspan="3">
+         <widget class="QScrollArea" name="scrollGeneral">
+          <property name="widgetResizable">
+           <bool>true</bool>
           </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QCheckBox" name="checkBox">
-          <property name="text">
-           <string>Collapse notes</string>
-          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents_2">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>606</width>
+             <height>183</height>
+            </rect>
+           </property>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -118,7 +135,7 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QScrollArea" name="scrollChordStars">
+         <widget class="QScrollArea" name="scrollTracks">
           <property name="widgetResizable">
            <bool>true</bool>
           </property>

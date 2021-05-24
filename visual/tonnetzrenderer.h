@@ -25,7 +25,7 @@ struct TonnetzOptions
 
 namespace TonnetzRenderer {
 
-void renderGrid(cv::Mat mat, cv::Point centre, std::vector<Hexagon::Hex> GridPositions, int cellDiameter, Hexagon::Layout layout, TonnetzOptions::Shape shape);
+void renderGrid(cv::Mat mat, cv::Point centre, std::vector<Hexagon::Hex> GridPositions, int cellDiameter, Hexagon::Layout layout, TonnetzOptions::Shape shape, rgb colour);
 void renderChord(Chord currChord, float chordProgress, cv::Mat mat, cv::Point centre, TonnetzOptions options, std::unordered_map<int, Hexagon::Hex> eulerTonnerzMap);
 void renderNote(Pitch note, float noteProgress, cv::Mat mat, cv::Point centre, TonnetzOptions options, std::unordered_map<int, Hexagon::Hex> eulerTonnerzMap, rgb colour);
 

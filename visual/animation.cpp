@@ -979,9 +979,23 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                         {
                             float noteProgress = (float)(aw.Width/2 - spts.pt1.x)/(spts.pt2.x - spts.pt1.x);
                             if ( ! rProp.sep_render[0])
-                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, image, clCentre, opt, RBuffer->TonnetzMap, chordL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
+                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, image, clCentre, opt, RBuffer->TonnetzMap, chordL.getColour((*it).track, (*it).pitch));
                             else
-                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, img_playing_notes, clCentre, opt, RBuffer->TonnetzMap, chordL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
+                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, img_playing_notes, clCentre, opt, RBuffer->TonnetzMap, chordL.getColour((*it).track, (*it).pitch));
+                        }
+                    }
+                }
+                if (chordL.CLType == ChordLayers::ChordLayerType::ChordStar)
+                {
+                    if (chordL.ActiveTracks[(*it).track] == true)
+                    {
+                        if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            float noteProgress = (float)(aw.Width/2 - spts.pt1.x)/(spts.pt2.x - spts.pt1.x);
+                            if ( ! rProp.sep_render[0])
+                                ChordStar::renderNote((*it).pitch, noteProgress, (Pitch::circle)chordL.ChordStarType, 10, chordL.getColour((*it).track, (*it).pitch), image, clCentre, chordL.w, chordL.TurnChordCircle);
+                            else
+                                ChordStar::renderNote((*it).pitch, noteProgress, (Pitch::circle)chordL.ChordStarType, 10, chordL.getColour((*it).track, (*it).pitch), img_playing_notes, clCentre, chordL.w, chordL.TurnChordCircle);
                         }
                     }
                 }
@@ -1140,7 +1154,7 @@ void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, A
     if (chordL.CLType == ChordLayers::ChordLayerType::ChordStar)
     {
         Chord::circle type = chordL.ChordStarType;
-        renderChordStar(chord, type, image, centre, diam, chordL.ActiveTracks, chordL.TurnChordCircle);
+        ChordStar::renderChordStar(chord, type, image, centre, diam, chordL.ActiveTracks, chordL.TurnChordCircle);
     }
     // ============ Displaying tonnetz in function paint notes, since notes are not interdependent ==============
 }
@@ -1171,17 +1185,17 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
                 Chord::circle type = (*lit).Cl.ChordStarType;
                 if ( ! ((*lit).Cl.NoteNamesOnStar))
                 {
-                    dispChordDisc(type, image, centre, diam, false, (*lit).Cl.TurnChordCircle, (*lit).Cl.AccidentalSharp);
+                    ChordStar::dispChordDisc(type, image, centre, diam, (*lit).Cl.GridColour, false, (*lit).Cl.TurnChordCircle, (*lit).Cl.AccidentalSharp);
                 }
                 else if ((*lit).Cl.NoteNamesOnStar)
                 {
-                    dispChordDisc(type, image, centre, diam, true, (*lit).Cl.TurnChordCircle, (*lit).Cl.AccidentalSharp);
+                    ChordStar::dispChordDisc(type, image, centre, diam, (*lit).Cl.GridColour, true, (*lit).Cl.TurnChordCircle, (*lit).Cl.AccidentalSharp);
                 }
             }
             // ============ Displaying tonnetz grid ==============
             else if ((*lit).Cl.CLType == ChordLayers::ChordLayerType::Tonnetz)
             {
-                TonnetzRenderer::renderGrid(image, centre, RBuffer->TonnetzGridPositions, (*lit).Cl.CellDiameter, (*lit).Cl.HexLayout, (*lit).Cl.TonnetzShape);
+                TonnetzRenderer::renderGrid(image, centre, RBuffer->TonnetzGridPositions, (*lit).Cl.CellDiameter, (*lit).Cl.HexLayout, (*lit).Cl.TonnetzShape, (*lit).Cl.GridColour);
             }
 
             std::list<ChordWithTime>::iterator cit;

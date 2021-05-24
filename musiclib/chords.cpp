@@ -64,6 +64,23 @@ std::string Pitch::getLetterNameWithOctave(Accidental type)
         return Pitch::LetterSharp + "-" + std::to_string(Pitch::getOctave());
     }
 }
+float Pitch::getAngleDeg(circle type)
+{
+    float angle;
+    if (type == circle::circleOfSemitones)
+    {
+         angle = this->getDistanceFromLastC()*360.0/12.0;
+    }
+    else if (type == circle::circleOfFifths)
+    {
+         angle = fmod(this->getDistanceFromLastC()*7*360.0/12.0, 360.0); // fmod = modulus with floats
+    }
+    else
+    {
+        angle = 0;
+    }
+    return angle;
+}
 void Pitch::setTrack(int track)
 {
     this->MidiTrack = track;
@@ -118,38 +135,21 @@ void Chord::calculateName() // here it's where "the stick sings" - we have to us
 std::set<float> Chord::getAnglesDeg(circle type, bool *tracks, bool includeUnsetTracks) // idea: implement other temperaments
 {
     std::set<float> angles;
-    if (type == circle::circleOfSemitones)
+
+    for (std::set<Pitch>::iterator pt = Chord::Pitches.begin(); pt != Chord::Pitches.end(); ++pt)
     {
-        for (std::set<Pitch>::iterator pt = Chord::Pitches.begin(); pt != Chord::Pitches.end(); ++pt)
+        Pitch p = *pt;
+        if (p.getMidiTrack() == -1 && includeUnsetTracks == true)
         {
-            Pitch p = *pt;
-            if (p.getMidiTrack() == -1 && includeUnsetTracks == true)
-            {
-                float angle = p.getDistanceFromLastC()*360.0/12.0;
-                angles.insert(angle);
-            }
-            else if (tracks[p.getMidiTrack()] == true)
-            {
-                float angle = p.getDistanceFromLastC()*360.0/12.0;
-                angles.insert(angle);
-            }
+            Pitch::circle pCircType = (Pitch::circle)type;
+            float angle = p.getAngleDeg(pCircType);
+            angles.insert(angle);
         }
-    }
-    else if (type == circle::circleOfFifths)
-    {
-        for (std::set<Pitch>::iterator pt = Chord::Pitches.begin(); pt != Chord::Pitches.end(); ++pt)
+        else if (tracks[p.getMidiTrack()] == true)
         {
-            Pitch p = *pt;
-            if (p.getMidiTrack() == -1 && includeUnsetTracks == true)
-            {
-                float angle = fmod(p.getDistanceFromLastC()*7*360.0/12.0, 360.0); // fmod = modulus with floats
-                angles.insert(angle);
-            }
-            else if (tracks[p.getMidiTrack()] == true)
-            {
-                float angle = fmod(p.getDistanceFromLastC()*7*360.0/12.0, 360.0); // fmod = modulus with floats
-                angles.insert(angle);
-            }
+            Pitch::circle pCircType = (Pitch::circle)type;
+            float angle = p.getAngleDeg(pCircType);
+            angles.insert(angle);
         }
     }
     return angles;

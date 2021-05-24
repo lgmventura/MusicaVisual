@@ -9,7 +9,7 @@ TonnetzOptions::TonnetzOptions(Shape shape, bool *tracks, Hexagon::Layout layout
     this->Layout = layout;
 }
 
-void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> GridPositions, int cellDiameter, Layout layout, TonnetzOptions::Shape shape)
+void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> GridPositions, int cellDiameter, Layout layout, TonnetzOptions::Shape shape, rgb colour)
 {
     if (shape == TonnetzOptions::Shape::Circle)
     {
@@ -21,7 +21,7 @@ void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> Grid
             cvCentre.x = hexCentre.x;
             cvCentre.y = hexCentre.y;
             cvCentre = cvCentre + centre;
-            cv::circle(mat, cvCentre, cellDiameter, cv::Scalar(200,200,200), 1, cv::LineTypes::LINE_AA);
+            cv::circle(mat, cvCentre, cellDiameter, cv::Scalar(colour.b, colour.g, colour.r), 1, cv::LineTypes::LINE_AA);
         }
     }
     else if (shape == TonnetzOptions::Shape::Hexagon)
@@ -40,7 +40,7 @@ void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> Grid
                 p = p + centre;
                 pts.at(k) = p;
             }
-            cv::polylines(mat, pts, true, cv::Scalar(200,200,200), 1, cv::LineTypes::LINE_AA);
+            cv::polylines(mat, pts, true, cv::Scalar(colour.b, colour.g, colour.r), 1, cv::LineTypes::LINE_AA);
         }
     }
 }

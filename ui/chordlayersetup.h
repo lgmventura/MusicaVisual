@@ -36,8 +36,13 @@ private:
     int rowH = 35;
     QWidget *mainWidgetTracks;
     QGridLayout *layoutTracks;
+    QWidget *widgetGeneral;
+    QGridLayout *layoutGeneral;
 
     // UI elements:
+    // Tab type/position/general:
+    ColourWidget *GridColourWid;
+
     // Tab Chord Star:
     std::vector<QCheckBox*> *Cb_activeTracks;
     std::vector<ColourWidget*> *Wid_tColours;
@@ -55,6 +60,7 @@ private:
 private slots:
     void TrackVisibilityChanged(int track);
     void colourChanged(int track);
+    void gridColourChanged();
 
     void on_cb_allTracks_stateChanged(int arg1);
 

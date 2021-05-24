@@ -39,6 +39,7 @@ class Pitch
 public:
     Pitch(int midi = -1);
 
+    enum circle {circleOfSemitones, circleOfFifths};
 // members:
 public:
 //    enum Letters {C, D, E, F, G, A, B};
@@ -65,6 +66,7 @@ public:
     std::string getLetterName(Accidental type);
     std::string getLetterNameWithOctave(Accidental type);
     int getMidiTrack() const {return this->MidiTrack;};
+    float getAngleDeg(circle type);
 
 // set methods:
     void setTrack(int track);

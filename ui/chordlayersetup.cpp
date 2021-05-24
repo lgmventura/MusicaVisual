@@ -44,6 +44,23 @@ void ChordLayerSetup::drawUi()
     ui->spb_sizew->setValue(this->ChordL->w);
     ui->spb_sizeh->setValue(this->ChordL->h);
 
+    widgetGeneral = new QWidget(ui->scrollGeneral);
+    layoutGeneral = new QGridLayout(widgetGeneral);
+    ui->scrollGeneral->setWidget(widgetGeneral);
+    widgetGeneral->setLayout(layoutGeneral);
+
+    QLabel *gridColourLabel = new QLabel;
+    QString gridColourLabelQStr = QString("Grid colour:");
+    gridColourLabel->setText(gridColourLabelQStr);
+    layoutGeneral->addWidget(gridColourLabel, 0, 0, 1, 1, Qt::AlignLeft);
+    GridColourWid = new ColourWidget(ui->scrollGeneral);
+    GridColourWid->setBackgroundColour(ChordL->GridColour.r, ChordL->GridColour.g, ChordL->GridColour.b);
+    layoutGeneral->addWidget(GridColourWid, 0, 1, 1, 1, Qt::AlignLeft);
+    GridColourWid->setMinimumHeight(30);
+    GridColourWid->setMinimumWidth(240);
+    GridColourWid->setMaximumHeight(120);
+    QObject::connect(GridColourWid, &ColourWidget::colourChanged, [this] { gridColourChanged(); });
+
     // Tab tracks:
     this->drawTabTracks();
 
@@ -74,9 +91,9 @@ void ChordLayerSetup::drawUi()
 void ChordLayerSetup::drawTabTracks()
 {
     // Setting up layout:
-    mainWidgetTracks = new QWidget(ui->scrollChordStars);
+    mainWidgetTracks = new QWidget(ui->scrollTracks);
     layoutTracks = new QGridLayout(mainWidgetTracks);
-    ui->scrollChordStars->setWidget(mainWidgetTracks);
+    ui->scrollTracks->setWidget(mainWidgetTracks);
     mainWidgetTracks->setLayout(layoutTracks);
     //mainWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     mainWidgetTracks->setMinimumHeight(rowH*this->Mdt->NTracks);
@@ -133,6 +150,16 @@ void ChordLayerSetup::colourChanged(int track)
     this->ChordL->setCv(track, 2, b);
 }
 
+void ChordLayerSetup::gridColourChanged()
+{
+    QColor newColour = GridColourWid->getBackgroundColour();
+    int r = newColour.red();
+    int g = newColour.green();
+    int b = newColour.blue();
+    this->ChordL->GridColour.r = r;
+    this->ChordL->GridColour.g = g;
+    this->ChordL->GridColour.b = b;
+}
 
 void ChordLayerSetup::on_cb_allTracks_clicked()
 {

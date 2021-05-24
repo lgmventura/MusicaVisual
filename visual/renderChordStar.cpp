@@ -1,6 +1,6 @@
 #include "renderChordStar.h"
 
-void renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool *tracks, int turn) // no need to pass by reference or return mat, since cv::Mat is already a reference
+void ChordStar::renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool *tracks, int turn) // no need to pass by reference or return mat, since cv::Mat is already a reference
 {
     std::set<float> angles = chord.getAnglesDeg(type, tracks);
 
@@ -10,7 +10,7 @@ void renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point cen
         float currAngleRad = currAngle * M_PI/180;
         cv::Point pointRel = cv::Point((float)diameter*cos(currAngleRad), (float)diameter*sin(currAngleRad));
         cv::Point pointAbs = centre + pointRel;
-        cv::circle(mat, pointAbs, 3, cv::Scalar(100,100,100), -1); // drawing circle
+//        cv::circle(mat, pointAbs, 3, cv::Scalar(100,100,100), -1); // drawing circle - update: now, being drawn as notes (for colour and other stuff)
         for (std::set<float>::iterator ptr2 = ptr; ptr2 != angles.end(); ++ptr2) // let's run through the next points and draw a line between then
         {
             float currAngle2 = (*ptr2) + turn*30;
@@ -22,7 +22,16 @@ void renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point cen
     }
 }
 
-void dispChordDisc(Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool dispPitchNames, int turn, bool accidentalSharp)
+void ChordStar::renderNote(Pitch note, float noteProgress, Pitch::circle type, int radius, rgb colour, cv::Mat mat, cv::Point centre, int diameter, int turn)
+{
+    float angle = note.getAngleDeg(type) + turn*30;
+    float currAngleRad = angle * M_PI/180;
+    cv::Point pointRel = cv::Point((float)diameter*cos(currAngleRad), (float)diameter*sin(currAngleRad));
+    cv::Point pointAbs = centre + pointRel;
+    cv::circle(mat, pointAbs, radius, cv::Scalar(colour.b, colour.g, colour.r), -1); // drawing circle
+}
+
+void ChordStar::dispChordDisc(Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, rgb colour, bool dispPitchNames, int turn, bool accidentalSharp)
 {
     cv::circle(mat, centre, diameter + 10, cv::Scalar(0, 0, 0), -1);
     std::list<Pitch> allPitches = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}; // init
@@ -33,7 +42,7 @@ void dispChordDisc(Chord::circle type, cv::Mat mat, cv::Point centre, int diamet
         float currAngleRad = i*30 * M_PI/180;
         cv::Point pointRel = cv::Point((float)diameter*cos(currAngleRad), (float)diameter*sin(currAngleRad));
         cv::Point pointAbs = centre + pointRel;
-        cv::circle(mat, pointAbs, 5, cv::Scalar(80, 80, 80));
+        cv::circle(mat, pointAbs, 5, cv::Scalar(colour.b, colour.g, colour.r));
         if (dispPitchNames)
         {
             if (accidentalSharp == false)
@@ -42,7 +51,7 @@ void dispChordDisc(Chord::circle type, cv::Mat mat, cv::Point centre, int diamet
                         pointAbs, // Coordinates
                         cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger
-                        cv::Scalar(200,200,200), // BGR Color
+                        cv::Scalar(colour.b, colour.g, colour.r), // BGR Color
                         1, // Line Thickness (Optional)
                         cv::LINE_AA); // Anti-alias (Optional)
             else
@@ -51,7 +60,7 @@ void dispChordDisc(Chord::circle type, cv::Mat mat, cv::Point centre, int diamet
                         pointAbs, // Coordinates
                         cv::FONT_HERSHEY_COMPLEX_SMALL, // Font
                         1.0, // Scale. 2.0 = 2x bigger
-                        cv::Scalar(200,200,200), // BGR Color
+                        cv::Scalar(colour.b, colour.g, colour.r), // BGR Color
                         1, // Line Thickness (Optional)
                         cv::LINE_AA); // Anti-alias (Optional)
         }

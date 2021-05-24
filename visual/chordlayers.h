@@ -28,6 +28,7 @@ public:
     // more general options:
     bool NoteFadeOut = false;
     bool NoteCollapse = false;
+    rgb GridColour = rgb(100, 100, 100);
 
     // Note names:
     bool AccidentalSharp = false; // 0 for flat, 1 for sharp
