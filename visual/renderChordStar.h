@@ -8,10 +8,17 @@
 #include <opencv2/imgproc.hpp>
 #include <math.h>
 
+struct ChordStarOptions
+{
+    Pitch::circle Type;
+    int Radius;
+    int TurnCircle = 0;
+};
+
 namespace ChordStar {
 
 void renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool *tracks, int turn = 0);
-void renderNote(Pitch note, float noteProgress, Pitch::circle type, int radius, rgb colour, cv::Mat mat, cv::Point centre, int circleDiameter, int turn = 0);
+void renderNote(Pitch note, float noteProgress, rgb colour, cv::Mat mat, cv::Point centre, int circleDiameter, ChordStarOptions);
 
 void dispChordDisc(Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, rgb colour, bool dispPitchNames, int turn = 0, bool accidentalSharp = 0);
 

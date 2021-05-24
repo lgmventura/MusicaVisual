@@ -74,6 +74,10 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
     opt.NoteSize = chordL.NoteSize;
     opt.NoteCollapse = chordL.NoteCollapse;
     opt.NoteFadeOut = chordL.NoteFadeOut;
+    ChordStarOptions csOpt;
+    csOpt.Radius = 10; // toDo
+    csOpt.TurnCircle = chordL.TurnChordCircle;
+    csOpt.Type = (Pitch::circle) chordL.ChordStarType;
 
     // iterating over all notes:
     for (std::list<MidiNote>::iterator it=mdt.Notes.begin() ; it != mdt.Notes.end(); ++it) // Run the list forwards
@@ -993,9 +997,9 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                         {
                             float noteProgress = (float)(aw.Width/2 - spts.pt1.x)/(spts.pt2.x - spts.pt1.x);
                             if ( ! rProp.sep_render[0])
-                                ChordStar::renderNote((*it).pitch, noteProgress, (Pitch::circle)chordL.ChordStarType, 10, chordL.getColour((*it).track, (*it).pitch), image, clCentre, chordL.w, chordL.TurnChordCircle);
+                                ChordStar::renderNote((*it).pitch, noteProgress, chordL.getColour((*it).track, (*it).pitch), image, clCentre, chordL.w, csOpt);
                             else
-                                ChordStar::renderNote((*it).pitch, noteProgress, (Pitch::circle)chordL.ChordStarType, 10, chordL.getColour((*it).track, (*it).pitch), img_playing_notes, clCentre, chordL.w, chordL.TurnChordCircle);
+                                ChordStar::renderNote((*it).pitch, noteProgress, chordL.getColour((*it).track, (*it).pitch), img_playing_notes, clCentre, chordL.w, csOpt);
                         }
                     }
                 }

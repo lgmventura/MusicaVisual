@@ -22,9 +22,10 @@ void ChordStar::renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv
     }
 }
 
-void ChordStar::renderNote(Pitch note, float noteProgress, Pitch::circle type, int radius, rgb colour, cv::Mat mat, cv::Point centre, int diameter, int turn)
+void ChordStar::renderNote(Pitch note, float noteProgress, rgb colour, cv::Mat mat, cv::Point centre, int circleDiameter, ChordStarOptions opt);
 {
-    float angle = note.getAngleDeg(type) + turn*30;
+    int radius = opt.Radius;
+    float angle = note.getAngleDeg(opt.Type) + opt.TurnCircle*30;
     float currAngleRad = angle * M_PI/180;
     cv::Point pointRel = cv::Point((float)diameter*cos(currAngleRad), (float)diameter*sin(currAngleRad));
     cv::Point pointAbs = centre + pointRel;
