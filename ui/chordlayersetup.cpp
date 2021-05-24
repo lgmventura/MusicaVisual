@@ -74,41 +74,65 @@ void ChordLayerSetup::drawUi()
 void ChordLayerSetup::drawTabTracks()
 {
     // Setting up layout:
-    mainWidgetChordStars = new QWidget(ui->scrollChordStars);
-    layoutChordStars = new QGridLayout(mainWidgetChordStars);
-    ui->scrollChordStars->setWidget(mainWidgetChordStars);
-    mainWidgetChordStars->setLayout(layoutChordStars);
+    mainWidgetTracks = new QWidget(ui->scrollChordStars);
+    layoutTracks = new QGridLayout(mainWidgetTracks);
+    ui->scrollChordStars->setWidget(mainWidgetTracks);
+    mainWidgetTracks->setLayout(layoutTracks);
     //mainWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    mainWidgetChordStars->setMinimumHeight(rowH*this->Mdt->NTracks);
+    mainWidgetTracks->setMinimumHeight(rowH*this->Mdt->NTracks);
 
     // Adding UI elements:
-    Cb_trackActiveChordStars = new std::vector<QCheckBox*>;
+    Cb_activeTracks = new std::vector<QCheckBox*>;
+    Wid_tColours = new std::vector<ColourWidget*>;
 
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
-        layoutChordStars->setRowStretch(iTrack, rowH);
+        layoutTracks->setRowStretch(iTrack, rowH);
 
         // Add checkbox to set track active state:
         QString trackName = QString::fromStdString(Mdt->TrackNames.at(iTrack));
-        QCheckBox *cb_trackActive = new QCheckBox(trackName, mainWidgetChordStars);
+        QCheckBox *cb_trackActive = new QCheckBox(trackName, mainWidgetTracks);
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
         cb_trackActive->setChecked(ChordL->ActiveTracks[iTrack]);
-        QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { chordStarTrackActiveChanged(iTrack); });
-        QObject::connect(this, SIGNAL(changeChordStarTrackActive(int)), this, SLOT(chordStarTrackActiveChanged(int)));
-        Cb_trackActiveChordStars->push_back(cb_trackActive);
-        layoutChordStars->addWidget(cb_trackActive, iTrack, 0, 1, 1, Qt::AlignLeft);
+        QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { TrackVisibilityChanged(iTrack); });
+        QObject::connect(this, SIGNAL(changeChordStarTrackActive(int)), this, SLOT(TrackVisibilityChanged(int)));
+        Cb_activeTracks->push_back(cb_trackActive);
+        layoutTracks->addWidget(cb_trackActive, iTrack, 0, 1, 1, Qt::AlignLeft);
+
+        // Colour widget:
+        ColourWidget *wid_colour = new ColourWidget(mainWidgetTracks);
+        wid_colour->setBackgroundColour(ChordL->getCv(iTrack,0), ChordL->getCv(iTrack,1), ChordL->getCv(iTrack,2));
+        layoutTracks->addWidget(wid_colour, iTrack, 1, 1, 1, Qt::AlignLeft);
+        wid_colour->setMinimumHeight(rowH);
+        wid_colour->setMinimumWidth(2*rowH);
+        Wid_tColours->push_back(wid_colour);
+        QObject::connect(wid_colour, &ColourWidget::colourChanged, [this, iTrack] { colourChanged(iTrack); });
     }
+
     this->updateCbAllTracks();
 }
 
-void ChordLayerSetup::chordStarTrackActiveChanged(int track)
+void ChordLayerSetup::TrackVisibilityChanged(int track)
 {
-    bool state = Cb_trackActiveChordStars->at(track)->isChecked();
+    bool state = Cb_activeTracks->at(track)->isChecked();
     this->ChordL->ActiveTracks[track] = state;
 
     this->updateCbAllTracks();
 }
+
+
+void ChordLayerSetup::colourChanged(int track)
+{
+    QColor newColour = Wid_tColours->at(track)->getBackgroundColour();
+    int r = newColour.red();
+    int g = newColour.green();
+    int b = newColour.blue();
+    this->ChordL->setCv(track, 0, r);
+    this->ChordL->setCv(track, 1, g);
+    this->ChordL->setCv(track, 2, b);
+}
+
 
 void ChordLayerSetup::on_cb_allTracks_clicked()
 {
@@ -147,7 +171,7 @@ void ChordLayerSetup::allTracksToggled(bool checked)
 {
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
-        Cb_trackActiveChordStars->at(iTrack)->setChecked(checked);
+        Cb_activeTracks->at(iTrack)->setChecked(checked);
         emit changeChordStarTrackActive(iTrack);
     }
 }

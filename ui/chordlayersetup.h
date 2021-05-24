@@ -9,6 +9,7 @@
 #include "musiclib/chords.h"
 #include "visual/chordlayers.h"
 #include "visual/renderbuffer.h"
+#include "ui/colourwidget.h"
 
 namespace Ui {
 class ChordLayerSetup;
@@ -33,12 +34,13 @@ private:
 
     // layout:
     int rowH = 35;
-    QWidget *mainWidgetChordStars;
-    QGridLayout *layoutChordStars;
+    QWidget *mainWidgetTracks;
+    QGridLayout *layoutTracks;
 
     // UI elements:
     // Tab Chord Star:
-    std::vector<QCheckBox*> *Cb_trackActiveChordStars;
+    std::vector<QCheckBox*> *Cb_activeTracks;
+    std::vector<ColourWidget*> *Wid_tColours;
 
     // functions:
     void drawUi();
@@ -51,7 +53,8 @@ private:
     void calculateTonnetzRadius();
 
 private slots:
-    void chordStarTrackActiveChanged(int track);
+    void TrackVisibilityChanged(int track);
+    void colourChanged(int track);
 
     void on_cb_allTracks_stateChanged(int arg1);
 
