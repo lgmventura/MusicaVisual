@@ -22,14 +22,15 @@ void ChordStar::renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv
     }
 }
 
-void ChordStar::renderNote(Pitch note, float noteProgress, rgb colour, cv::Mat mat, cv::Point centre, int circleDiameter, ChordStarOptions opt);
+void ChordStar::renderNote(Pitch note, float noteProgress, rgb colour, cv::Mat mat, cv::Point centre, int diameter, ChordStarOptions opt)
 {
-    int radius = opt.Radius;
+    rgb currentColour = colour * (1 - opt.NoteFadeOut * noteProgress);
+    int radius = opt.Radius - (opt.NoteCollapse * noteProgress * opt.Radius);
     float angle = note.getAngleDeg(opt.Type) + opt.TurnCircle*30;
     float currAngleRad = angle * M_PI/180;
     cv::Point pointRel = cv::Point((float)diameter*cos(currAngleRad), (float)diameter*sin(currAngleRad));
     cv::Point pointAbs = centre + pointRel;
-    cv::circle(mat, pointAbs, radius, cv::Scalar(colour.b, colour.g, colour.r), -1); // drawing circle
+    cv::circle(mat, pointAbs, radius, cv::Scalar(currentColour.b, currentColour.g, currentColour.r), -1); // drawing circle
 }
 
 void ChordStar::dispChordDisc(Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, rgb colour, bool dispPitchNames, int turn, bool accidentalSharp)

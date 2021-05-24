@@ -78,6 +78,8 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
     csOpt.Radius = 10; // toDo
     csOpt.TurnCircle = chordL.TurnChordCircle;
     csOpt.Type = (Pitch::circle) chordL.ChordStarType;
+    csOpt.NoteCollapse = chordL.NoteCollapse;
+    csOpt.NoteFadeOut = chordL.NoteFadeOut;
 
     // iterating over all notes:
     for (std::list<MidiNote>::iterator it=mdt.Notes.begin() ; it != mdt.Notes.end(); ++it) // Run the list forwards
