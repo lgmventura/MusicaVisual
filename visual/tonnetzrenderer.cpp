@@ -29,7 +29,7 @@ void TonnetzRenderer::renderGrid(cv::Mat mat, cv::Point centre, vector<Hex> Grid
         std::vector<Hex>::iterator it = GridPositions.begin();
         for (int iHex = 0; it != GridPositions.end(); it++, iHex++)
         {
-            std::vector<Point2d> polygon = polygon_corners(layout, (*it));
+            std::vector<Point2d> polygon = polygon_corners(layout, (*it), (double)cellDiameter/10);
             std::vector<Point2d>::iterator jt = polygon.begin();
             std::array<cv::Point, 6> pts;
             for (int k = 0; jt != polygon.end(); jt++, k++)
@@ -101,7 +101,7 @@ void TonnetzRenderer::renderNote(Pitch note, float noteProgress, cv::Mat mat, cv
     }
     else if (options.Shp == TonnetzOptions::Shape::Hexagon)
     {
-        std::vector<Point2d> polygon = polygon_corners(options.Layout, (hex));
+        std::vector<Point2d> polygon = polygon_corners(options.Layout, (hex), (double)size/10);
         std::vector<Point2d>::iterator jt = polygon.begin();
         std::array<cv::Point, 6> pts;
         for (int k = 0; jt != polygon.end(); jt++, k++)

@@ -202,14 +202,14 @@ Point2d hex_corner_offset(Layout layout, int corner)
     return Point2d(size.x * cos(angle), size.y * sin(angle));
 }
 
-vector<Point2d> polygon_corners(Layout layout, Hex h)
+vector<Point2d> polygon_corners(Layout layout, Hex h, double size)
 {
     vector<Point2d> corners = {};
     Point2d center = hex_to_pixel(layout, h);
     for (int i = 0; i < 6; i++)
     {
         Point2d offset = hex_corner_offset(layout, i);
-        corners.push_back(Point2d(center.x + offset.x, center.y + offset.y));
+        corners.push_back(Point2d(center.x + size*offset.x, center.y + size*offset.y));
     }
     return corners;
 }

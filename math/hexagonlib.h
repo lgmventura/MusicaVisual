@@ -190,7 +190,7 @@ FractionalHex pixel_to_hex(Layout layout, Point2d p);
 Point2d hex_corner_offset(Layout layout, int corner);
 
 
-vector<Point2d> polygon_corners(Layout layout, Hex h);
+vector<Point2d> polygon_corners(Layout layout, Hex h, double size_mult = 1);
 
 
 std::vector<Hex> hex_ring(Hex centre, int radius);
