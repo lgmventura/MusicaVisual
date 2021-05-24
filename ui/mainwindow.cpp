@@ -69,10 +69,10 @@ MainWindow::MainWindow(QWidget *parent) :
     this->Mdt = new MusicData(); // create object MusicData
     this->VRec = new VideoRecorder(720, 480, 30); // dimensions, fps etc. will be eventually changed later
     this->RProp = new RenderP();
-    this->Layers = new std::list<Layer>;
+    this->Layers = new std::list<LayerContainer>;
     this->RBuffer = new RenderBuffer();
 
-    Layer layer0;
+    LayerContainer layer0;
     layer0.setName("Layer 0");
     this->Layers->push_back(layer0);
 }
@@ -353,7 +353,7 @@ void MainWindow::saveSettings(string filePath)
     ofstream output_file(filePath, ios::binary);
     output_file.write(reinterpret_cast<char*>(RProp),sizeof(*RProp));
     output_file.write(reinterpret_cast<char*>(&numLayers),sizeof(int));
-    std::list<Layer>::iterator it = Layers->begin();
+    std::list<LayerContainer>::iterator it = Layers->begin();
     for (int iLayer = 0; iLayer < numLayers; iLayer++, it++)
     {
         output_file.write(reinterpret_cast<char*>(&(*it)),sizeof(*it));
@@ -384,7 +384,7 @@ void MainWindow::loadSettings(string filePath)
         input_file.read(reinterpret_cast<char*>(RProp),sizeof(*RProp));
         input_file.read(reinterpret_cast<char*>(&numLayers),sizeof(int));
         Layers->clear();
-        Layer *loadedLayer = new Layer();
+        LayerContainer *loadedLayer = new LayerContainer();
         for (int iLayer = 0; iLayer < numLayers; iLayer++)
         {
             input_file.read(reinterpret_cast<char*>(loadedLayer),sizeof(*loadedLayer));

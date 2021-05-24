@@ -115,7 +115,7 @@ private:
     Help *helpDiag_1 = nullptr;
     MusicData *Mdt = nullptr;
     VideoRecorder *VRec = nullptr;
-    std::list<Layer> *Layers;
+    std::list<LayerContainer> *Layers;
     RenderP *RProp;
     AnimState *AState;
     AnimPainter *APainter;

@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QTableWidget>
 
-#include "visual/layer.h"
+#include "visual/layercontainer.h"
 #include "visual/renderbuffer.h"
 #include "musicdata.h"
 #include "ui/blocklayersetup.h"
@@ -23,7 +23,7 @@ class LayerSetup : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit LayerSetup(std::list<Layer> *layers, MusicData *mdt, RenderBuffer *rBuffer, QWidget *parent = nullptr);
+    explicit LayerSetup(std::list<LayerContainer> *layers, MusicData *mdt, RenderBuffer *rBuffer, QWidget *parent = nullptr);
     ~LayerSetup();
 
     void refresh();
@@ -33,7 +33,7 @@ private:
 
     QTableWidget *tableWidget;
 
-    std::list<Layer> *Layers;
+    std::list<LayerContainer> *Layers;
     MusicData *Mdt;
     RenderBuffer *RBuffer;
 
@@ -43,10 +43,10 @@ private:
 
     void initUI();
 
-    void insertLayerActiveCheckBox(int row, Layer *layer);
-    void insertLayerNameLineEdit(int row, Layer *layer);
-    void insertLayerTypeComboBox(int row, Layer *layer);
-    void insertLayerSetupPButton(int row, Layer *layer);
+    void insertLayerActiveCheckBox(int row, LayerContainer *layer);
+    void insertLayerNameLineEdit(int row, LayerContainer *layer);
+    void insertLayerTypeComboBox(int row, LayerContainer *layer);
+    void insertLayerSetupPButton(int row, LayerContainer *layer);
     void moveLayer(int fromRow, int toRow);
     void connectTableWidgets();
     void disconnectTabWidgets();

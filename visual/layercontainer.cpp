@@ -1,23 +1,23 @@
-#include "layer.h"
+#include "layercontainer.h"
 
-Layer::Layer()
+LayerContainer::LayerContainer()
 {
 
 }
 
-Layer::~Layer()
+LayerContainer::~LayerContainer()
 {
 
 }
 
-std::string Layer::getName()
+std::string LayerContainer::getName()
 {
     std::string name;
     name = this->Name;
     return name;
 }
 
-void Layer::setName(std::string newName)
+void LayerContainer::setName(std::string newName)
 {
     newName.copy(Name, 128);
 }

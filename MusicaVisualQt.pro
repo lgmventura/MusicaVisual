@@ -43,7 +43,7 @@ SOURCES += main.cpp\
     visual/blocklayers.cpp \
     visual/chordlayers.cpp \
     visual/eulertonnetz.cpp \
-    visual/layer.cpp \
+    visual/layercontainer.cpp \
     visual/renderChordStar.cpp \
     visual/renderbuffer.cpp \
     visual/tonnetzrenderer.cpp \
@@ -85,7 +85,7 @@ HEADERS  += \
     visual/blocklayers.h \
     visual/chordlayers.h \
     visual/eulertonnetz.h \
-    visual/layer.h \
+    visual/layercontainer.h \
     visual/renderChordStar.h \
     visual/renderbuffer.h \
     visual/tonnetzrenderer.h \

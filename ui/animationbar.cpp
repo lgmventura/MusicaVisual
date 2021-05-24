@@ -62,7 +62,7 @@ AnimationBar::AnimationBar(QWidget *parent) :
     // This original contructor is currently not used nor called. Use the below!
 }
 
-AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, std::list<Layer> *layers, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec):
+AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, int window_width, int window_height, float fps, RenderP *rProp, std::list<LayerContainer> *layers, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec):
     QWidget(parent),
     ui(new Ui::AnimationBar)
 {

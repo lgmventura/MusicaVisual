@@ -1,7 +1,7 @@
 #include "layersetup.h"
 #include "ui_layersetup.h"
 
-LayerSetup::LayerSetup(std::list<Layer> *layers, MusicData *mdt, RenderBuffer *rBuffer, QWidget *parent) :
+LayerSetup::LayerSetup(std::list<LayerContainer> *layers, MusicData *mdt, RenderBuffer *rBuffer, QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::LayerSetup)
 {
@@ -35,11 +35,11 @@ void LayerSetup::initUI()
     this->tableWidget->insertColumn(3); // For pushbutton edit layer
 
     // initilizing rows for each layer:
-    std::list<Layer>::iterator it = Layers->begin();
+    std::list<LayerContainer>::iterator it = Layers->begin();
     for (int iRow = 0; it != this->Layers->end(); it++, iRow++)
     {
         // getting current layer:
-        Layer currLayer = *it;
+        LayerContainer currLayer = *it;
 
         // inserting row:
         this->tableWidget->insertRow(iRow);
@@ -76,7 +76,7 @@ void LayerSetup::layerActiveChanged(int layer)
     QCheckBox *cb = (QCheckBox*) this->tableWidget->cellWidget(layer, 0);
     bool state = cb->isChecked();
 
-    std::list<Layer>::iterator it = Layers->begin();
+    std::list<LayerContainer>::iterator it = Layers->begin();
     std::advance(it, layer); // go to layer position
     (*it).LayerActive = state;
 }
@@ -86,7 +86,7 @@ void LayerSetup::layerNameChanged(int layer)
     QLineEdit *ledt = (QLineEdit*) this->tableWidget->cellWidget(layer, 1);
     QString qName = ledt->text();
 
-    std::list<Layer>::iterator it = Layers->begin();
+    std::list<LayerContainer>::iterator it = Layers->begin();
     std::advance(it, layer); // go to layer position
     (*it).setName(qName.toStdString());
 }
@@ -96,9 +96,9 @@ void LayerSetup::layerTypeChanged(int layer)
     QComboBox *cmbx = (QComboBox*) this->tableWidget->cellWidget(layer, 2);
     int typeIndex = cmbx->currentIndex();
 
-    std::list<Layer>::iterator it = Layers->begin();
+    std::list<LayerContainer>::iterator it = Layers->begin();
     std::advance(it, layer); // go to layer position
-    (*it).LType = Layer::LayerType(typeIndex);
+    (*it).LType = LayerContainer::LayerType(typeIndex);
 }
 
 void LayerSetup::layerEditTriggered(int layer)
@@ -108,10 +108,10 @@ void LayerSetup::layerEditTriggered(int layer)
     QComboBox *cmbx = (QComboBox*) this->tableWidget->cellWidget(row, 2);
     int typeIndex = cmbx->currentIndex();
 
-    std::list<Layer>::iterator it = this->Layers->begin();
+    std::list<LayerContainer>::iterator it = this->Layers->begin();
     std::advance(it, row); // not it points to the current layer
 
-    if (typeIndex == Layer::LayerType::BlockLayer)
+    if (typeIndex == LayerContainer::LayerType::BlockLayer)
     {
         if (Bls == nullptr)
         {
@@ -126,7 +126,7 @@ void LayerSetup::layerEditTriggered(int layer)
         Bls->setWindowTitle(qWindowTitle);
         Bls->show();
     }
-    else if (typeIndex == Layer::LayerType::ChordLayer)
+    else if (typeIndex == LayerContainer::LayerType::ChordLayer)
     {
         if (Cls == nullptr)
         {
@@ -146,12 +146,12 @@ void LayerSetup::layerEditTriggered(int layer)
 
 void LayerSetup::on_pb_addLayer_clicked()
 {
-    Layer newLayer;
+    LayerContainer newLayer;
     int numLayers = Layers->size();
     newLayer.setName("Layer " + std::to_string(numLayers));
     int row = this->tableWidget->currentRow();
     if (row == -1) {row = 0;} // if all were deleted, currentRow returns -1
-    std::list<Layer>::iterator it = Layers->begin();
+    std::list<LayerContainer>::iterator it = Layers->begin();
     for (int iPos = 0; iPos < row; iPos++) { it++; }
     this->Layers->insert(it, newLayer);
     this->tableWidget->insertRow(row);
@@ -178,7 +178,7 @@ void LayerSetup::on_pb_removeLayer_clicked()
     int row = this->tableWidget->currentRow();
     if (row >= 0)
     {
-        std::list<Layer>::iterator it = Layers->begin();
+        std::list<LayerContainer>::iterator it = Layers->begin();
         std::advance(it, row);
         this->Layers->erase(it);
         this->tableWidget->removeRow(row);
@@ -187,7 +187,7 @@ void LayerSetup::on_pb_removeLayer_clicked()
     }
 }
 
-void LayerSetup::insertLayerActiveCheckBox(int row, Layer *layer)
+void LayerSetup::insertLayerActiveCheckBox(int row, LayerContainer *layer)
 {
     QCheckBox *cb_layerActive = new QCheckBox();
     cb_layerActive->setStyleSheet("text-align: center; margin-left:44%; margin-right:38%;");
@@ -197,7 +197,7 @@ void LayerSetup::insertLayerActiveCheckBox(int row, Layer *layer)
     this->tableWidget->setCellWidget(row, 0, cb_layerActive);
 }
 
-void LayerSetup::insertLayerNameLineEdit(int row, Layer *layer)
+void LayerSetup::insertLayerNameLineEdit(int row, LayerContainer *layer)
 {
     std::string layerName = layer->getName();
     QString qLayerName = QString::fromStdString(layerName);
@@ -208,9 +208,9 @@ void LayerSetup::insertLayerNameLineEdit(int row, Layer *layer)
     this->tableWidget->setCellWidget(row, 1, le_layerName);
 }
 
-void LayerSetup::insertLayerTypeComboBox(int row, Layer *layer)
+void LayerSetup::insertLayerTypeComboBox(int row, LayerContainer *layer)
 {
-    Layer::LayerType currentType = layer->LType;
+    LayerContainer::LayerType currentType = layer->LType;
 
     QComboBox *cmb_layerType = new QComboBox();
     cmb_layerType->addItem("Blocks"); // ideally, I should iterate over the enum class, but I would need to define a custom iterator there and so on. Since there is no real plan to add more in the near future, letting it hard-coded here for now.
@@ -221,7 +221,7 @@ void LayerSetup::insertLayerTypeComboBox(int row, Layer *layer)
     this->tableWidget->setCellWidget(row, 2, cmb_layerType);
 }
 
-void LayerSetup::insertLayerSetupPButton(int row, Layer *layer)
+void LayerSetup::insertLayerSetupPButton(int row, LayerContainer *layer)
 {
     QPushButton *pb_editLayer = new QPushButton();
     QString qPbName = QString::fromStdString("Edit…");
@@ -233,8 +233,8 @@ void LayerSetup::insertLayerSetupPButton(int row, Layer *layer)
 
 void LayerSetup::moveLayer(int fromRow, int toRow)
 {
-    std::list<Layer>::iterator itFrom = this->Layers->begin();
-    std::list<Layer>::iterator itTo = this->Layers->begin();
+    std::list<LayerContainer>::iterator itFrom = this->Layers->begin();
+    std::list<LayerContainer>::iterator itTo = this->Layers->begin();
     std::advance(itFrom, fromRow);
     if (fromRow < toRow)
     {
@@ -254,7 +254,7 @@ void LayerSetup::moveLayer(int fromRow, int toRow)
 
 void LayerSetup::connectTableWidgets()
 {
-    std::list<Layer>::iterator it = Layers->begin();
+    std::list<LayerContainer>::iterator it = Layers->begin();
     for (int iRow = 0; it != this->Layers->end(); it++, iRow++)
     {
         // getting widgets:
@@ -273,7 +273,7 @@ void LayerSetup::connectTableWidgets()
 
 void LayerSetup::disconnectTabWidgets()
 {
-    std::list<Layer>::iterator it = Layers->begin();
+    std::list<LayerContainer>::iterator it = Layers->begin();
     for (int iRow = 0; it != this->Layers->end(); it++, iRow++)
     {
         // getting widgets:

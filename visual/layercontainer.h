@@ -1,14 +1,14 @@
-#ifndef LAYER_H
-#define LAYER_H
+#ifndef LAYERCONTAINER_H
+#define LAYERCONTAINER_H
 
 #include "visual/blocklayers.h"
 #include "visual/chordlayers.h"
 
-class Layer
+class LayerContainer
 {
 public:
-    Layer();
-    ~Layer();
+    LayerContainer();
+    ~LayerContainer();
 
     enum LayerType {BlockLayer = 0, ChordLayer = 1};
 
@@ -30,4 +30,4 @@ private:
     // float Opacity;
 };
 
-#endif // LAYER_H
+#endif // LAYERCONTAINER_H

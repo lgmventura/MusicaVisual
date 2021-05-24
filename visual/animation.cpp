@@ -29,7 +29,7 @@ void AnimPainter::paintBlocksNoShading(cv::Mat image, MusicData mdt, ShapePoints
     }
 }
 
-void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, AnimWindow aw, BlockLayers blockL, ChordLayers chordL, RenderP rProp, Layer::LayerType ltype) // this function is called for every frame. aw.StartMidiTime is the time in the left side of the window, aw.EndMidiTime, at the right. These depend on playback position and zoom.
+void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, AnimWindow aw, BlockLayers blockL, ChordLayers chordL, RenderP rProp, LayerContainer::LayerType ltype) // this function is called for every frame. aw.StartMidiTime is the time in the left side of the window, aw.EndMidiTime, at the right. These depend on playback position and zoom.
 {
     // this function loops through all notes and call corresponding functions to paint them
     // finding current global zoom:
@@ -92,7 +92,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
             spts.pt2.y = f2int_safe(spts.y2);//aw.Height*(((*it).pitch + 1)/(50));
             //std::cout << (*it).t_on << ' ' << (*it).t_off << ": " << (*it).pitch << '\n';
             //std::cout << spts.pt1.x << ' ' << spts.pt1.y << ": " << spts.pt2.x << ' ' << spts.pt2.y << '\n';
-            if (ltype == Layer::BlockLayer)
+            if (ltype == LayerContainer::BlockLayer)
             {
                 for (unsigned int tnum = 0; tnum < mdt.NTracks; tnum++)
                 {
@@ -1145,17 +1145,17 @@ void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, A
     // ============ Displaying tonnetz in function paint notes, since notes are not interdependent ==============
 }
 
-void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat> img_buffer_sep_tracks, AnimWindow aw, std::list<Layer> layers, RenderP renderS)
+void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat> img_buffer_sep_tracks, AnimWindow aw, std::list<LayerContainer> layers, RenderP renderS)
 {
-    std::list<Layer>::reverse_iterator lit = layers.rbegin();
+    std::list<LayerContainer>::reverse_iterator lit = layers.rbegin();
     for(int iLayer = 0; lit != layers.rend(); lit++, iLayer++)
     {
         // (*it) is now the layer of the current iteration
-        if ((*lit).LType == Layer::LayerType::BlockLayer && (*lit).LayerActive == true)
+        if ((*lit).LType == LayerContainer::LayerType::BlockLayer && (*lit).LayerActive == true)
         {
-            this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, (*lit).Cl, renderS, Layer::BlockLayer);
+            this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, (*lit).Cl, renderS, LayerContainer::BlockLayer);
         }
-        else if ((*lit).LType == Layer::LayerType::ChordLayer && (*lit).LayerActive == true)
+        else if ((*lit).LType == LayerContainer::LayerType::ChordLayer && (*lit).LayerActive == true)
         {
             int zoom = aw.EndMidiTime - aw.StartMidiTime;
             aw.CurrPosMiddle = (aw.StartMidiTime + (zoom)/2);
@@ -1194,7 +1194,7 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
                 {
                     float chordProgress = (float)(aw.CurrPosMiddle - chordWT.Start_time)/(chordWT_next.Start_time - chordWT.Start_time);
                     this->paintChords((*cit).chord, chordProgress, image, aw, (*lit).Cl, renderS);
-                    this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, (*lit).Cl, renderS, Layer::ChordLayer);
+                    this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, (*lit).Cl, renderS, LayerContainer::ChordLayer);
                     break;
                 }
             }

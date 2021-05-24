@@ -7,7 +7,7 @@
 #include <opencv2/imgproc.hpp>
 
 //Include project files
-#include "layer.h"
+#include "layercontainer.h"
 #include "videorecorder.h"
 #include "visual/renderbuffer.h"
 #include "musicdata.h"
@@ -92,9 +92,9 @@ public:
     RenderBuffer *RBuffer;
 
     void paintBlocksNoShading( cv::Mat image, MusicData mdt, ShapePoints spts, char* window_name, AnimWindow aw);
-    void paintNotes(MusicData mdt, cv::Mat, std::vector <cv::Mat>, AnimWindow aw, BlockLayers, ChordLayers, RenderP, Layer::LayerType ltype);
+    void paintNotes(MusicData mdt, cv::Mat, std::vector <cv::Mat>, AnimWindow aw, BlockLayers, ChordLayers, RenderP, LayerContainer::LayerType ltype);
     void paintChords(Chord chord, float chordProgress, cv::Mat, AnimWindow aw, ChordLayers chordL, RenderP rProp);
-    void paintLayers(MusicData mdt, cv::Mat, std::vector <cv::Mat>, AnimWindow aw, std::list<Layer> layers, RenderP);
+    void paintLayers(MusicData mdt, cv::Mat, std::vector <cv::Mat>, AnimWindow aw, std::list<LayerContainer> layers, RenderP);
     void appendFrame(cv::Mat image, VideoRecorder* vRec);
 };
 
