@@ -975,10 +975,13 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                 {
                     if (chordL.ChordTracks[(*it).track] == true)
                     {
-                    if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
                         {
                             float noteProgress = (float)(aw.Width/2 - spts.pt1.x)/(spts.pt2.x - spts.pt1.x);
-                            TonnetzRenderer::renderNote((*it).pitch, noteProgress, image, clCentre, opt, RBuffer->TonnetzMap, blockL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
+                            if ( ! rProp.sep_render[0])
+                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, image, clCentre, opt, RBuffer->TonnetzMap, blockL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
+                            else
+                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, img_playing_notes, clCentre, opt, RBuffer->TonnetzMap, blockL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
                         }
                     }
                 }

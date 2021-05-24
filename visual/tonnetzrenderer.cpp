@@ -97,7 +97,7 @@ void TonnetzRenderer::renderNote(Pitch note, float noteProgress, cv::Mat mat, cv
         cvCentre.x = hexCentre.x;
         cvCentre.y = hexCentre.y;
         cvCentre = cvCentre + centre;
-        cv::circle(mat, cvCentre, size, cv::Scalar(currentColour.r, currentColour.g, currentColour.b), cv::LineTypes::FILLED);
+        cv::circle(mat, cvCentre, size, cv::Scalar(currentColour.b, currentColour.g, currentColour.r), cv::LineTypes::FILLED);
     }
     else if (options.Shp == TonnetzOptions::Shape::Hexagon)
     {
@@ -112,6 +112,6 @@ void TonnetzRenderer::renderNote(Pitch note, float noteProgress, cv::Mat mat, cv
             p = p + centre;
             pts.at(k) = p;
         }
-        cv::fillConvexPoly(mat, pts, cv::Scalar(currentColour.r, currentColour.g, currentColour.b), cv::LineTypes::LINE_AA);
+        cv::fillConvexPoly(mat, pts, cv::Scalar(currentColour.b, currentColour.g, currentColour.r), cv::LineTypes::LINE_AA);
     }
 }
