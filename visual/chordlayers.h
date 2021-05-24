@@ -3,19 +3,18 @@
 
 #include <string>
 
+#include "layer.h"
 #include "chords.h"
 #include "tonnetzrenderer.h"
 
 using namespace Hexagon;
 
-class ChordLayers
+class ChordLayers: public Layer
 {
 public:
     ChordLayers();
 
     enum ChordLayerType {PitchNames, ChordStar, Tonnetz};
-
-    bool ChordTracks[128] = { [0 ... 127 ] = 1 };
 
     // Type:
     ChordLayerType CLType = PitchNames;

@@ -69,7 +69,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
     cv::Point clCentre = cv::Point(p_x, p_y);
 
-    TonnetzOptions opt(chordL.TonnetzShape, chordL.ChordTracks, chordL.HexLayout);
+    TonnetzOptions opt(chordL.TonnetzShape, chordL.ActiveTracks, chordL.HexLayout);
     opt.Central = chordL.CentralMidi;
     opt.NoteSize = chordL.NoteSize;
     opt.NoteCollapse = chordL.NoteCollapse;
@@ -97,7 +97,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                 for (unsigned int tnum = 0; tnum < mdt.NTracks; tnum++)
                 {
                     // -------------------------- Draw Interconnected Lines -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.interconnect[tnum] == 1) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.interconnect[tnum] == 1) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -115,7 +115,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // ------------------------- Draw Rectangles -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 0) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 0) // All tracks - rectangle
                     {
                         if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
                             if ( ! rProp.sep_render[1])
@@ -138,7 +138,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Rhombus -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 1) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 1) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -172,7 +172,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Ellipses -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 2) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 2) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -200,7 +200,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Circles -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 3) // All tracks
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 3) // All tracks
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -232,7 +232,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Circles with moving centred circle -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 4) // All tracks
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 4) // All tracks
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -285,7 +285,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Circles with moving centred circle and playing note highlight -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 5) // All tracks
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 5) // All tracks
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -341,7 +341,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Rectangles with moving centred rectangle -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 6) // All tracks
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 6) // All tracks
                     {
     //                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
     //                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + pitch_max)/2)/((float)pitch_max - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -393,7 +393,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Rectangles with moving centred rectangle and highlighted borders -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 7) // All tracks
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 7) // All tracks
                     {
     //                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
     //                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + pitch_max)/2)/((float)pitch_max - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -452,7 +452,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Rhombus with moving rhombus -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 8) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 8) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -526,7 +526,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Rhombus with moving rhombus and playing highlight (select sep playing notes render) -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 9) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 9) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -606,7 +606,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw ellipses with moving centred ellipse -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 10) // All tracks
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 10) // All tracks
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -668,7 +668,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw ellipses with moving centred ellipse and highlighted playing note -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 11) // All tracks
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 11) // All tracks
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -730,7 +730,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Circles with size proportional to the velocity -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 12) // All tracks
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 12) // All tracks
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -760,7 +760,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Ellipses with height proportional to the velocity -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 13) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 13) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -788,7 +788,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Rhombus with height proportional to the velocity -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 14) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 14) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -823,7 +823,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Triangles V with height proportional to the velocity -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 15) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 15) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -856,7 +856,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Triangles ^ with height proportional to the velocity -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 16) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 16) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -890,7 +890,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Triangles |> (forte-piano) -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 17) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 17) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -924,7 +924,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
 
 
                     // -------------------------- Draw Triangles <| (piano-forte) -------------------------
-                    if ((*it).track == tnum && blockL.active[tnum] == true && blockL.shape[tnum] == 18) // All tracks - rectangle
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 18) // All tracks - rectangle
                     {
                         spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
@@ -973,15 +973,15 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
             {
                 if (chordL.CLType == ChordLayers::ChordLayerType::Tonnetz)
                 {
-                    if (chordL.ChordTracks[(*it).track] == true)
+                    if (chordL.ActiveTracks[(*it).track] == true)
                     {
                         if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
                         {
                             float noteProgress = (float)(aw.Width/2 - spts.pt1.x)/(spts.pt2.x - spts.pt1.x);
                             if ( ! rProp.sep_render[0])
-                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, image, clCentre, opt, RBuffer->TonnetzMap, blockL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
+                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, image, clCentre, opt, RBuffer->TonnetzMap, chordL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
                             else
-                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, img_playing_notes, clCentre, opt, RBuffer->TonnetzMap, blockL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
+                                TonnetzRenderer::renderNote((*it).pitch, noteProgress, img_playing_notes, clCentre, opt, RBuffer->TonnetzMap, chordL.getColour((*it).track, (*it).pitch)); // WARNING: taking colour from block layers temporarily. ToDo: take from chord layer. Do we need to duplicate them?
                         }
                     }
                 }
@@ -1123,7 +1123,7 @@ void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, A
     if (chordL.CLType == ChordLayers::ChordLayerType::PitchNames) // ToDo: create a new class for chord analysis, generate chord names, currently displaying only pitches
     {
         std::string ptStr = "Pitches:";
-        ptStr = chord.getPitchesStr(chordL.AccidentalSharp, chordL.ChordTracks);
+        ptStr = chord.getPitchesStr(chordL.AccidentalSharp, chordL.ActiveTracks);
         cv::putText(image,
                 ptStr,//"Here is some text",
                 centre, // Coordinates
@@ -1140,7 +1140,7 @@ void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, A
     if (chordL.CLType == ChordLayers::ChordLayerType::ChordStar)
     {
         Chord::circle type = chordL.ChordStarType;
-        renderChordStar(chord, type, image, centre, diam, chordL.ChordTracks, chordL.TurnChordCircle);
+        renderChordStar(chord, type, image, centre, diam, chordL.ActiveTracks, chordL.TurnChordCircle);
     }
     // ============ Displaying tonnetz in function paint notes, since notes are not interdependent ==============
 }

@@ -93,7 +93,7 @@ void ChordLayerSetup::drawTabTracks()
         QCheckBox *cb_trackActive = new QCheckBox(trackName, mainWidgetChordStars);
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
-        cb_trackActive->setChecked(ChordL->ChordTracks[iTrack]);
+        cb_trackActive->setChecked(ChordL->ActiveTracks[iTrack]);
         QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { chordStarTrackActiveChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeChordStarTrackActive(int)), this, SLOT(chordStarTrackActiveChanged(int)));
         Cb_trackActiveChordStars->push_back(cb_trackActive);
@@ -105,7 +105,7 @@ void ChordLayerSetup::drawTabTracks()
 void ChordLayerSetup::chordStarTrackActiveChanged(int track)
 {
     bool state = Cb_trackActiveChordStars->at(track)->isChecked();
-    this->ChordL->ChordTracks[track] = state;
+    this->ChordL->ActiveTracks[track] = state;
 
     this->updateCbAllTracks();
 }
@@ -124,7 +124,7 @@ void ChordLayerSetup::updateCbAllTracks()
     unsigned int numVisibleTracks = 0;
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
-        if (this->ChordL->ChordTracks[iTrack] == true)
+        if (this->ChordL->ActiveTracks[iTrack] == true)
         {
             numVisibleTracks++;
         }

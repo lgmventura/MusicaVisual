@@ -29,7 +29,6 @@ SOURCES += main.cpp\
     ui/mainwindow.cpp \
     ui/playthread.cpp \
     ui/rendersetup.cpp \
-    ui/trackssetup.cpp \
     ui/chordlayersetup.cpp \
     utils/cnum.cpp \
     csappmidi/src-library/MidiFile.cpp \
@@ -43,6 +42,7 @@ SOURCES += main.cpp\
     visual/blocklayers.cpp \
     visual/chordlayers.cpp \
     visual/eulertonnetz.cpp \
+    visual/layer.cpp \
     visual/layercontainer.cpp \
     visual/renderChordStar.cpp \
     visual/renderbuffer.cpp \
@@ -65,7 +65,6 @@ HEADERS  += \
     ui/mainwindow.h \
     ui/playthread.h \
     ui/rendersetup.h \
-    ui/trackssetup.h \
     ui/chordlayersetup.h \
     utils/cnum.h \
     csappmidi/include/MidiFile.h \
@@ -85,6 +84,7 @@ HEADERS  += \
     visual/blocklayers.h \
     visual/chordlayers.h \
     visual/eulertonnetz.h \
+    visual/layer.h \
     visual/layercontainer.h \
     visual/renderChordStar.h \
     visual/renderbuffer.h \

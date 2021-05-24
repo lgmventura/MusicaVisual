@@ -57,7 +57,7 @@ void BlockLayerSetup::drawUi()
         QCheckBox *cb_trackActive = new QCheckBox(trackName, mainWidget);
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
-        cb_trackActive->setChecked(BlockL->active[iTrack]);
+        cb_trackActive->setChecked(BlockL->ActiveTracks[iTrack]);
         QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { trackVisibilityChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeTrackVisibility(int)), this, SLOT(trackVisibilityChanged(int)));
         Cb_trackActive->push_back(cb_trackActive);
@@ -92,7 +92,7 @@ void BlockLayerSetup::drawUi()
         }
         layout->addWidget(cmb_colScheme, iTrack, 2, 1, 1, Qt::AlignLeft);
         cmb_colScheme->setMinimumWidth(4*rowH);
-        cmb_colScheme->setCurrentIndex(BlockL->colorScheme[iTrack]);
+        cmb_colScheme->setCurrentIndex(BlockL->ColourScheme[iTrack]);
         Cmb_colScheme->push_back(cmb_colScheme);
         QObject::connect(cmb_colScheme, qOverload<int>(&QComboBox::currentIndexChanged), [this, iTrack] { colourSchemeChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeColourScheme(int)), this, SLOT(colourSchemeChanged(int)));
@@ -176,7 +176,7 @@ void BlockLayerSetup::changeBlockLayer(BlockLayers *newBlockL)
 void BlockLayerSetup::trackVisibilityChanged(int track)
 {
     bool state = Cb_trackActive->at(track)->isChecked();
-    this->BlockL->active[track] = state;
+    this->BlockL->ActiveTracks[track] = state;
 
     this->updateCbAllTracks();
 }
@@ -195,7 +195,7 @@ void BlockLayerSetup::colourChanged(int track)
 void BlockLayerSetup::colourSchemeChanged(int track)
 {
     int newColScheme = Cmb_colScheme->at(track)->currentIndex();
-    this->BlockL->colorScheme[track] = newColScheme;
+    this->BlockL->ColourScheme[track] = newColScheme;
 }
 
 void BlockLayerSetup::shapeChanged(int track)
@@ -231,7 +231,7 @@ void BlockLayerSetup::updateCbAllTracks()
     unsigned int numVisibleTracks = 0;
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
-        if (this->BlockL->active[iTrack] == true)
+        if (this->BlockL->ActiveTracks[iTrack] == true)
         {
             numVisibleTracks++;
         }
