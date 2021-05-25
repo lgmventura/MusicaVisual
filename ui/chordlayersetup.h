@@ -34,18 +34,23 @@ private:
 
     // layout:
     int rowH = 35;
+
+    // UI elements:
+    // Tab type/position/general:
+    ColourWidget *GridColourWid;
     QWidget *mainWidgetTracks;
     QGridLayout *layoutTracks;
     QWidget *widgetGeneral;
     QGridLayout *layoutGeneral;
 
-    // UI elements:
-    // Tab type/position/general:
-    ColourWidget *GridColourWid;
-
-    // Tab Chord Star:
+    // Tab tracks:
     std::vector<QCheckBox*> *Cb_activeTracks;
     std::vector<ColourWidget*> *Wid_tColours;
+
+    // Tab Chord Star:
+    ColourWidget *chStarColourWid;
+    QWidget *widgetChordStar;
+    QGridLayout *layoutChordStar;
 
     // functions:
     void drawUi();
@@ -61,6 +66,7 @@ private slots:
     void TrackVisibilityChanged(int track);
     void colourChanged(int track);
     void gridColourChanged();
+    void chStColourChanged();
 
     void on_cb_allTracks_stateChanged(int arg1);
 
@@ -81,6 +87,8 @@ private slots:
     void on_combox_chordStar_currentIndexChanged(int index);
 
     void on_spb_chordStarOffset_valueChanged(int arg1);
+
+    void on_spb_chSt_noteSize_valueChanged(int arg1);
 
     void on_cb_dispNoteNamesStar_toggled(bool checked);
 

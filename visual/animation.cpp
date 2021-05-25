@@ -75,7 +75,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
     opt.NoteCollapse = chordL.NoteCollapse;
     opt.NoteFadeOut = chordL.NoteFadeOut;
     ChordStarOptions csOpt;
-    csOpt.Radius = 10; // toDo
+    csOpt.Radius = chordL.NoteSize; // toDo
     csOpt.TurnCircle = chordL.TurnChordCircle;
     csOpt.Type = (Pitch::circle) chordL.ChordStarType;
     csOpt.NoteCollapse = chordL.NoteCollapse;
@@ -1160,7 +1160,7 @@ void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, A
     if (chordL.CLType == ChordLayers::ChordLayerType::ChordStar)
     {
         Chord::circle type = chordL.ChordStarType;
-        ChordStar::renderChordStar(chord, type, image, centre, diam, chordL.ActiveTracks, chordL.TurnChordCircle);
+        ChordStar::renderChordStar(chord, type, image, centre, diam, chordL.ChordStarColour, chordL.ActiveTracks, chordL.TurnChordCircle);
     }
     // ============ Displaying tonnetz in function paint notes, since notes are not interdependent ==============
 }

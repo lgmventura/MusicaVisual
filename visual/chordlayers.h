@@ -38,6 +38,7 @@ public:
     bool NoteNamesOnStar = false;
     int TurnChordCircle = 0;
     Chord::circle ChordStarType = Chord::circleOfSemitones;
+    rgb ChordStarColour = rgb(120, 120, 120);
 
     // Tonnetz:
     TonnetzOptions::Shape TonnetzShape = TonnetzOptions::Shape::Circle;

@@ -49,10 +49,10 @@ void ChordLayerSetup::drawUi()
     ui->scrollGeneral->setWidget(widgetGeneral);
     widgetGeneral->setLayout(layoutGeneral);
 
-    QLabel *gridColourLabel = new QLabel;
-    QString gridColourLabelQStr = QString("Grid colour:");
-    gridColourLabel->setText(gridColourLabelQStr);
-    layoutGeneral->addWidget(gridColourLabel, 0, 0, 1, 1, Qt::AlignLeft);
+    QLabel *lb_gridColour = new QLabel;
+    QString qstr_gridColour = QString("Grid colour:");
+    lb_gridColour->setText(qstr_gridColour);
+    layoutGeneral->addWidget(lb_gridColour, 0, 0, 1, 1, Qt::AlignLeft);
     GridColourWid = new ColourWidget(ui->scrollGeneral);
     GridColourWid->setBackgroundColour(ChordL->GridColour.r, ChordL->GridColour.g, ChordL->GridColour.b);
     layoutGeneral->addWidget(GridColourWid, 0, 1, 1, 1, Qt::AlignLeft);
@@ -71,6 +71,25 @@ void ChordLayerSetup::drawUi()
     ui->combox_chordStar->setCurrentIndex(ChordL->ChordStarType);
     ui->spb_chordStarOffset->setValue(ChordL->TurnChordCircle);
     ui->cb_dispNoteNamesStar->setChecked(ChordL->NoteNamesOnStar);
+    ui->spb_chSt_noteSize->setValue(ChordL->NoteSize); // using same value from tonnetz, could be changed
+
+    widgetChordStar = new QWidget(ui->scroll_chSt);
+    layoutChordStar = new QGridLayout(widgetChordStar);
+    ui->scroll_chSt->setWidget(widgetChordStar);
+    widgetChordStar->setLayout(layoutChordStar);
+
+    QLabel *lb_ChStColour = new QLabel;
+    QString qstr_ChStColour = QString("Chord star colour:");
+    lb_ChStColour->setText(qstr_ChStColour);
+    layoutChordStar->addWidget(lb_ChStColour, 0, 0, 1, 1, Qt::AlignLeft);
+    chStarColourWid = new ColourWidget(ui->scroll_chSt);
+    chStarColourWid->setBackgroundColour(ChordL->ChordStarColour.r, ChordL->ChordStarColour.g, ChordL->ChordStarColour.b);
+    layoutChordStar->addWidget(chStarColourWid, 0, 1, 1, 1, Qt::AlignLeft);
+    chStarColourWid->setMinimumHeight(30);
+    chStarColourWid->setMinimumWidth(240);
+    chStarColourWid->setMaximumHeight(120);
+    QObject::connect(chStarColourWid, &ColourWidget::colourChanged, [this] { chStColourChanged(); });
+
 
     // Tab Tonnetz:
     int cmb_tonnetzShape_currIndex = ChordL->TonnetzShape;
@@ -159,6 +178,17 @@ void ChordLayerSetup::gridColourChanged()
     this->ChordL->GridColour.r = r;
     this->ChordL->GridColour.g = g;
     this->ChordL->GridColour.b = b;
+}
+
+void ChordLayerSetup::chStColourChanged()
+{
+    QColor newColour = chStarColourWid->getBackgroundColour();
+    int r = newColour.red();
+    int g = newColour.green();
+    int b = newColour.blue();
+    this->ChordL->ChordStarColour.r = r;
+    this->ChordL->ChordStarColour.g = g;
+    this->ChordL->ChordStarColour.b = b;
 }
 
 void ChordLayerSetup::on_cb_allTracks_clicked()
@@ -350,6 +380,11 @@ void ChordLayerSetup::on_spb_centralMidiPitch_valueChanged(int arg1)
 }
 
 void ChordLayerSetup::on_spb_noteSize_valueChanged(int arg1)
+{
+    ChordL->NoteSize = arg1;
+}
+
+void ChordLayerSetup::on_spb_chSt_noteSize_valueChanged(int arg1)
 {
     ChordL->NoteSize = arg1;
 }

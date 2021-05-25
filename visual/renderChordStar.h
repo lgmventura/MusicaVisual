@@ -19,7 +19,7 @@ struct ChordStarOptions
 
 namespace ChordStar {
 
-void renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool *tracks, int turn = 0);
+void renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, rgb lineColour, bool *tracks, int turn = 0);
 void renderNote(Pitch note, float noteProgress, rgb colour, cv::Mat mat, cv::Point centre, int circleDiameter, ChordStarOptions opt);
 
 void dispChordDisc(Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, rgb colour, bool dispPitchNames, int turn = 0, bool accidentalSharp = 0);

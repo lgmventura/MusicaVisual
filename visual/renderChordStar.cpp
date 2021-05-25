@@ -1,6 +1,6 @@
 #include "renderChordStar.h"
 
-void ChordStar::renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, bool *tracks, int turn) // no need to pass by reference or return mat, since cv::Mat is already a reference
+void ChordStar::renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv::Point centre, int diameter, rgb lineColour, bool *tracks, int turn) // no need to pass by reference or return mat, since cv::Mat is already a reference
 {
     std::set<float> angles = chord.getAnglesDeg(type, tracks);
 
@@ -17,7 +17,7 @@ void ChordStar::renderChordStar(Chord chord, Chord::circle type, cv::Mat mat, cv
             float currAngleRad2 = currAngle2 * M_PI/180;
             cv::Point pointRel2 = cv::Point(diameter*cos(currAngleRad2), diameter*sin(currAngleRad2));
             cv::Point pointAbs2 = centre + pointRel2;
-            cv::line(mat, pointAbs, pointAbs2, cv::Scalar(100,100,100), 2);
+            cv::line(mat, pointAbs, pointAbs2, cv::Scalar(lineColour.b, lineColour.g, lineColour.r), 2);
         }
     }
 }
