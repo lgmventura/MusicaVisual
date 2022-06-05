@@ -6,6 +6,7 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QTableWidget>
+#include <QScreen> // to make new windows appear on the centre of the main screen
 
 #include "visual/layercontainer.h"
 #include "visual/renderbuffer.h"
@@ -40,6 +41,7 @@ private:
     BlockLayerSetup *Bls;
     ChordLayerSetup *Cls;
 
+    QScreen *screen;
 
     void initUI();
 

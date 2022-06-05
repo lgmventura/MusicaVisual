@@ -49,6 +49,8 @@
 
 #include "opencv2/core.hpp"
 
+#include <QScreen> // to make new windows appear on the centre of the main screen
+
 
 
 
@@ -121,6 +123,8 @@ private:
     AnimPainter *APainter;
     AnimationBar *AnimBar;
     RenderBuffer *RBuffer;
+
+    QScreen *screen;
 };
 
 #endif // MAINWINDOW_H

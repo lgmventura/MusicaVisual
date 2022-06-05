@@ -75,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
     LayerContainer layer0;
     layer0.setName("Layer 0");
     this->Layers->push_back(layer0);
+
+    screen = QGuiApplication::primaryScreen();
 }
 
 MainWindow::~MainWindow()
@@ -294,6 +296,7 @@ void MainWindow::on_actionRendering_Properties_triggered()
     {
         dwrenderprop = new RenderSetup(RProp, this, Mdt, VRec);
     }
+    dwrenderprop->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, dwrenderprop->size(), screen->geometry()));
     dwrenderprop->show();
 }
 
@@ -419,6 +422,7 @@ void MainWindow::on_actionAbout_triggered()
     //if (aboutDiag == nullptr)
     {
         aboutDiag = new About(this);
+        aboutDiag->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, aboutDiag->size(), screen->geometry()));
         aboutDiag->show();
     }
 }
@@ -454,6 +458,7 @@ void MainWindow::on_actionHow_does_it_work_triggered()
         }
         //cout << helpStr << endl;
         helpDiag_1 = new Help(helpStr, this);
+        helpDiag_1->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, helpDiag_1->size(), screen->geometry()));
         helpDiag_1->show();
     }
 }
@@ -476,5 +481,6 @@ void MainWindow::on_actionSetup_layers_triggered()
         Lstp->resize(640, 480);
     }
     Lstp->refresh();
+    Lstp->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, Lstp->size(), screen->geometry()));
     Lstp->show();
 }

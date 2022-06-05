@@ -14,6 +14,8 @@ LayerSetup::LayerSetup(std::list<LayerContainer> *layers, MusicData *mdt, Render
     this->Bls = nullptr;
     this->Cls = nullptr;
 
+    this->screen = QGuiApplication::primaryScreen();
+
     this->initUI();
 }
 
@@ -124,6 +126,7 @@ void LayerSetup::layerEditTriggered(int layer)
         // set the current layer Bl object and the mainWindow as parent, otherwise, they don't move:
         QString qWindowTitle = "Block layer setup for " + QString::fromStdString((*it).getName());
         Bls->setWindowTitle(qWindowTitle);
+        Bls->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, Bls->size(), screen->geometry()));
         Bls->show();
     }
     else if (typeIndex == LayerContainer::LayerType::ChordLayer)
@@ -140,6 +143,7 @@ void LayerSetup::layerEditTriggered(int layer)
 
         QString qWindowTitle = "Chord layer setup for " + QString::fromStdString((*it).getName());
         Cls->setWindowTitle(qWindowTitle);
+        Cls->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, Cls->size(), screen->geometry()));
         Cls->show();
     }
 }
