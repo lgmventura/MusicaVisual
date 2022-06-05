@@ -974,11 +974,12 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                         spts.pt3.y = f2int_safe(spts.y1);
                         spts.pt4.x = f2int_safe(spts.x3);
                         spts.pt4.y = f2int_safe(spts.y2);
-                        float nprogress = 1.0 - (float)(spts.x2-aw.Width/2)/(spts.x2-spts.x1);
+                        //float nprogress = 1.0 - (float)(spts.x2-aw.Width/2)/(spts.x2-spts.x1); // note progress, considering t_off
+                        float atckprogress = 1.0 - (float)(spts.pt2.x-aw.Width/2)/(spts.pt2.x-spts.x1); // note attack progress
                         cv::Point ptos[4];
                         std::vector<cv::Point> midline; // animated line over the rhombus
                         ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
-                        midline.push_back(spts.pt1); midline.push_back(cv::Point(spts.x3, spts.y3 - nprogress*(spts.y3 - spts.y1))); midline.push_back(spts.pt2); midline.push_back(cv::Point(spts.x3, spts.y3 - nprogress*(spts.y1 - spts.y3)));
+                        midline.push_back(spts.pt1); midline.push_back(cv::Point(spts.x3, spts.y3 - atckprogress*(spts.y3 - spts.y1))); midline.push_back(spts.pt2); midline.push_back(cv::Point(spts.x3, spts.y3 - atckprogress*(spts.y1 - spts.y3)));
                         const cv::Point *plpts = (const cv::Point*) cv::Mat(midline).data;
                         int npts = cv::Mat(midline).rows;
                         if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
