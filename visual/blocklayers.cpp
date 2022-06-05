@@ -9,7 +9,7 @@ const std::string BlockSetupOptions::ColourSchemes[3] = {
     "Single colour",
     "1/12 hue shift per half tone",
     "1/12 hue shift per fifth"};
-const std::string BlockSetupOptions::Shapes[20] = {
+const std::string BlockSetupOptions::Shapes[21] = {
     "Rectangle",
     "Rhombus (Diamonds)",
     "Ellipses",
@@ -29,7 +29,8 @@ const std::string BlockSetupOptions::Shapes[20] = {
     "Triangles Delta with height prop to vel",
     "Triangles > (fp)",
     "Triangles < (pf)",
-    "Attack rhombus"
+    "Attack rhombus",
+    "Circle miriapod"
 };
 const std::string BlockSetupOptions::Interconnection[2] = {
     "No connection",

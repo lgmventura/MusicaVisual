@@ -1007,6 +1007,64 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                     }
 
 
+                    // -------------------------- Draw circle miriapod (train of circles) -------------------------
+                    if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 20) // All tracks
+                    {
+                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + (float)(*it).t_middle)/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
+                        spts.pt3.x = f2int_safe(spts.x3); // Center x
+                        spts.pt3.y = f2int_safe(spts.y3); // Center y
+                        int radius = std::max(3, (int)(spts.y2 - spts.y1));
+                        int numCircles = std::max(1, (int)(spts.x3 - spts.x1)/radius);
+                        if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                for (int iC = 0; iC < numCircles; iC++) {
+                                    cv::Point centre = cv::Point(spts.x1 + iC*2*radius, spts.y3);
+                                    cv::circle( image, centre, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
+                                }
+                            else
+                                for (int iC = 0; iC < numCircles; iC++) {
+                                    cv::Point centre = cv::Point(spts.x1 + iC*2*radius, spts.y3);
+                                    cv::circle( img_buffer_sep_tracks[tnum], centre, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, -1, lineType );
+                                }
+                        else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
+                        {
+                            int numCirclesRight = std::max(1, (int)(spts.x2 - aw.Width/2)/(2*radius));
+                            if ( ! rProp.sep_render[1])
+                                //cv::fillPoly( image, pts, );
+                                for (int iC = 0; iC < numCirclesRight; iC++) {
+                                    cv::Point centre = cv::Point(aw.Width/2 + iC*2*radius, spts.y3);
+                                    cv::circle( image, centre, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*4/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*4/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*4/512}, -1, lineType );
+                                }
+                            else
+                                for (int iC = 0; iC < numCirclesRight; iC++) {
+                                    cv::Point centre = cv::Point(aw.Width/2 + iC*2*radius, spts.y3);
+                                    cv::circle( img_buffer_sep_tracks[tnum], centre, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*4/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*4/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*4/512}, -1, lineType );
+                                }
+
+                            cv::Point centre = cv::Point(aw.Width/2, spts.y3);
+                            if ( ! rProp.sep_render[0]) {
+                                cv::circle( image, centre, (int)(spts.x2-aw.Width/2+3)%(2*radius), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
+                            }
+                            else {
+                                cv::circle( img_playing_notes, centre, (int)(spts.x2-aw.Width/2+1)%(2*radius), {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, -1, lineType );
+                            }
+                        }
+                        else // The note block is after (to the left of) the center line
+                            if ( ! rProp.sep_render[1])
+                                for (int iC = 0; iC < numCircles; iC++) {
+                                    cv::Point centre = cv::Point(spts.x1 + iC*2*radius, spts.y3);
+                                    cv::circle( image, centre, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
+                                }
+                            else
+                                for (int iC = 0; iC < numCircles; iC++) {
+                                    cv::Point centre = cv::Point(spts.x1 + iC*2*radius, spts.y3);
+                                    cv::circle( img_buffer_sep_tracks[tnum], centre, radius, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/512}, 2, lineType );
+                                }
+                    }
+
+
 
                     // End shape drawings ------------------------------------------------
 

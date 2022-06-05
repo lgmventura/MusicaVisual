@@ -32,7 +32,7 @@ private:
 
 public:
     const static std::string ColourSchemes[3];
-    const static std::string Shapes[20];
+    const static std::string Shapes[21];
     const static std::string Interconnection[2];
 };
 
