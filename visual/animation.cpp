@@ -965,19 +965,20 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                     // -------------------------- Draw attack rhombus (independent of note duration) -------------------------
                     if ((*it).track == tnum && blockL.ActiveTracks[tnum] == true && blockL.shape[tnum] == 19)
                     {
-                        spts.x3 = (float)aw.Width*((-(float)aw.StartMidiTime + std::min(10.0, (double)(*it).t_middle))/((float)aw.EndMidiTime - (float)aw.StartMidiTime));
+                        spts.x3 = spts.pt1.x + std::min(((double)spts.pt2.x - spts.pt1.x)/2, 10.0);
                         spts.y3 = (float)aw.Height/2 - (float)aw.Height*((float)((*it).pitch + 0.5 - ((float)mdt.PitchMin + mdt.PitchMax)/2)/((float)mdt.PitchMax - (float)mdt.PitchMin))*aw.VZoom - rProp.vertShift;
                         spts.pt1.y = f2int_safe(spts.y3);
+                        spts.pt2.x = spts.pt1.x + std::min((double)spts.pt2.x - spts.pt1.x, 20.0);
                         spts.pt2.y = f2int_safe(spts.y3);
                         spts.pt3.x = f2int_safe(spts.x3);
                         spts.pt3.y = f2int_safe(spts.y1);
                         spts.pt4.x = f2int_safe(spts.x3);
                         spts.pt4.y = f2int_safe(spts.y2);
-                        float nprogress = 1.5 - (float)(spts.x2-aw.Width/2)/(spts.x2-spts.x1);
+                        float nprogress = 1.0 - (float)(spts.x2-aw.Width/2)/(spts.x2-spts.x1);
                         cv::Point ptos[4];
-                        std::vector<cv::Point> midline;
+                        std::vector<cv::Point> midline; // animated line over the rhombus
                         ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
-                        midline.push_back(spts.pt1); midline.push_back(spts.pt3); midline.push_back(spts.pt2);
+                        midline.push_back(spts.pt1); midline.push_back(cv::Point(spts.x3, spts.y3 - nprogress*(spts.y3 - spts.y1))); midline.push_back(spts.pt2); midline.push_back(cv::Point(spts.x3, spts.y3 - nprogress*(spts.y1 - spts.y3)));
                         const cv::Point *plpts = (const cv::Point*) cv::Mat(midline).data;
                         int npts = cv::Mat(midline).rows;
                         if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
@@ -990,11 +991,11 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                         {
                             if ( ! rProp.sep_render[0]) {
                                 cv::fillConvexPoly( image, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType );
-                                cv::polylines( image, &plpts, &npts, 1, false, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, 2, lineType );
+                                cv::polylines( image, &plpts, &npts, 1, true, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, 1, lineType );
                             }
                             else {
                                 cv::fillConvexPoly( img_playing_notes, ptos, 4, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/64, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/64}, lineType );
-                                cv::polylines( img_playing_notes, &plpts, &npts, 1, false, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).g*(*it).vel*3/512, blockL.getColour(tnum, (*it).pitch).r*(*it).vel*3/512}, 2, lineType );
+                                cv::polylines( img_playing_notes, &plpts, &npts, 1, true, {blockL.getColour(tnum, (*it).pitch).b*(*it).vel/32, blockL.getColour(tnum, (*it).pitch).g*(*it).vel/32, blockL.getColour(tnum, (*it).pitch).r*(*it).vel/32}, 1, lineType );
                             }
                         }
                         else // The note block is after (to the left of) the center line
