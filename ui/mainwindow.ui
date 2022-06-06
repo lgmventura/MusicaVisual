@@ -211,6 +211,8 @@
      <string>Tools</string>
     </property>
     <addaction name="actionSqueeze_tracks"/>
+    <addaction name="separator"/>
+    <addaction name="actionSplit_channels_into_tracks"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -297,6 +299,11 @@
   <action name="actionSetup_layers">
    <property name="text">
     <string>Setup layers…</string>
+   </property>
+  </action>
+  <action name="actionSplit_channels_into_tracks">
+   <property name="text">
+    <string>Split channels into tracks</string>
    </property>
   </action>
  </widget>
