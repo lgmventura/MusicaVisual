@@ -37,12 +37,13 @@ class MidiNote: public MidiMessages
 {
 public:
     unsigned int track;
+    unsigned int channel;
     long t_off;
     unsigned int vel;
     unsigned int pitch;
     unsigned int t_middle;// = t_on + t_off;
     unsigned int duration;
-    int is_note; // 1 for yes. This is just to avoid trash.
+    bool is_note; // 1 for yes. This is just to avoid trash.
     MidiNote();
 };
 

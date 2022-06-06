@@ -74,6 +74,7 @@ void MusicData::processMidiString(string midiMessagesText) // legacy, still usef
                 tempnote.t_on = time;
                 tempnote.pitch = stoi(messg_str.substr(3,2), nullptr, 16); // get the pitch from the midi message string
                 tempnote.track = track;
+                tempnote.channel = stoi(messg_str.substr(1,1), nullptr, 16); // channel is the second byte in hex
                 tempnote.vel = stoi(messg_str.substr(6,2), nullptr, 16); // get velocity from the midi message string
                 this->Notes.push_back(tempnote); // Insert the tempnote into the list "notes"
                 if (tempnote.pitch > this->PitchMax)
