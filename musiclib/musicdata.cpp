@@ -215,79 +215,64 @@ string MusicData::squeezeTracksMidiStr(string midiMessages)
 string MusicData::splitChannels2Tracks(string midiMessages)
 {
     std::stringstream stream; // for the whole text in the edit area
-    std::stringstream streamCopy; // copy because the orig. will be exhausted using getline
     stream.str(midiMessages);
-    streamCopy.str(midiMessages);
     string str; // one line
 
-    std::vector <unsigned int> tracks_list;
+    unsigned int tnum;
+    unsigned int chan;
 
-    std::set<unsigned int> tracks_set;
-    std::set<unsigned int>::iterator it;
-    std::pair<std::set<unsigned int>::iterator,bool> ret;
-
-    typedef std::pair<unsigned int, unsigned int> trackChan;
-    std::set<trackChan> track_chan_set;
-    std::set<trackChan>::iterator ittc;
-
-    unsigned int tnum_temp;
     std::string messg_str;
-    //std::map <unsigned short, unsigned short> tracks_association;
-    for (int i = 0; getline(stream,str,'\t'); i++)
-    {
-        if (i >= 5 && i%4 == 2) // position (column) of a track number in the plain text
-        {
-            tnum_temp = stoi(str, nullptr, 10);
-        }
-        if (i >= 5 && i%4 == 3) // getting midi message
-        {
-            //messg = stoi(str, nullptr, 16); // getting the midi message type
-            messg_str = str; // getting the midi message string
-            //ui->plainTextEdit->appendPlainText(QString::fromStdString(messg_str)); // this line is only for verification
-        }
-        if (messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) > 0) // checking midi message. Consider the track not empty if there is at least one note_on message.
-        {
-            unsigned int chan = stoi(messg_str.substr(1,1), nullptr, 16);
-            trackChan trackChan = {tnum_temp, chan};
-
-            track_chan_set.insert(trackChan);
-            tracks_list.push_back(tnum_temp); // getting the track number and inserting into the list
-            ret = tracks_set.insert(tnum_temp); // getting the track number and inserting into the set. The set is like its mathematical definition, so it doesn't get repeated items
-            //if (ret.second==false) // if no element was inserted into the set because the element is already there
-            //    it=ret.first; // to improve inserting efficiency, see http://www.cplusplus.com/reference/set/set/insert/
-        }
-    }
     std::stringstream stream2;
     std::string str2;
+    std::string aux;
 
-    for (int i = 0; getline(streamCopy,str,'\t'); i++)
+    bool newChan;
+
+    for (int i = 0; getline(stream, str, '\t'); i++)
     {
-        if (i < 5) // for the first lines
-            str2.append(str); // nothing changes
+        newChan = false;
+        if (i >= 5 && i%4 == 2) // position (column) of a track number in the plain text
+        {
+            tnum = stoi(str, nullptr, 10);
+            newChan = true;
+        }
         else if (i >= 5 && i%4 == 3) // getting midi message
         {
-            //messg = stoi(str, nullptr, 16); // getting the midi message type
             messg_str = str; // getting the midi message string
-            str2.append(str);
-            //ui->plainTextEdit->appendPlainText(QString::fromStdString(messg_str)); // this line is only for verification
-        }
-        else if (i >= 5 && i%4 != 2) // for the following changes, if it is not in the track column,
-        {
-            str2.append(str); // nothing changes
-        }
-        else //if (i >= 5 && i%4 == 2) // else
-        {
-            unsigned int chan = stoi(messg_str.substr(1,1), nullptr, 16);
-            trackChan trackChan = {stoi(str, nullptr, 10), chan};
 
-            ittc = track_chan_set.find(trackChan); // find position of the track in the new set containing only non-empty tracks
-            str2.append(std::to_string(std::distance(track_chan_set.begin(), ittc))); // insert it to the auxiliar string str2
+            if ((messg_str[0] == '9' || messg_str[0] == '8' || messg_str[0] == 'A' || messg_str[0] == 'B' || messg_str[0] == 'C' || messg_str[0] == 'D' || messg_str[0] == 'E'))// && stoi(messg_str.substr(6,2), nullptr, 16) > 0)
+            {
+                chan = stoi(messg_str.substr(1,1), nullptr, 16);
+                unsigned int trackChan = tnum*16 + chan; // There are at most 128 tracks and each can have up to 16 channels, so we can put the channels as a last hex digit (but in decimal, i.e. 16a + b) and then squeeze
+
+//                size_t pos = stream2.rfind("\t");
+//                if (pos != std::string::npos) {
+//                    str2.erase(pos);
+//                }
+
+                str2.append(std::to_string(trackChan)); // insert it to the auxiliar string str2
+    //            str2.append("\t");
+    //            str2.append("_");
+    //            str2.append(std::to_string(i));
+            }
+            else {
+                str2.append(std::to_string(tnum));
+            }
+            str2.append("\t");
+        }
+//        else //if (i >= 5 && i%4 == 2) // else
+//        {
+
+//        }
+        if (newChan == false) {
+            str2.append(str);
+            str2.append("\t");
         }
         stream2 << str2;
-        stream2 << '\t';
+        //stream2 << '\t';
 
         str2.clear();
     }
 
-    return stream2.str();
+    return squeezeTracksMidiStr(stream2.str());
 }
