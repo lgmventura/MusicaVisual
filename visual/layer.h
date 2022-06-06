@@ -9,7 +9,7 @@ public:
     Layer();
 
     bool ActiveTracks[128] = { [0 ... 127] = 1 };
-    int TColours[128][3]= { // pre-initializing the first 24 tracks, idea: use an ini file.
+    int TColours[128][3]= { // pre-initializing the first tracks, idea: use an ini file.
         {60, 60, 240} ,   //1 (index 0)
         {0, 120, 120} ,   //2
         {0, 220, 0},    //3

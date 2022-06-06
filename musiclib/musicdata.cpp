@@ -211,3 +211,81 @@ string MusicData::squeezeTracksMidiStr(string midiMessages)
 
     return stream2.str();
 }
+
+string MusicData::splitChannels2Tracks(string midiMessages)
+{
+    std::stringstream stream; // for the whole text in the edit area
+    std::stringstream streamCopy; // copy because the orig. will be exhausted using getline
+    stream.str(midiMessages);
+    streamCopy.str(midiMessages);
+    string str; // one line
+
+    struct TrackChannel{
+        unsigned int track;
+        unsigned int channel;
+
+        bool operator== (const TrackChannel& rhs) const
+        {
+            return (this->track == rhs.track && this->channel == rhs.channel);
+        }
+    };
+
+    std::vector <unsigned int> tracks_list;
+
+    std::set<TrackChannel> tracks_set;
+    std::set<TrackChannel>::iterator it;
+    std::pair<std::set<TrackChannel>::iterator,bool> ret;
+
+    unsigned short tnum_temp;
+    std::string messg_str;
+    //std::map <unsigned short, unsigned short> tracks_association;
+    for (int i = 0; getline(stream,str,'\t'); i++)
+    {
+        if (i >= 5 && i%4 == 2) // position (column) of a track number in the plain text
+        {
+            tnum_temp = stoi(str, nullptr, 10);
+        }
+        if (i >= 5 && i%4 == 3) // getting midi message
+        {
+            //messg = stoi(str, nullptr, 16); // getting the midi message type
+            messg_str = str; // getting the midi message string
+            //ui->plainTextEdit->appendPlainText(QString::fromStdString(messg_str)); // this line is only for verification
+        }
+        if (messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) > 0) // checking midi message. Consider the track not empty if there is at least one note_on message.
+        {
+            unsigned int chan = stoi(messg_str.substr(1,1), nullptr, 16);
+            TrackChannel tc;
+            tc.channel = chan;
+            tc.track = tnum_temp;
+            tracks_list.push_back(tnum_temp); // getting the track number and inserting into the list
+            ret = tracks_set.insert(tc); // getting the track number and inserting into the set. The set is like its mathematical definition, so it doesn't get repeated items
+            //if (ret.second==false) // if no element was inserted into the set because the element is already there
+            //    it=ret.first; // to improve inserting efficiency, see http://www.cplusplus.com/reference/set/set/insert/
+        }
+    }
+    std::stringstream stream2;
+    std::string str2;
+
+    for (int i = 0; getline(streamCopy,str,'\t'); i++)
+    {
+        if (i < 5) // for the first lines
+            str2.append(str); // nothing changes
+        else if (i >= 5 && i%4 != 2) // for the following changes, if it is not in the track column,
+            str2.append(str); // nothing changes
+        else //if (i >= 5 && i%4 == 2) // else
+        {
+            unsigned int chan = stoi(messg_str.substr(1,1), nullptr, 16);
+            TrackChannel tc;
+            tc.channel = chan;
+            tc.track = stoi(str, nullptr, 10);
+            it = tracks_set.find(tc); // find position of the track in the new set containing only non-empty tracks
+            str2.append(std::to_string(std::distance(tracks_set.begin(), it))); // insert it to the auxiliar string str2
+        }
+        stream2 << str2;
+        stream2 << '\t';
+
+        str2.clear();
+    }
+
+    return stream2.str();
+}

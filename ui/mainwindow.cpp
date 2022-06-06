@@ -484,3 +484,13 @@ void MainWindow::on_actionSetup_layers_triggered()
     Lstp->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, Lstp->size(), screen->geometry()));
     Lstp->show();
 }
+
+void MainWindow::on_actionSplit_channels_into_tracks_triggered()
+{
+    std::stringstream stream; // for the whole text in the edit area
+    stream << ui->plainTextEdit->toPlainText().toUtf8().constData(); // Get the entire text from the plain text input box.
+    std::string midiMessagesFromTextEdt = stream.str();
+    std::string midiMessagesSqz = Mdt->splitChannels2Tracks(midiMessagesFromTextEdt);
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->appendPlainText(QString::fromStdString(midiMessagesSqz));
+}

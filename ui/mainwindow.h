@@ -109,6 +109,8 @@ private slots:
 
     void on_actionSetup_layers_triggered();
 
+    void on_actionSplit_channels_into_tracks_triggered();
+
 private:
     Ui::MainWindow *ui;
     LayerSetup *Lstp;

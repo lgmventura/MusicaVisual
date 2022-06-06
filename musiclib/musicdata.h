@@ -29,6 +29,7 @@ public: // methods
     void nameTracksReset();
     void processMidiString(string midiMessagesText);
     string squeezeTracksMidiStr(string midiMessagesText);
+    string splitChannels2Tracks(string midiMessagesText);
 
 };
 
