@@ -215,64 +215,90 @@ string MusicData::squeezeTracksMidiStr(string midiMessages)
 string MusicData::splitChannels2Tracks(string midiMessages)
 {
     std::stringstream stream; // for the whole text in the edit area
+    std::stringstream streamCopy; // copy because the orig. will be exhausted using getline
     stream.str(midiMessages);
+    streamCopy.str(midiMessages);
     string str; // one line
 
-    unsigned int tnum;
-    unsigned int chan;
+    unsigned int tnum; // track number
+    unsigned int chan; // channel number
 
     std::string messg_str;
-    std::stringstream stream2;
-    std::string str2;
-    std::string aux;
+    std::stringstream stream2; // output stream
+    std::string str2; // output string (only one chunks between two tabs (e.g. time, delta, track or midi_message) -> will be dropped into stream2 for each of them)
 
-    bool newChan;
+    // the first thing is to create an associative map between old and new track numbers. All midi messages have a track associated with (see the track column), but not all of them have
+    // a channel. The midi messages that have a channel are only those starting with 8, 9, A, B, C, D or E. Then, the channel will be the second hex char. For instance, a message starting
+    // with 93 is a note_on (or off if vel == 0) in channel 3. So, if we have notes in track 4 on channel 6 and 7 only, then, we only want the track 4 to be split into 2 tracks, one
+    // for channel 6 and one for channel 7. If track 3 has notes only in channel 5, we do not want to split channel 3. So, we need to run through, check for all messages with a channel
+    // and map them into a new track. Since there are 128 possible tracks and 16 possible channels, we can have a unique relationship by doing new_track = 16*old_track + channel.
+    // we can only do this for messages with a channel. For those without a channel, we still want to map them into the channel, otherwise we have new_track = 16*old_track, which means
+    // we are creating a new track only for those messages, resulting in a track without notes but with auxiliar or meta messages.
+    // So, we first run through everything to map and run a second time to put the messages with channel into their unique location (16*t + c) and the ones without a channel into a location
+    // of one with channel (16*t + c_from_another_message_from_same_track).
+    // At the end, we can squeeze to get rid of empty tracks and we'll stay only with messages that have the lowest channel value among all messages within the same track, on its original track,
+    // and messages with a higher channel value on a new track following its original track. For messages without a channel, they will end up on their original tracks, which corresponds to
+    // the lowest channel.
+    std::unordered_map<unsigned int, unsigned int> track_old_new;
 
-    for (int i = 0; getline(stream, str, '\t'); i++)
+    bool tab;
+
+    for (int i = 0; getline(stream, str, '\t'); i++) // first run to map tnum (old_track) to tnum*16 + chan. Not writing anything yet.
     {
-        newChan = false;
-        if (i >= 5 && i%4 == 2) // position (column) of a track number in the plain text
+        if (i >= 5 && i%4 == 2) // position (column) of a track number in the plain text (index 2)
         {
             tnum = stoi(str, nullptr, 10);
-            newChan = true;
+        }
+        else if (i >= 5 && i%4 == 3) // getting the midi message, which is the 4th column (index 3)
+        {
+            messg_str = str; // getting the midi message string
+
+            if ((messg_str[0] == '9' || messg_str[0] == '8' || messg_str[0] == 'A' || messg_str[0] == 'B' || messg_str[0] == 'C' || messg_str[0] == 'D' || messg_str[0] == 'E')) // these are all the first bytes of a midi message that have a channel associated with
+            {
+                chan = stoi(messg_str.substr(1,1), nullptr, 16); // read out channel, which is the second byte (position 1, length 1) and transform to int (from base 16, hex)
+                track_old_new.insert(std::pair<unsigned int, unsigned int>(tnum, tnum*16 + chan)); // map old track with new provisory track tnum*16 + chan (unique track number, since chan can vary within the range 0 to 15)
+            }
+        }
+    }
+    for (int i = 0; getline(streamCopy, str, '\t'); i++) // run through everything again, now to rewrite
+    {
+        tab = true; // insert a tab or not, to avoid double tabs
+        if (i < 5) // for the first lines
+            str2.append(str); // nothing changes
+        else if (i >= 5 && i%4 == 2) // position (column) of a track number in the plain text
+        {
+            tnum = stoi(str, nullptr, 10); // get old track number
+            tab = false; // we aren't writing anything yet into the final string, so in this case, we have to skip append("\t") so we don't end up with 2 consecutive tabs
         }
         else if (i >= 5 && i%4 == 3) // getting midi message
         {
             messg_str = str; // getting the midi message string
 
-            if ((messg_str[0] == '9' || messg_str[0] == '8' || messg_str[0] == 'A' || messg_str[0] == 'B' || messg_str[0] == 'C' || messg_str[0] == 'D' || messg_str[0] == 'E'))// && stoi(messg_str.substr(6,2), nullptr, 16) > 0)
+            if ((messg_str[0] == '9' || messg_str[0] == '8' || messg_str[0] == 'A' || messg_str[0] == 'B' || messg_str[0] == 'C' || messg_str[0] == 'D' || messg_str[0] == 'E')) // these are all the first bytes of a midi message that have a channel associated with
             {
-                chan = stoi(messg_str.substr(1,1), nullptr, 16);
-                unsigned int trackChan = tnum*16 + chan; // There are at most 128 tracks and each can have up to 16 channels, so we can put the channels as a last hex digit (but in decimal, i.e. 16a + b) and then squeeze
-
-//                size_t pos = stream2.rfind("\t");
-//                if (pos != std::string::npos) {
-//                    str2.erase(pos);
-//                }
-
-                str2.append(std::to_string(trackChan)); // insert it to the auxiliar string str2
-    //            str2.append("\t");
-    //            str2.append("_");
-    //            str2.append(std::to_string(i));
+                chan = stoi(messg_str.substr(1,1), nullptr, 16); // read out channel, which is the second byte (position 1, length 1) and transform to int (from base 16, hex)
+                str2.append(std::to_string(tnum*16 + chan)); // write new provisory track number on the string, which is 16*tnum + chan (chan can vary between 0 and 15). The squeeze later will transform the provisory into the final track number.
             }
-            else {
-                str2.append(std::to_string(tnum));
+            else // any other message which doesn't have a channel associated
+            {
+                str2.append(std::to_string(track_old_new[tnum])); // insert first track occurence from the map, so these messages still end up in an existing track from the new ones, which are defined by 16*tnum + chan.
             }
-            str2.append("\t");
+            str2.append("\t"); // we appended the (new) track number only now after checking them from message or from map. We need a tabulator before appending the message itself.
+            str2.append(messg_str); // append the entire message
         }
-//        else //if (i >= 5 && i%4 == 2) // else
-//        {
-
-//        }
-        if (newChan == false) {
-            str2.append(str);
-            str2.append("\t");
+        else // no header, no track number, no message. Is either time or delta
+        {
+            str2.append(str); // just append, nothing changes
         }
-        stream2 << str2;
-        //stream2 << '\t';
+        stream2 << str2; // put chunk str2 into stream2, which is the whole text
+        if (tab == true) {
+            stream2 << '\t';
+        }
 
-        str2.clear();
+        str2.clear(); // already in stream2. Clearing to get the next one.
     }
 
+    // now we can squeeze to remove empty tracks, since 16*tnum + chan will generate a lot of empty tracks,
+    // since normally only one or few channels are used per track:
     return squeezeTracksMidiStr(stream2.str());
 }
