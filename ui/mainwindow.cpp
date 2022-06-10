@@ -249,6 +249,11 @@ void MainWindow::on_pb_animation_clicked()
     cv::Mat mat_zeros = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     // then we declare the vector of the same type, but without declaring its size yet:
     std::vector <cv::Mat> *img_buffer_sep_tracks = new std::vector <cv::Mat>;
+
+    cv::Mat *playingNote = new cv::Mat;
+    *playingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    cv::Mat *movingNote = new cv::Mat;
+    *movingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     // and now we use the std::vector.push_back method to insert elements at the end of the vector, doing it for every track (so, I use the for). Then, inside this funcion, I clone the matrix.
     // the method clone() for cv::Mat creates a copy rather than an instance of the matrix. This is how I ensure I am giving having different matrices.
     for (unsigned int kz = 0; kz < Mdt->NTracks; kz++)
@@ -259,7 +264,7 @@ void MainWindow::on_pb_animation_clicked()
     APainter = new AnimPainter(this->RBuffer);
 
     cv::namedWindow("Animation");
-    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, window_width, window_height, ui->dsb_fps->value(), RProp, Layers, APainter, AState, VRec);
+    AnimBar = new AnimationBar(0, (char*)"Animation", Mdt, image_win2, img_buffer_sep_tracks, playingNote, movingNote, window_width, window_height, ui->dsb_fps->value(), RProp, Layers, APainter, AState, VRec);
     AnimBar->show();
 
     if(ui->edt_videoOutput->text().toStdString().size() > 0)

@@ -29,7 +29,7 @@ void AnimPainter::paintBlocksNoShading(cv::Mat image, MusicData mdt, ShapePoints
     }
 }
 
-void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, AnimWindow aw, BlockLayers blockL, ChordLayers chordL, RenderP rProp, LayerContainer::LayerType ltype) // this function is called for every frame. aw.StartMidiTime is the time in the left side of the window, aw.EndMidiTime, at the right. These depend on playback position and zoom.
+void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, cv::Mat img_playing_notes, cv::Mat img_moving_notes, AnimWindow aw, BlockLayers blockL, ChordLayers chordL, RenderP rProp, LayerContainer::LayerType ltype) // this function is called for every frame. aw.StartMidiTime is the time in the left side of the window, aw.EndMidiTime, at the right. These depend on playback position and zoom.
 {
     // this function loops through all notes and call corresponding functions to paint them
     // finding current global zoom:
@@ -53,8 +53,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
     int x_max = aw.Width + 5000, y_max = aw.Height + 50;
     //int max_duration = window_width + 1000;
     //std::cout << "Paint blocks! " << Mdt->PitchMin << ' ' << pitch_max << endl;
-    cv::Mat img_playing_notes = cv::Mat::zeros(aw.Height, aw.Width, CV_8UC3 );
-    cv::Mat img_moving_notes = cv::Mat::zeros(aw.Height, aw.Width, CV_8UC3 );
+
     //cv::Mat img_buffer_sep_tracks[tracks_count] = cv::Mat::zeros( aw.Height, window_width, CV_8UC3 ); // Qt 5.7, OpenCV 2.4 (which uses C++98)
     //cv::Mat img_buffer_sep_tracks[tracks_count] = {cv::Mat::zeros( aw.Height, window_width, CV_8UC3 )}; // this does not solve for Qt 5.9, OpenCV 4.0 (which uses C++11)
     // http://answers.opencv.org/question/31665/creating-an-array-of-mats-of-size-n/ - Static arrays need the size for their construction at compile time. If you want to have the size controlled at run-time, you need to either create the mat-array via new or use std::vector (I'd prefer the latter one, since when using new you'll also need to call delete[] and it also prevents you from writing at non existent memory)
@@ -1267,7 +1266,7 @@ void AnimPainter::paintChords(Chord chord, float chordProgress, cv::Mat image, A
     // ============ Displaying tonnetz in function paint notes, since notes are not interdependent ==============
 }
 
-void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat> img_buffer_sep_tracks, AnimWindow aw, std::list<LayerContainer> layers, RenderP renderS)
+void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat> img_buffer_sep_tracks, cv::Mat playingNote, cv::Mat movingNote, AnimWindow aw, std::list<LayerContainer> layers, RenderP renderS)
 {
     std::list<LayerContainer>::reverse_iterator lit = layers.rbegin();
     for(int iLayer = 0; lit != layers.rend(); lit++, iLayer++)
@@ -1275,7 +1274,7 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
         // (*it) is now the layer of the current iteration
         if ((*lit).LType == LayerContainer::LayerType::BlockLayer && (*lit).LayerActive == true)
         {
-            this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, (*lit).Cl, renderS, LayerContainer::BlockLayer);
+            this->paintNotes(mdt, image, img_buffer_sep_tracks, playingNote, movingNote, aw, (*lit).Bl, (*lit).Cl, renderS, LayerContainer::BlockLayer);
         }
         else if ((*lit).LType == LayerContainer::LayerType::ChordLayer && (*lit).LayerActive == true)
         {
@@ -1316,7 +1315,7 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
                 {
                     float chordProgress = (float)(aw.CurrPosMiddle - chordWT.Start_time)/(chordWT_next.Start_time - chordWT.Start_time);
                     this->paintChords((*cit).chord, chordProgress, image, aw, (*lit).Cl, renderS);
-                    this->paintNotes(mdt, image, img_buffer_sep_tracks, aw, (*lit).Bl, (*lit).Cl, renderS, LayerContainer::ChordLayer);
+                    this->paintNotes(mdt, image, img_buffer_sep_tracks, playingNote, movingNote, aw, (*lit).Bl, (*lit).Cl, renderS, LayerContainer::ChordLayer);
                     break;
                 }
             }
