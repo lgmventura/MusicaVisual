@@ -2,8 +2,8 @@
 #include <iostream> // only for debugging
 
 
-const std::string PitchDict::LettersFlat[12]  =        {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
-const std::string PitchDict::LettersSharp[12] =        {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+const char PitchDict::LettersFlat[12][3]  =        {"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"};
+const char PitchDict::LettersSharp[12][3] =        {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 const std::string PitchDict::GermanicNamesFlat[12]  =  {"C", "Des", "D", "Es", "E", "F", "Ges", "G", "Aes", "A", "B", "H"};
 const std::string PitchDict::GermanicNamesSharp[12] =  {"C", "Cis", "D", "Dis", "E", "F", "Fis", "G", "Gis", "A", "Ais", "B"};
 const std::string PitchDict::SolfeggioNamesFlat[12]  = {"Do", "Re bemol", "Re", "Mi bemol", "Mi", "Fa", "Sol bemol", "Sol", "La bemol", "La", "Si bemol", "Si"};
@@ -18,10 +18,10 @@ Pitch::Pitch(int midi)
     Pitch::DistanceFromLastC = midi%12;
     Pitch::LetterFlat = PitchDict::LettersFlat[midi%12];
     Pitch::LetterSharp = PitchDict::LettersSharp[midi%12];
-    Pitch::GermanicFlat = PitchDict::GermanicNamesFlat[midi%12];
-    Pitch::GermanicSharp = PitchDict::GermanicNamesSharp[midi%12];
-    Pitch::SolfeggioFlat = PitchDict::SolfeggioNamesFlat[midi%12];
-    Pitch::SolfeggioSharp = PitchDict::SolfeggioNamesSharp[midi%12]; // pitch::DistanceFromLastC
+//    Pitch::GermanicFlat = PitchDict::GermanicNamesFlat[midi%12];
+//    Pitch::GermanicSharp = PitchDict::GermanicNamesSharp[midi%12];
+//    Pitch::SolfeggioFlat = PitchDict::SolfeggioNamesFlat[midi%12];
+//    Pitch::SolfeggioSharp = PitchDict::SolfeggioNamesSharp[midi%12]; // pitch::DistanceFromLastC
 }
 bool Pitch::isValidPitch()
 {

@@ -18,8 +18,8 @@ private:
     PitchDict() {}
 
 public:
-    const static std::string LettersFlat[12];
-    const static std::string LettersSharp[12];
+    const static char LettersFlat[12][3];
+    const static char LettersSharp[12][3];
     const static std::string GermanicNamesFlat[12];
     const static std::string GermanicNamesSharp[12];
     const static std::string SolfeggioNamesFlat[12];
@@ -51,10 +51,10 @@ private:
     int DistanceFromLastC; // 0 to 11
     std::string LetterFlat; // A to G
     std::string LetterSharp;
-    std::string GermanicFlat; // A to H
-    std::string GermanicSharp;
-    std::string SolfeggioFlat; // Do to Si
-    std::string SolfeggioSharp;
+//    std::string GermanicFlat; // A to H
+//    std::string GermanicSharp;
+//    std::string SolfeggioFlat; // Do to Si
+//    std::string SolfeggioSharp;
 
     int MidiTrack = -1; // if not set or not relevant, the default value is -1
 

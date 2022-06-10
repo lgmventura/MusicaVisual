@@ -196,6 +196,8 @@
     <addaction name="separator"/>
     <addaction name="actionSave_settings_as"/>
     <addaction name="actionLoad_settings"/>
+    <addaction name="separator"/>
+    <addaction name="actionProcess_chords"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -304,6 +306,17 @@
   <action name="actionSplit_channels_into_tracks">
    <property name="text">
     <string>Split channels into tracks</string>
+   </property>
+  </action>
+  <action name="actionProcess_chords">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Process chords</string>
    </property>
   </action>
  </widget>

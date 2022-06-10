@@ -76,6 +76,8 @@ MainWindow::MainWindow(QWidget *parent) :
     layer0.setName("Layer 0");
     this->Layers->push_back(layer0);
 
+    this->ProcessChords = true;
+
     screen = QGuiApplication::primaryScreen();
 }
 
@@ -201,8 +203,11 @@ void MainWindow::on_pb_process_clicked() // Process button
 
     // Processing chords:
     Chords chords;
-    chords.process_chords(this->Mdt->Notes, true);
-    Mdt->GChords = chords;
+    if (this->ProcessChords)
+    {
+        chords.process_chords(this->Mdt->Notes, true);
+        Mdt->GChords = chords;
+    }
 }
 
 
@@ -498,4 +503,9 @@ void MainWindow::on_actionSplit_channels_into_tracks_triggered()
     std::string midiMessagesSqz = Mdt->splitChannels2Tracks(midiMessagesFromTextEdt);
     ui->plainTextEdit->clear();
     ui->plainTextEdit->appendPlainText(QString::fromStdString(midiMessagesSqz));
+}
+
+void MainWindow::on_actionProcess_chords_toggled(bool arg1)
+{
+    this->ProcessChords = arg1;
 }

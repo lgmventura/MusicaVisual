@@ -111,6 +111,8 @@ private slots:
 
     void on_actionSplit_channels_into_tracks_triggered();
 
+    void on_actionProcess_chords_toggled(bool arg1);
+
 private:
     Ui::MainWindow *ui;
     LayerSetup *Lstp;
@@ -125,6 +127,7 @@ private:
     AnimPainter *APainter;
     AnimationBar *AnimBar;
     RenderBuffer *RBuffer;
+    bool ProcessChords; // option, because it lets everything slower
 
     QScreen *screen;
 };

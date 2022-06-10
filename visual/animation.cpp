@@ -1305,6 +1305,9 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
                 TonnetzRenderer::renderGrid(image, centre, RBuffer->TonnetzGridPositions, (*lit).Cl.CellDiameter, (*lit).Cl.HexLayout, (*lit).Cl.TonnetzShape, (*lit).Cl.GridColour);
             }
 
+
+            this->paintNotes(mdt, image, img_buffer_sep_tracks, playingNote, movingNote, aw, (*lit).Bl, (*lit).Cl, renderS, LayerContainer::ChordLayer);
+
             std::list<ChordWithTime>::iterator cit;
             std::list<ChordWithTime>::iterator cit_next;
             for (cit = mdt.GChords.ChordsWTime.begin(), cit_next = ++mdt.GChords.ChordsWTime.begin(); cit_next!=(mdt.GChords.ChordsWTime.end()); ++cit, ++cit_next) // run through all chords
@@ -1315,7 +1318,6 @@ void AnimPainter::paintLayers(MusicData mdt, cv::Mat image, std::vector<cv::Mat>
                 {
                     float chordProgress = (float)(aw.CurrPosMiddle - chordWT.Start_time)/(chordWT_next.Start_time - chordWT.Start_time);
                     this->paintChords((*cit).chord, chordProgress, image, aw, (*lit).Cl, renderS);
-                    this->paintNotes(mdt, image, img_buffer_sep_tracks, playingNote, movingNote, aw, (*lit).Bl, (*lit).Cl, renderS, LayerContainer::ChordLayer);
                     break;
                 }
             }
