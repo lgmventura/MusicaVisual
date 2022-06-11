@@ -19,6 +19,7 @@ void MusicData::nameTracksReset()
 void MusicData::processMidiString(string midiMessagesText) // legacy, still usefull for debug. ToDo: write new function, direct from import
 {
     unsigned int delta, track;
+    unsigned int id = 0;
     unsigned long time = 0;
     int messg;
     // reset track names, since we are processing a new midi file, to avoid garbage (old names, if you load a new midi file):
@@ -76,6 +77,8 @@ void MusicData::processMidiString(string midiMessagesText) // legacy, still usef
                 tempnote.track = track;
                 tempnote.channel = stoi(messg_str.substr(1,1), nullptr, 16); // channel is the second byte in hex
                 tempnote.vel = stoi(messg_str.substr(6,2), nullptr, 16); // get velocity from the midi message string
+                tempnote.id = id;
+                id++;
                 this->Notes.push_back(tempnote); // Insert the tempnote into the list "notes"
                 if (tempnote.pitch > this->PitchMax)
                 {
