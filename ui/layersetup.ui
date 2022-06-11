@@ -18,7 +18,7 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="5" column="0">
+    <item row="6" column="0">
      <spacer name="verticalSpacer_2">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -31,14 +31,14 @@
       </property>
      </spacer>
     </item>
-    <item row="0" column="0">
-     <widget class="QPushButton" name="pb_moveUp">
+    <item row="1" column="0">
+     <widget class="QPushButton" name="pb_moveDown">
       <property name="text">
-       <string>▲</string>
+       <string>▼</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
+    <item row="5" column="0">
      <widget class="QPushButton" name="pb_removeLayer">
       <property name="text">
        <string>Remove</string>
@@ -52,10 +52,10 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QPushButton" name="pb_moveDown">
+    <item row="0" column="0">
+     <widget class="QPushButton" name="pb_moveUp">
       <property name="text">
-       <string>▼</string>
+       <string>▲</string>
       </property>
      </widget>
     </item>
@@ -71,6 +71,13 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="4" column="0">
+     <widget class="QPushButton" name="pb_cloneLayer">
+      <property name="text">
+       <string>Clone</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

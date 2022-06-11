@@ -176,6 +176,40 @@ void LayerSetup::on_pb_addLayer_clicked()
     this->connectTableWidgets();
 }
 
+void LayerSetup::on_pb_cloneLayer_clicked()
+{
+    LayerContainer newLayer;
+    int row = this->tableWidget->currentRow();
+    if (row >= 0)
+    {
+        std::list<LayerContainer>::iterator it = Layers->begin();
+        std::advance(it, row);
+        newLayer = *it;
+    }
+    int numLayers = Layers->size();
+    newLayer.setName("Layer " + std::to_string(numLayers));
+    row = this->tableWidget->currentRow();
+    if (row == -1) {row = 0;} // if all were deleted, currentRow returns -1
+    std::list<LayerContainer>::iterator it = Layers->begin();
+    for (int iPos = 0; iPos < row; iPos++) { it++; }
+    this->Layers->insert(it, newLayer);
+    this->tableWidget->insertRow(row);
+
+    // creating "blocks active" checkbox:
+    this->insertLayerActiveCheckBox(row, &newLayer);
+
+    // inserting layer name:
+    this->insertLayerNameLineEdit(row, &newLayer);
+
+    // inserting layer type dropdown menu:
+    this->insertLayerTypeComboBox(row, &newLayer);
+
+    // inserting layer edit push button:
+    this->insertLayerSetupPButton(row, &newLayer);
+
+    // connecting:
+    this->connectTableWidgets();
+}
 
 void LayerSetup::on_pb_removeLayer_clicked()
 {
@@ -323,3 +357,4 @@ void LayerSetup::refresh()
     }
     this->initUI();
 }
+

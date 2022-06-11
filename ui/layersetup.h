@@ -61,6 +61,7 @@ private slots:
     void layerEditTriggered(int layer);
 
     void on_pb_addLayer_clicked();
+    void on_pb_cloneLayer_clicked();
 
     void on_pb_removeLayer_clicked();
 
