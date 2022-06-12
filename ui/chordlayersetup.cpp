@@ -1,14 +1,14 @@
 #include "chordlayersetup.h"
 #include "ui_chordlayersetup.h"
 
-ChordLayerSetup::ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, RenderBuffer *rBuffer, QWidget *parent) :
+ChordLayerSetup::ChordLayerSetup(MusicData *mdt, LayerContainer *layerCt, RenderBuffer *rBuffer, QWidget *parent) :
     QDockWidget(parent),
     ui(new Ui::ChordLayerSetup)
 {
     ui->setupUi(this);
 
     this->Mdt = mdt;
-    this->ChordL = chordL;
+    this->LayerCt = layerCt;
 
     this->RBuffer = rBuffer;
 
@@ -20,9 +20,9 @@ ChordLayerSetup::~ChordLayerSetup()
     delete ui;
 }
 
-void ChordLayerSetup::changeChordLayer(ChordLayers *newChordL)
+void ChordLayerSetup::changeChordLayer(LayerContainer *newLayerCt)
 {
-    this->ChordL = newChordL;
+    this->LayerCt = newLayerCt;
     this->drawUi();
 }
 
@@ -30,7 +30,7 @@ void ChordLayerSetup::drawUi()
 {
     // updating UI elements:
     // Tab Type/Size:
-    int cb_type_currIndex = ChordL->CLType;
+    int cb_type_currIndex = LayerCt->Cl.CLType;
     ui->cb_type->clear();
     int numTypes = sizeof(ChordSetupOptions::ChordLayerTypes)/sizeof(ChordSetupOptions::ChordLayerTypes[0]);
     for (int iType = 0; iType < numTypes; iType++)
@@ -39,10 +39,10 @@ void ChordLayerSetup::drawUi()
         ui->cb_type->addItem(qItem);
     }
     ui->cb_type->setCurrentIndex(cb_type_currIndex);
-    ui->dspb_posx->setValue(this->ChordL->x_pos);
-    ui->dspb_posy->setValue(this->ChordL->y_pos);
-    ui->spb_sizew->setValue(this->ChordL->w);
-    ui->spb_sizeh->setValue(this->ChordL->h);
+    ui->dspb_posx->setValue(this->LayerCt->Cl.x_pos);
+    ui->dspb_posy->setValue(this->LayerCt->Cl.y_pos);
+    ui->spb_sizew->setValue(this->LayerCt->Cl.w);
+    ui->spb_sizeh->setValue(this->LayerCt->Cl.h);
 
     widgetGeneral = new QWidget(ui->scrollGeneral);
     layoutGeneral = new QGridLayout(widgetGeneral);
@@ -54,7 +54,7 @@ void ChordLayerSetup::drawUi()
     lb_gridColour->setText(qstr_gridColour);
     layoutGeneral->addWidget(lb_gridColour, 0, 0, 1, 1, Qt::AlignLeft);
     GridColourWid = new ColourWidget(ui->scrollGeneral);
-    GridColourWid->setBackgroundColour(ChordL->GridColour.r, ChordL->GridColour.g, ChordL->GridColour.b);
+    GridColourWid->setBackgroundColour(LayerCt->Cl.GridColour.r, LayerCt->Cl.GridColour.g, LayerCt->Cl.GridColour.b);
     layoutGeneral->addWidget(GridColourWid, 0, 1, 1, 1, Qt::AlignLeft);
     GridColourWid->setMinimumHeight(30);
     GridColourWid->setMinimumWidth(240);
@@ -65,13 +65,13 @@ void ChordLayerSetup::drawUi()
     this->drawTabTracks();
 
     // Tab note names:
-    ui->cb_sharpFlat->setCurrentIndex((int) ChordL->AccidentalSharp);
+    ui->cb_sharpFlat->setCurrentIndex((int) LayerCt->Cl.AccidentalSharp);
 
     // Tab chord star:
-    ui->combox_chordStar->setCurrentIndex(ChordL->ChordStarType);
-    ui->spb_chordStarOffset->setValue(ChordL->TurnChordCircle);
-    ui->cb_dispNoteNamesStar->setChecked(ChordL->NoteNamesOnStar);
-    ui->spb_chSt_noteSize->setValue(ChordL->NoteSize); // using same value from tonnetz, could be changed
+    ui->combox_chordStar->setCurrentIndex(LayerCt->Cl.ChordStarType);
+    ui->spb_chordStarOffset->setValue(LayerCt->Cl.TurnChordCircle);
+    ui->cb_dispNoteNamesStar->setChecked(LayerCt->Cl.NoteNamesOnStar);
+    ui->spb_chSt_noteSize->setValue(LayerCt->Cl.NoteSize); // using same value from tonnetz, could be changed
 
     widgetChordStar = new QWidget(ui->scroll_chSt);
     layoutChordStar = new QGridLayout(widgetChordStar);
@@ -83,7 +83,7 @@ void ChordLayerSetup::drawUi()
     lb_ChStColour->setText(qstr_ChStColour);
     layoutChordStar->addWidget(lb_ChStColour, 0, 0, 1, 1, Qt::AlignLeft);
     chStarColourWid = new ColourWidget(ui->scroll_chSt);
-    chStarColourWid->setBackgroundColour(ChordL->ChordStarColour.r, ChordL->ChordStarColour.g, ChordL->ChordStarColour.b);
+    chStarColourWid->setBackgroundColour(LayerCt->Cl.ChordStarColour.r, LayerCt->Cl.ChordStarColour.g, LayerCt->Cl.ChordStarColour.b);
     layoutChordStar->addWidget(chStarColourWid, 0, 1, 1, 1, Qt::AlignLeft);
     chStarColourWid->setMinimumHeight(30);
     chStarColourWid->setMinimumWidth(240);
@@ -92,7 +92,7 @@ void ChordLayerSetup::drawUi()
 
 
     // Tab Tonnetz:
-    int cmb_tonnetzShape_currIndex = ChordL->TonnetzShape;
+    int cmb_tonnetzShape_currIndex = LayerCt->Cl.TonnetzShape;
     ui->cmb_tonnetzShape->clear();
     int numShapes = sizeof(ChordSetupOptions::TonnetzShapes)/sizeof(ChordSetupOptions::TonnetzShapes[0]);
     for (int iShape = 0; iShape < numShapes; iShape++) {
@@ -100,10 +100,10 @@ void ChordLayerSetup::drawUi()
         ui->cmb_tonnetzShape->addItem(qItem);
     }
     ui->cmb_tonnetzShape->setCurrentIndex(cmb_tonnetzShape_currIndex);
-    ui->spb_centralMidiPitch->setValue(ChordL->CentralMidi);
-    ui->spb_cellSize->setValue(ChordL->CellDiameter);
-    ui->spb_gridCellSize->setValue(ChordL->HexLayout.size.x);
-    ui->spb_noteSize->setValue(ChordL->NoteSize);
+    ui->spb_centralMidiPitch->setValue(LayerCt->Cl.CentralMidi);
+    ui->spb_cellSize->setValue(LayerCt->Cl.CellDiameter);
+    ui->spb_gridCellSize->setValue(LayerCt->Cl.HexLayout.size.x);
+    ui->spb_noteSize->setValue(LayerCt->Cl.NoteSize);
     this->calculateTonnetzRadius();
 }
 
@@ -130,7 +130,7 @@ void ChordLayerSetup::drawTabTracks()
         QCheckBox *cb_trackActive = new QCheckBox(trackName, mainWidgetTracks);
 //        cb_trackActive->setMinimumHeight(25);
 //        cb_trackActive->setMinimumWidth(150);
-        cb_trackActive->setChecked(ChordL->ActiveTracks[iTrack]);
+        cb_trackActive->setChecked(LayerCt->Cl.ActiveTracks[iTrack]);
         QObject::connect(cb_trackActive, &QCheckBox::toggled, [this, iTrack] { TrackVisibilityChanged(iTrack); });
         QObject::connect(this, SIGNAL(changeChordStarTrackActive(int)), this, SLOT(TrackVisibilityChanged(int)));
         Cb_activeTracks->push_back(cb_trackActive);
@@ -138,7 +138,7 @@ void ChordLayerSetup::drawTabTracks()
 
         // Colour widget:
         ColourWidget *wid_colour = new ColourWidget(mainWidgetTracks);
-        wid_colour->setBackgroundColour(ChordL->getCv(iTrack,0), ChordL->getCv(iTrack,1), ChordL->getCv(iTrack,2));
+        wid_colour->setBackgroundColour(LayerCt->getCv(iTrack,0), LayerCt->getCv(iTrack,1), LayerCt->getCv(iTrack,2));
         layoutTracks->addWidget(wid_colour, iTrack, 1, 1, 1, Qt::AlignLeft);
         wid_colour->setMinimumHeight(rowH);
         wid_colour->setMinimumWidth(2*rowH);
@@ -152,7 +152,7 @@ void ChordLayerSetup::drawTabTracks()
 void ChordLayerSetup::TrackVisibilityChanged(int track)
 {
     bool state = Cb_activeTracks->at(track)->isChecked();
-    this->ChordL->ActiveTracks[track] = state;
+    this->LayerCt->Cl.ActiveTracks[track] = state;
 
     this->updateCbAllTracks();
 }
@@ -164,9 +164,9 @@ void ChordLayerSetup::colourChanged(int track)
     int r = newColour.red();
     int g = newColour.green();
     int b = newColour.blue();
-    this->ChordL->setCv(track, 0, r);
-    this->ChordL->setCv(track, 1, g);
-    this->ChordL->setCv(track, 2, b);
+    this->LayerCt->setCv(track, 0, r);
+    this->LayerCt->setCv(track, 1, g);
+    this->LayerCt->setCv(track, 2, b);
 }
 
 void ChordLayerSetup::gridColourChanged()
@@ -175,9 +175,9 @@ void ChordLayerSetup::gridColourChanged()
     int r = newColour.red();
     int g = newColour.green();
     int b = newColour.blue();
-    this->ChordL->GridColour.r = r;
-    this->ChordL->GridColour.g = g;
-    this->ChordL->GridColour.b = b;
+    this->LayerCt->Cl.GridColour.r = r;
+    this->LayerCt->Cl.GridColour.g = g;
+    this->LayerCt->Cl.GridColour.b = b;
 }
 
 void ChordLayerSetup::chStColourChanged()
@@ -186,9 +186,9 @@ void ChordLayerSetup::chStColourChanged()
     int r = newColour.red();
     int g = newColour.green();
     int b = newColour.blue();
-    this->ChordL->ChordStarColour.r = r;
-    this->ChordL->ChordStarColour.g = g;
-    this->ChordL->ChordStarColour.b = b;
+    this->LayerCt->Cl.ChordStarColour.r = r;
+    this->LayerCt->Cl.ChordStarColour.g = g;
+    this->LayerCt->Cl.ChordStarColour.b = b;
 }
 
 void ChordLayerSetup::on_cb_allTracks_clicked()
@@ -205,7 +205,7 @@ void ChordLayerSetup::updateCbAllTracks()
     unsigned int numVisibleTracks = 0;
     for (unsigned int iTrack = 0; iTrack < this->Mdt->NTracks; iTrack++)
     {
-        if (this->ChordL->ActiveTracks[iTrack] == true)
+        if (this->LayerCt->Cl.ActiveTracks[iTrack] == true)
         {
             numVisibleTracks++;
         }
@@ -253,32 +253,32 @@ void ChordLayerSetup::on_cb_allTracks_stateChanged(int arg1)
 
 void ChordLayerSetup::calculateTonnetzRadius()
 {
-    this->RBuffer->prepareTonnetzGrid(Mdt->PitchMin, Mdt->PitchMax, ChordL->CentralMidi);
+    this->RBuffer->prepareTonnetzGrid(Mdt->PitchMin, Mdt->PitchMax, LayerCt->Cl.CentralMidi);
 }
 
 void ChordLayerSetup::on_dspb_posx_valueChanged(double arg1)
 {
-    this->ChordL->x_pos = arg1;
+    this->LayerCt->Cl.x_pos = arg1;
 }
 
 void ChordLayerSetup::on_dspb_posy_valueChanged(double arg1)
 {
-    this->ChordL->y_pos = arg1;
+    this->LayerCt->Cl.y_pos = arg1;
 }
 
 void ChordLayerSetup::on_spb_sizew_valueChanged(int arg1)
 {
-    this->ChordL->w = arg1;
+    this->LayerCt->Cl.w = arg1;
 }
 
 void ChordLayerSetup::on_spb_sizeh_valueChanged(int arg1)
 {
-    this->ChordL->h = arg1;
+    this->LayerCt->Cl.h = arg1;
 }
 
 void ChordLayerSetup::on_cb_type_currentIndexChanged(int index)
 {
-    this->ChordL->CLType = ChordLayers::ChordLayerType(index);
+    this->LayerCt->Cl.CLType = ChordLayers::ChordLayerType(index);
 }
 
 
@@ -330,72 +330,72 @@ void ChordLayerSetup::on_cb_type_currentIndexChanged(int index)
 void ChordLayerSetup::on_cb_sharpFlat_currentIndexChanged(int index)
 {
     if (index == 0)
-            ChordL->AccidentalSharp = false;
+            LayerCt->Cl.AccidentalSharp = false;
         else if (index == 1)
-            ChordL->AccidentalSharp = true;
+            LayerCt->Cl.AccidentalSharp = true;
 }
 
 void ChordLayerSetup::on_combox_chordStar_currentIndexChanged(int index)
 {
         if (index == 0)
         {
-            ChordL->ChordStarType = Chord::circleOfSemitones;
+            LayerCt->Cl.ChordStarType = Chord::circleOfSemitones;
         }
         else if (index == 1)
         {
-            ChordL->ChordStarType = Chord::circleOfFifths;
+            LayerCt->Cl.ChordStarType = Chord::circleOfFifths;
         }
 }
 
 void ChordLayerSetup::on_spb_chordStarOffset_valueChanged(int arg1)
 {
-    ChordL->TurnChordCircle = arg1;
+    LayerCt->Cl.TurnChordCircle = arg1;
 }
 
 void ChordLayerSetup::on_cb_dispNoteNamesStar_toggled(bool checked)
 {
-    ChordL->NoteNamesOnStar = checked;
+    LayerCt->Cl.NoteNamesOnStar = checked;
 }
 
 
 void ChordLayerSetup::on_cmb_tonnetzShape_currentIndexChanged(int index)
 {
-    ChordL->TonnetzShape = TonnetzOptions::Shape(index);
+    LayerCt->Cl.TonnetzShape = TonnetzOptions::Shape(index);
 }
 
 void ChordLayerSetup::on_spb_gridCellSize_valueChanged(int arg1)
 {
-    ChordL->setTonnetzGridDiameter(arg1);
+    LayerCt->Cl.setTonnetzGridDiameter(arg1);
 }
 
 void ChordLayerSetup::on_spb_cellSize_valueChanged(int arg1)
 {
-    ChordL->CellDiameter = arg1;
+    LayerCt->Cl.CellDiameter = arg1;
 }
 
 void ChordLayerSetup::on_spb_centralMidiPitch_valueChanged(int arg1)
 {
-    ChordL->CentralMidi = arg1;
+    LayerCt->Cl.CentralMidi = arg1;
     this->calculateTonnetzRadius();
 }
 
 void ChordLayerSetup::on_spb_noteSize_valueChanged(int arg1)
 {
-    ChordL->NoteSize = arg1;
+    LayerCt->Cl.NoteSize = arg1;
 }
 
 void ChordLayerSetup::on_spb_chSt_noteSize_valueChanged(int arg1)
 {
-    ChordL->NoteSize = arg1;
+    LayerCt->Cl.NoteSize = arg1;
 }
 
 
 void ChordLayerSetup::on_cb_noteFadeOut_toggled(bool checked)
 {
-    ChordL->NoteFadeOut = checked;
+    LayerCt->Cl.NoteFadeOut = checked;
 }
 
 void ChordLayerSetup::on_checkBox_toggled(bool checked)
 {
-    ChordL->NoteCollapse = checked;
+    LayerCt->Cl.NoteCollapse = checked;
 }

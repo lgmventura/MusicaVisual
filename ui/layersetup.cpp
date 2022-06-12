@@ -117,11 +117,11 @@ void LayerSetup::layerEditTriggered(int layer)
     {
         if (Bls == nullptr)
         {
-            Bls = new BlockLayerSetup(Mdt, &it->Bl, this->parentWidget());
+            Bls = new BlockLayerSetup(Mdt, &(*it), this->parentWidget());
         }
         else
         {
-            Bls->changeBlockLayer(&it->Bl);
+            Bls->changeBlockLayer(&(*it));
         }
         // set the current layer Bl object and the mainWindow as parent, otherwise, they don't move:
         QString qWindowTitle = "Block layer setup for " + QString::fromStdString((*it).getName());
@@ -133,12 +133,12 @@ void LayerSetup::layerEditTriggered(int layer)
     {
         if (Cls == nullptr)
         {
-            Cls = new ChordLayerSetup(Mdt, &it->Cl, RBuffer, this->parentWidget());
+            Cls = new ChordLayerSetup(Mdt, &(*it), RBuffer, this->parentWidget());
             Cls->resize(640, 480);
         }
         else
         {
-            Cls->changeChordLayer(&it->Cl);
+            Cls->changeChordLayer(&(*it));
         }
 
         QString qWindowTitle = "Chord layer setup for " + QString::fromStdString((*it).getName());
@@ -320,7 +320,7 @@ void LayerSetup::disconnectTabWidgets()
         QComboBox *cmbx = (QComboBox*) this->tableWidget->cellWidget(iRow, 2);
         QPushButton *pb = (QPushButton*) this->tableWidget->cellWidget(iRow, 3);
 
-        // connecting them:
+        // disconnecting them:
         QObject::disconnect(cb, 0,0,0);
         QObject::disconnect(ledt, 0,0,0);
         QObject::disconnect(cmbx, 0,0,0);

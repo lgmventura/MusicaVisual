@@ -5,3 +5,7 @@ Layer::Layer()
 
 }
 
+Layer::~Layer()
+{
+
+}

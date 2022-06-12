@@ -7,7 +7,7 @@
 
 #include "musiclib/musicdata.h"
 #include "musiclib/chords.h"
-#include "visual/chordlayers.h"
+#include "visual/layercontainer.h"
 #include "visual/renderbuffer.h"
 #include "ui/colourwidget.h"
 
@@ -20,14 +20,14 @@ class ChordLayerSetup : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit ChordLayerSetup(MusicData *mdt, ChordLayers *chordL, RenderBuffer *rBuffer, QWidget *parent = nullptr);
+    explicit ChordLayerSetup(MusicData *mdt, LayerContainer *layerCt, RenderBuffer *rBuffer, QWidget *parent = nullptr);
     ~ChordLayerSetup();
 
-    void changeChordLayer(ChordLayers *newChordL);
+    void changeChordLayer(LayerContainer *newLayerCt);
 private:
     Ui::ChordLayerSetup *ui;
 
-    ChordLayers *ChordL;
+    LayerContainer *LayerCt;
     MusicData *Mdt;
 
     RenderBuffer *RBuffer;

@@ -100,7 +100,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
             spts.pt2.y = f2int_safe(spts.y2);//aw.Height*(((*it).pitch + 1)/(50));
             //std::cout << (*it).t_on << ' ' << (*it).t_off << ": " << (*it).pitch << '\n';
             //std::cout << spts.pt1.x << ' ' << spts.pt1.y << ": " << spts.pt2.x << ' ' << spts.pt2.y << '\n';
-            if (ltype == LayerContainer::BlockLayer)
+            if (layerCt.LType == LayerContainer::BlockLayer)
             {
                 for (unsigned int tnum = 0; tnum < mdt.NTracks; tnum++)
                 {
