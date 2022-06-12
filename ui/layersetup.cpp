@@ -179,15 +179,14 @@ void LayerSetup::on_pb_addLayer_clicked()
 void LayerSetup::on_pb_cloneLayer_clicked()
 {
     LayerContainer newLayer;
-    int row = this->tableWidget->currentRow();
+    int row = this->tableWidget->currentRow(); // get current row
     if (row >= 0)
     {
         std::list<LayerContainer>::iterator it = Layers->begin();
-        std::advance(it, row);
-        newLayer = *it;
+        std::advance(it, row); // go to current row
+        newLayer = *it; // new layer is equal to the one already there
     }
-    int numLayers = Layers->size();
-    newLayer.setName("Layer " + std::to_string(numLayers));
+    newLayer.setName(newLayer.getName() + " (2)");
     row = this->tableWidget->currentRow();
     if (row == -1) {row = 0;} // if all were deleted, currentRow returns -1
     std::list<LayerContainer>::iterator it = Layers->begin();
