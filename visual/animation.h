@@ -92,7 +92,7 @@ public:
     RenderBuffer *RBuffer;
 
     void paintBlocksNoShading( cv::Mat image, MusicData mdt, ShapePoints spts, char* window_name, AnimWindow aw);
-    void paintNotes(MusicData mdt, cv::Mat, std::vector <cv::Mat>, cv::Mat, cv::Mat, AnimWindow aw, BlockLayers, ChordLayers, RenderP, LayerContainer::LayerType ltype);
+    void paintNotes(MusicData mdt, cv::Mat, std::vector <cv::Mat>, cv::Mat, cv::Mat, AnimWindow aw, LayerContainer layerCt, RenderP);
     void paintChords(Chord chord, float chordProgress, cv::Mat, AnimWindow aw, ChordLayers chordL, RenderP rProp);
     void paintLayers(MusicData mdt, cv::Mat, std::vector <cv::Mat>, cv::Mat, cv::Mat, AnimWindow aw, std::list<LayerContainer> layers, RenderP);
     void appendFrame(cv::Mat image, VideoRecorder* vRec);

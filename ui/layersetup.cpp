@@ -357,4 +357,3 @@ void LayerSetup::refresh()
     }
     this->initUI();
 }
-

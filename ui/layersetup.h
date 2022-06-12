@@ -65,8 +65,6 @@ private slots:
 
     void on_pb_removeLayer_clicked();
 
-
-
     void on_pb_moveUp_clicked();
     void on_pb_moveDown_clicked();
 };

@@ -127,6 +127,7 @@ private:
     AnimPainter *APainter;
     AnimationBar *AnimBar;
     RenderBuffer *RBuffer;
+
     bool ProcessChords; // option, because it lets everything slower
 
     QScreen *screen;
