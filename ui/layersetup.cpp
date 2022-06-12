@@ -14,6 +14,8 @@ LayerSetup::LayerSetup(std::list<LayerContainer> *layers, MusicData *mdt, Render
     this->Bls = nullptr;
     this->Cls = nullptr;
 
+    this->imgLayers = new std::vector<cv::Mat>;
+
     this->screen = QGuiApplication::primaryScreen();
 
     this->initUI();
@@ -156,6 +158,7 @@ void LayerSetup::on_pb_addLayer_clicked()
     int row = this->tableWidget->currentRow();
     if (row == -1) {row = 0;} // if all were deleted, currentRow returns -1
     std::list<LayerContainer>::iterator it = Layers->begin();
+    //imgLayers->push_back(cv::Mat::zeros(window_height, window_width, CV_8UC3));
     for (int iPos = 0; iPos < row; iPos++) { it++; }
     this->Layers->insert(it, newLayer);
     this->tableWidget->insertRow(row);

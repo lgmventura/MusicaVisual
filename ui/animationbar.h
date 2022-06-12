@@ -53,6 +53,7 @@ public:
     AnimPainter *APainter;
     AnimState *AState;
     cv::Mat *image;
+    std::vector <cv::Mat> imgLayers;
     std::vector <cv::Mat> *img_buffer_sep_tracks;
     cv::Mat *PlayingNote;
     cv::Mat *MovingNote;

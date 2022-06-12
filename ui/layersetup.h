@@ -41,6 +41,8 @@ private:
     BlockLayerSetup *Bls;
     ChordLayerSetup *Cls;
 
+    std::vector<cv::Mat> *imgLayers;
+
     QScreen *screen;
 
     void initUI();

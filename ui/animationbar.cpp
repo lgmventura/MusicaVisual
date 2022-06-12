@@ -126,7 +126,7 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
     aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
     aw.Width = window_width;
     aw.Height = window_height;
-    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
+    APainter->paintNotes(*Mdt, *image, *img_buffer_sep_tracks, imgLayers, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
     APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);
 
@@ -152,7 +152,7 @@ void AnimationBar::on_hSlider_playback_valueChanged(int value)
     aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
     aw.Width = window_width;
     aw.Height = window_height;
-    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
+    APainter->paintNotes(*Mdt, *image, *img_buffer_sep_tracks, imgLayers, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
     APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);
 }
