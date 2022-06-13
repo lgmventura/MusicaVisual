@@ -92,6 +92,8 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
     // iterating over all notes:
     for (std::list<MidiNote>::iterator it=mdt.Notes.begin() ; it != mdt.Notes.end(); ++it) // Run the list forwards
     {
+        if ((*it).t_on > aw.EndMidiTime + 50) // if note starts after the screen (in test. The notes' start times need to be sorted - pre-subposition)
+            break; // break loop through notes. Merge tracks and frams below and then, next frame
         // taking only notes inside the visible area (tolerance of 50 ticks outside the screen)
         if ((*it).is_note == 1 && aw.StartMidiTime -50 < (*it).t_off && aw.EndMidiTime + 50 > (*it).t_on) // is_note checks if it's a real note to avoid getting trash.
         {
@@ -113,7 +115,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                     // note is not from track or track is not active -> go to next track
                     if ((*it).track != tnum || blockL.ActiveTracks[tnum] == false)
                     {
-                        continue;
+                        continue; // nothing to do in this track in this layer. Next track!
                     }
                     // -------------------------- Draw Interconnected Lines -------------------------
                     if (blockL.interconnect[tnum] == 1) // All tracks - rectangle

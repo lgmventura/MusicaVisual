@@ -79,6 +79,7 @@ void MusicData::processMidiString(string midiMessagesText) // legacy, still usef
                 tempnote.vel = stoi(messg_str.substr(6,2), nullptr, 16); // get velocity from the midi message string
                 tempnote.id = id;
                 id++;
+                tempnote.is_note = false; // t_off still not found
                 this->Notes.push_back(tempnote); // Insert the tempnote into the list "notes"
                 if (tempnote.pitch > this->PitchMax)
                 {
@@ -90,7 +91,7 @@ void MusicData::processMidiString(string midiMessagesText) // legacy, still usef
                 if (tempnote.track > this->NTracks) // if there we see a track whose number is higher than the current number of tracks, we do number of tracks (aka tracks_count) = current track number
                         this->NTracks = tempnote.track;
             }
-            if ((messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) == 0) || messg_str[0] == '8') // Condition for Note off is messg_str[0] == '9' and velocity == 0 or messg_str[0] == '8'
+            else if ((messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) == 0) || messg_str[0] == '8') // Condition for Note off is messg_str[0] == '9' and velocity == 0 or messg_str[0] == '8'
             {
                 for (std::list<MidiNote>::iterator it=this->Notes.end() ; it != this->Notes.begin(); ) // note_off found: run the list backwards
                 {
@@ -106,7 +107,7 @@ void MusicData::processMidiString(string midiMessagesText) // legacy, still usef
 
                 }
             }
-            if (messg_str[0] == 'f' && messg_str[1] == 'f' && messg_str.size() >= 9) // Checks if it's a meta-message
+            else if (messg_str[0] == 'f' && messg_str[1] == 'f' && messg_str.size() >= 9) // Checks if it's a meta-message
             {
                 // meta message is ill-formed.
                 // meta messages must have at least three bytes:
@@ -167,7 +168,7 @@ string MusicData::squeezeTracksMidiStr(string midiMessages)
 
     std::set <unsigned short> tracks_set;
     std::set<unsigned short>::iterator it;
-    std::pair<std::set<unsigned short>::iterator,bool> ret;
+    //std::pair<std::set<unsigned short>::iterator,bool> ret;
 
     unsigned short tnum_temp;
     std::string messg_str;
@@ -187,7 +188,8 @@ string MusicData::squeezeTracksMidiStr(string midiMessages)
         if (messg_str[0] == '9' && stoi(messg_str.substr(6,2), nullptr, 16) > 0) // checking midi message. Consider the track not empty if there is at least one note_on message.
         {
             tracks_list.push_back(tnum_temp); // getting the track number and inserting into the list
-            ret = tracks_set.insert(tnum_temp); // getting the track number and inserting into the set. The set is like its mathematical definition, so it doesn't get repeated items
+            //ret = tracks_set.insert(tnum_temp); // getting the track number and inserting into the set. The set is like its mathematical definition, so it doesn't get repeated items
+            tracks_set.insert(tnum_temp);
             //if (ret.second==false) // if no element was inserted into the set because the element is already there
             //    it=ret.first; // to improve inserting efficiency, see http://www.cplusplus.com/reference/set/set/insert/
         }
@@ -204,7 +206,13 @@ string MusicData::squeezeTracksMidiStr(string midiMessages)
         else //if (i >= 5 && i%4 == 2) // else
         {
             it = tracks_set.find(stoi(str, nullptr, 10)); // find position of the track in the new set containing only non-empty tracks
-            str2.append(std::to_string(std::distance(tracks_set.begin(), it))); // insert it to the auxiliar string str2
+//            if (it != tracks_set.end()) {
+                str2.append(std::to_string(std::distance(tracks_set.begin(), it))); // insert it to the auxiliar string str2
+//            }
+//            else {
+//                str2.append("-1");
+//            }
+
         }
         stream2 << str2;
         stream2 << '\t';
