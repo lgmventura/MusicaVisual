@@ -31,12 +31,12 @@ void AnimPainter::paintBlocksNoShading(cv::Mat image, MusicData mdt, ShapePoints
 
 void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat> img_buffer_sep_tracks, cv::Mat img_playing_notes, cv::Mat img_moving_notes, AnimWindow aw, LayerContainer layerCt, RenderP rProp) // this function is called for every frame. aw.StartMidiTime is the time in the left side of the window, aw.EndMidiTime, at the right. These depend on playback position and zoom.
 {
-    const int dcr = 512/3; // denominator for colour of notes on the right (not played)
-    const int dcl = 512; // denominator for colour of notes on the left (already played)
-    const int dcm = 96; // denominator for colour of moving notes
+    const int dcr = 160; // denominator for colour of notes on the right (not played)
+    const int dcl = 480; // denominator for colour of notes on the left (already played)
+    const int dcm = 128; // denominator for colour of moving notes
     const int dcmp = 64; // denominator for colour of playing notes from moving shapes
-    const int dcp = 64; // denominator for colour of playing notes
-    const int dcf = 64; // denominator for colour of fading notes (last moving)
+    const int dcp = 96; // denominator for colour of playing notes
+    const int dcf = 96; // denominator for colour of fading notes (last moving)
     // this function loops through all notes and call corresponding functions to paint them
     // finding current global zoom:
     int hZoomGlob = aw.EndMidiTime - aw.StartMidiTime;
@@ -994,7 +994,7 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                         cv::Point ptos[4];
                         std::vector<cv::Point> midline; // animated line over the rhombus
                         ptos[0] = spts.pt1; ptos[1] = spts.pt3; ptos[2] = spts.pt2; ptos[3] = spts.pt4;
-                        midline.push_back(spts.pt1); midline.push_back(cv::Point(spts.x3, spts.y3 - atckprogress*(spts.y3 - spts.y1))); midline.push_back(spts.pt2); midline.push_back(cv::Point(spts.x3, spts.y3 - atckprogress*(spts.y1 - spts.y3)));
+                        midline.push_back(spts.pt1); midline.push_back(cv::Point(spts.x3, spts.y3 - 2*atckprogress*(spts.y3 - spts.y1))); midline.push_back(spts.pt2); midline.push_back(cv::Point(spts.x3, spts.y3 - 2*atckprogress*(spts.y1 - spts.y3)));
                         const cv::Point *plpts = (const cv::Point*) cv::Mat(midline).data;
                         int npts = cv::Mat(midline).rows;
                         if (spts.pt1.x > aw.Width/2) // The note block is before (to the right of) the center line
@@ -1006,12 +1006,12 @@ void AnimPainter::paintNotes(MusicData mdt, cv::Mat image, std::vector <cv::Mat>
                         else if (spts.pt1.x <= aw.Width/2 && spts.pt2.x > aw.Width/2) // The note block is inside the center line
                         {
                             if ( ! rProp.sep_render[0]) {
-                                cv::fillConvexPoly( image, ptos, 4, {layerCt.getColour(tnum, (*it).pitch).b*(*it).vel/dcp, layerCt.getColour(tnum, (*it).pitch).g*(*it).vel/dcp, layerCt.getColour(tnum, (*it).pitch).r*(*it).vel/dcp}, lineType );
-                                cv::polylines( image, &plpts, &npts, 1, true, {layerCt.getColour(tnum, (*it).pitch).b*(*it).vel/32, layerCt.getColour(tnum, (*it).pitch).g*(*it).vel/32, layerCt.getColour(tnum, (*it).pitch).r*(*it).vel/32}, 1, lineType );
+                                //cv::fillConvexPoly( image, ptos, 4, {layerCt.getColour(tnum, (*it).pitch).b*(*it).vel/dcp, layerCt.getColour(tnum, (*it).pitch).g*(*it).vel/dcp, layerCt.getColour(tnum, (*it).pitch).r*(*it).vel/dcp}, lineType );
+                                cv::polylines( image, &plpts, &npts, 1, true, {layerCt.getColour(tnum, (*it).pitch).b*(*it).vel/32*(1-atckprogress), layerCt.getColour(tnum, (*it).pitch).g*(*it).vel/32*(1-atckprogress), layerCt.getColour(tnum, (*it).pitch).r*(*it).vel/32*(1-atckprogress)}, 2, lineType );
                             }
                             else {
-                                cv::fillConvexPoly( img_playing_notes, ptos, 4, {layerCt.getColour(tnum, (*it).pitch).b*(*it).vel/dcp, layerCt.getColour(tnum, (*it).pitch).g*(*it).vel/dcp, layerCt.getColour(tnum, (*it).pitch).r*(*it).vel/dcp}, lineType );
-                                cv::polylines( img_playing_notes, &plpts, &npts, 1, true, {layerCt.getColour(tnum, (*it).pitch).b*(*it).vel/32, layerCt.getColour(tnum, (*it).pitch).g*(*it).vel/32, layerCt.getColour(tnum, (*it).pitch).r*(*it).vel/32}, 1, lineType );
+                                //cv::fillConvexPoly( img_playing_notes, ptos, 4, {layerCt.getColour(tnum, (*it).pitch).b*(*it).vel/dcp, layerCt.getColour(tnum, (*it).pitch).g*(*it).vel/dcp, layerCt.getColour(tnum, (*it).pitch).r*(*it).vel/dcp}, lineType );
+                                cv::polylines( img_playing_notes, &plpts, &npts, 1, true, {layerCt.getColour(tnum, (*it).pitch).b*(*it).vel/32*(1-atckprogress), layerCt.getColour(tnum, (*it).pitch).g*(*it).vel/32*(1-atckprogress), layerCt.getColour(tnum, (*it).pitch).r*(*it).vel/32*(1-atckprogress)}, 2, lineType );
                             }
                         }
                         else // The note block is after (to the left of) the center line
