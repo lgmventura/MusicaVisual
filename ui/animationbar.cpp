@@ -96,8 +96,19 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
 
     ui->label_2->setText(QString::fromStdString(vRec->CodecFourCC));
 
+    // create play thread, which will operate on the loop
     playThread = new PlayThread(this, fps);
     connect(playThread, SIGNAL(NumberChanged(int)), this, SLOT(onNumberChanged(int)));
+
+    // create worker, which will operate on a single frame
+    thread = new QThread();
+    Worker* worker = new Worker(mdt, window_width, window_height, aPainter, aState, rProp, layers, vRec, winName);
+    worker->moveToThread(thread);
+    //connect( worker, &Worker::error, this, &MyClass::errorString);
+    connect( thread, &QThread::started, worker, &Worker::process);
+    connect( worker, &Worker::finished, thread, &QThread::quit);
+    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
+    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
 
     //DrawBlThread = new DrawBlocksThread(mdt, image, img_buffer_sep_tracks, window_width, window_height, fps, RProp, TProp, APainter, AState, VRec);
 }
@@ -144,17 +155,7 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 void AnimationBar::on_hSlider_playback_valueChanged(int value)
 {
     AState->setXpos(value);
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    AnimWindow aw;
-    aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
-    aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
-    aw.Width = window_width;
-    aw.Height = window_height;
-    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
-    APainter->appendFrame(*image, VRec);
-    cv::imshow(winName, *image);
+    thread->start();
 }
 
 void AnimationBar::onNumberChanged(int num)
@@ -172,7 +173,7 @@ void AnimationBar::onNumberChanged(int num)
     ui->spb_playback->setValue(AState->CurrentTime);// + 1);
     if (ui->spb_playback->value() == Mdt->TotalTime)
         playThread->stop = true;
-    playThread->wait(1); // wait with timeout for the next frame to respond
+    //playThread->wait(1); // wait with timeout for the next frame to respond
 }
 
 void AnimationBar::on_pb_play_clicked()
@@ -219,4 +220,38 @@ void AnimationBar::on_pb_recVideo_toggled(bool checked)
 void AnimationBar::setRecButtonEnabled(bool value)
 {
     ui->pb_recVideo->setEnabled(value);
+}
+
+
+Worker::Worker(MusicData *mdt, int winWidth, int winHeight, AnimPainter *aPainter, AnimState *aState, RenderP *rProp, std::list<LayerContainer> *layers, VideoRecorder *vRec, char* winName) { // Constructor
+    this->Mdt = mdt;
+    this->window_width = winWidth;
+    this->window_height = winHeight;
+    this->winName = winName;
+    this->RProp = rProp;
+    this->Layers = layers;
+    this->APainter = aPainter;
+    this->AState = aState;
+    this->VRec = vRec;
+}
+
+Worker::~Worker() { // Destructor
+    // free resources
+}
+
+void Worker::process() { // Process. Start processing data.
+    // allocate resources using new here
+    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    AnimWindow aw;
+    aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
+    aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
+    aw.Width = window_width;
+    aw.Height = window_height;
+    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
+    APainter->appendFrame(*image, VRec);
+    cv::imshow(winName, *image);
+
+    emit finished();
 }
