@@ -36,6 +36,32 @@
 #include "rendersetup.h"
 #include "midimessages.h"
 
+class Worker : public QObject {
+    Q_OBJECT
+public:
+    Worker(MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, int winWidth, int winHeight, AnimPainter *aPainter, AnimState *aState, RenderP *rProp, std::list<LayerContainer> *layers, VideoRecorder *vRec, char* winName);
+    ~Worker();
+public slots:
+    void process();
+signals:
+    void finished();
+    void error(QString err);
+private:
+    MusicData *Mdt;
+    int window_height;
+    int window_width;
+    char* winName;
+    cv::Mat *image;
+    std::vector <cv::Mat> *img_buffer_sep_tracks;
+    cv::Mat *PlayingNote;
+    cv::Mat *MovingNote;
+    AnimPainter *APainter;
+    AnimState *AState;
+    RenderP *RProp;
+    std::list<LayerContainer> *Layers;
+    VideoRecorder *VRec;
+};
+
 namespace Ui {
 class AnimationBar;
 }
@@ -64,6 +90,7 @@ public:
 
     PlayThread *playThread;
 
+    Worker* worker;
     QThread* thread;
 
     AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, int window_width, int window_height, float fps, RenderP *rProp, std::list<LayerContainer> *layers, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec = nullptr);
@@ -92,32 +119,6 @@ public slots:
 
 private:
     Ui::AnimationBar *ui;
-};
-
-class Worker : public QObject {
-    Q_OBJECT
-public:
-    Worker(MusicData *mdt, int winWidth, int winHeight, AnimPainter *aPainter, AnimState *aState, RenderP *rProp, std::list<LayerContainer> *layers, VideoRecorder *vRec, char* winName);
-    ~Worker();
-public slots:
-    void process();
-signals:
-    void finished();
-    void error(QString err);
-private:
-    MusicData *Mdt;
-    int window_height;
-    int window_width;
-    char* winName;
-    cv::Mat *image;
-    std::vector <cv::Mat> *img_buffer_sep_tracks;
-    cv::Mat *PlayingNote;
-    cv::Mat *MovingNote;
-    AnimPainter *APainter;
-    AnimState *AState;
-    RenderP *RProp;
-    std::list<LayerContainer> *Layers;
-    VideoRecorder *VRec;
 };
 
 #endif // ANIMATIONBAR_H

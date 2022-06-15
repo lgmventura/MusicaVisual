@@ -102,7 +102,7 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
 
     // create worker, which will operate on a single frame
     thread = new QThread();
-    Worker* worker = new Worker(mdt, window_width, window_height, aPainter, aState, rProp, layers, vRec, winName);
+    worker = new Worker(mdt, image, img_buffer_sep_tracks, playingNote, movingNote, window_width, window_height, aPainter, aState, rProp, layers, vRec, winName);
     worker->moveToThread(thread);
     //connect( worker, &Worker::error, this, &MyClass::errorString);
     connect( thread, &QThread::started, worker, &Worker::process);
@@ -131,15 +131,7 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    // obs.: image is passed per value, but in OpenCV, this value is actually a pointer to the actual data (matrix), so the function does modify the data!
-    AnimWindow aw;
-    aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
-    aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
-    aw.Width = window_width;
-    aw.Height = window_height;
-    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
-    APainter->appendFrame(*image, VRec);
-    cv::imshow(winName, *image);
+    thread->start();
 
     if (RProp->extra_time[0] == 1)
     {
@@ -155,6 +147,9 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 void AnimationBar::on_hSlider_playback_valueChanged(int value)
 {
     AState->setXpos(value);
+    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     thread->start();
 }
 
@@ -223,7 +218,7 @@ void AnimationBar::setRecButtonEnabled(bool value)
 }
 
 
-Worker::Worker(MusicData *mdt, int winWidth, int winHeight, AnimPainter *aPainter, AnimState *aState, RenderP *rProp, std::list<LayerContainer> *layers, VideoRecorder *vRec, char* winName) { // Constructor
+Worker::Worker(MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, int winWidth, int winHeight, AnimPainter *aPainter, AnimState *aState, RenderP *rProp, std::list<LayerContainer> *layers, VideoRecorder *vRec, char* winName) { // Constructor
     this->Mdt = mdt;
     this->window_width = winWidth;
     this->window_height = winHeight;
@@ -233,6 +228,11 @@ Worker::Worker(MusicData *mdt, int winWidth, int winHeight, AnimPainter *aPainte
     this->APainter = aPainter;
     this->AState = aState;
     this->VRec = vRec;
+
+    this->image = image;
+    this->img_buffer_sep_tracks = img_buffer_sep_tracks;
+    this->PlayingNote = playingNote;
+    this->MovingNote = movingNote;
 }
 
 Worker::~Worker() { // Destructor
@@ -241,9 +241,9 @@ Worker::~Worker() { // Destructor
 
 void Worker::process() { // Process. Start processing data.
     // allocate resources using new here
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+//    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+//    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+//    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     AnimWindow aw;
     aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
     aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
