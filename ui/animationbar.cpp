@@ -100,15 +100,7 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     playThread = new PlayThread(this, fps);
     connect(playThread, SIGNAL(NumberChanged(int)), this, SLOT(onNumberChanged(int)));
 
-    // create worker, which will operate on a single frame
-    thread = new QThread();
-    worker = new Worker(mdt, image, img_buffer_sep_tracks, playingNote, movingNote, window_width, window_height, aPainter, aState, rProp, layers, vRec, winName);
-    worker->moveToThread(thread);
-    //connect( worker, &Worker::error, this, &MyClass::errorString);
-    connect( thread, &QThread::started, worker, &Worker::process);
-    connect( worker, &Worker::finished, thread, &QThread::quit);
-    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
-    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
+
 
     //DrawBlThread = new DrawBlocksThread(mdt, image, img_buffer_sep_tracks, window_width, window_height, fps, RProp, TProp, APainter, AState, VRec);
 }
@@ -128,9 +120,15 @@ AnimationBar::~AnimationBar()
 void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 {
     AState->setZoom(value);
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    // create worker, which will operate on a single frame
+    thread = new QThread();
+    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, window_width, window_height, APainter, AState, RProp, Layers, VRec, winName);
+    worker->moveToThread(thread);
+    //connect( worker, &Worker::error, this, &MyClass::errorString);
+    connect( thread, &QThread::started, worker, &Worker::process);
+    connect( worker, &Worker::finished, thread, &QThread::quit);
+    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
+    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
     thread->start();
 
     if (RProp->extra_time[0] == 1)
@@ -147,10 +145,16 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 void AnimationBar::on_hSlider_playback_valueChanged(int value)
 {
     AState->setXpos(value);
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    thread = new QThread();
+    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, window_width, window_height, APainter, AState, RProp, Layers, VRec, winName);
+    worker->moveToThread(thread);
+    //connect( worker, &Worker::error, this, &MyClass::errorString);
+    connect( thread, &QThread::started, worker, &Worker::process);
+    connect( worker, &Worker::finished, thread, &QThread::quit);
+    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
+    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
     thread->start();
+    APainter->appendFrame(*image, VRec);
 }
 
 void AnimationBar::onNumberChanged(int num)
@@ -241,17 +245,20 @@ Worker::~Worker() { // Destructor
 
 void Worker::process() { // Process. Start processing data.
     // allocate resources using new here
-//    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-//    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-//    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    //mutex.lock();
+
+    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     AnimWindow aw;
     aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
     aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
     aw.Width = window_width;
     aw.Height = window_height;
     APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
-    APainter->appendFrame(*image, VRec);
     cv::imshow(winName, *image);
+
+    //mutex.unlock();
 
     emit finished();
 }

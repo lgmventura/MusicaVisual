@@ -60,6 +60,8 @@ private:
     RenderP *RProp;
     std::list<LayerContainer> *Layers;
     VideoRecorder *VRec;
+
+    QMutex mutex;
 };
 
 namespace Ui {
