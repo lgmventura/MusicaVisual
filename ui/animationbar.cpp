@@ -81,6 +81,12 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     this->APainter = aPainter;
     this->AState = aState;
     this->VRec = vRec;
+
+    // create play thread, which will operate on the loop
+    playThread = new PlayThread(this, fps);
+    connect(playThread, SIGNAL(NumberChanged(int)), this, SLOT(onNumberChanged(int)));
+
+    // start values for UI elements
     ui->hSlider_zoom->setMaximum(mdt->TotalTime);
     ui->hSlider_playback->setMaximum(mdt->TotalTime);
     ui->spb_zoom->setMaximum(mdt->TotalTime);
@@ -95,11 +101,6 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     ui->hSlider_playback->setValue(0);
 
     ui->label_2->setText(QString::fromStdString(vRec->CodecFourCC));
-
-    // create play thread, which will operate on the loop
-    playThread = new PlayThread(this, fps);
-    connect(playThread, SIGNAL(NumberChanged(int)), this, SLOT(onNumberChanged(int)));
-
 
 
     //DrawBlThread = new DrawBlocksThread(mdt, image, img_buffer_sep_tracks, window_width, window_height, fps, RProp, TProp, APainter, AState, VRec);
@@ -142,6 +143,7 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
     connect( worker, &Worker::finished, worker, &Worker::deleteLater);
     connect( thread, &QThread::finished, thread, &QThread::deleteLater);
     connect( worker, &Worker::finished, this, &AnimationBar::finishFrame);
+    playThread->isFrameDone = false;
     thread->start();
     if (RProp->extra_time[0] == 1)
     {
@@ -173,6 +175,7 @@ void AnimationBar::on_hSlider_playback_valueChanged(int value)
     connect( worker, &Worker::finished, worker, &Worker::deleteLater);
     connect( thread, &QThread::finished, thread, &QThread::deleteLater);
     connect( worker, &Worker::finished, this, &AnimationBar::finishFrame);
+    playThread->isFrameDone = false;
     thread->start();
 }
 
