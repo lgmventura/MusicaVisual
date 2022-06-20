@@ -77,6 +77,7 @@ public:
     std::list<LayerContainer> *Layers;
     AnimPainter *APainter;
     AnimState *AState;
+    AnimWindow aw;
     cv::Mat *image;
     std::vector <cv::Mat> *img_buffer_sep_tracks;
     cv::Mat *PlayingNote;

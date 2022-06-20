@@ -128,7 +128,6 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    AnimWindow aw;
     aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
     aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
     aw.Width = window_width;
@@ -161,7 +160,6 @@ void AnimationBar::on_hSlider_playback_valueChanged(int value)
     *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    AnimWindow aw;
     aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
     aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
     aw.Width = window_width;
@@ -270,13 +268,13 @@ Worker::~Worker() { // Destructor
 
 void Worker::process() { // Process. Start processing data.
     // allocate resources using new here
-    //mutex.lock();
+    mutex.lock();
 
-
+    //qDebug() << "Frame started";
     APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, *Aw, *Layers, *RProp);
-    qDebug() << "Frame rendered\n";
+    //qDebug() << "Frame rendered\n";
 
-    //mutex.unlock();
+    mutex.unlock();
 
     emit finished();
 }
