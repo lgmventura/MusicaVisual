@@ -39,7 +39,7 @@
 class Worker : public QObject {
     Q_OBJECT
 public:
-    Worker(MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, int winWidth, int winHeight, AnimPainter *aPainter, AnimState *aState, RenderP *rProp, std::list<LayerContainer> *layers, VideoRecorder *vRec, char* winName);
+    Worker(MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, AnimWindow *aw, RenderP *rProp, std::list<LayerContainer> *layers, char* winName, AnimPainter *aPainter);
     ~Worker();
 public slots:
     void process();
@@ -48,18 +48,15 @@ signals:
     void error(QString err);
 private:
     MusicData *Mdt;
-    int window_height;
-    int window_width;
     char* winName;
     cv::Mat *image;
     std::vector <cv::Mat> *img_buffer_sep_tracks;
     cv::Mat *PlayingNote;
     cv::Mat *MovingNote;
-    AnimPainter *APainter;
-    AnimState *AState;
+    AnimWindow *Aw;
     RenderP *RProp;
     std::list<LayerContainer> *Layers;
-    VideoRecorder *VRec;
+    AnimPainter *APainter;
 
     QMutex mutex;
 };
@@ -119,6 +116,7 @@ public slots:
 
     void setRecButtonEnabled(bool value);
 
+    void finishFrame();
 private:
     Ui::AnimationBar *ui;
 };

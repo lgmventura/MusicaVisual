@@ -38,6 +38,7 @@ public:
     void run();
     float fps;
     bool stop;
+    bool isFrameDone;
 
 signals:
     void NumberChanged(int);

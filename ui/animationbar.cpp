@@ -109,6 +109,11 @@ AnimationBar::~AnimationBar()
 {
     // releasing memory before closing it in this destructor
     img_buffer_sep_tracks->clear();
+//    image->deallocate();
+//    PlayingNote->deallocate();
+//    MovingNote->deallocate();
+//    delete(image);
+//    free(image);
     if (VRec->RecordVideo == true)
     {
         VRec->releaseVideo();
@@ -120,17 +125,25 @@ AnimationBar::~AnimationBar()
 void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 {
     AState->setZoom(value);
+    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    AnimWindow aw;
+    aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
+    aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
+    aw.Width = window_width;
+    aw.Height = window_height;
     // create worker, which will operate on a single frame
     thread = new QThread();
-    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, window_width, window_height, APainter, AState, RProp, Layers, VRec, winName);
+    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, &aw, RProp, Layers, winName, APainter);
     worker->moveToThread(thread);
     //connect( worker, &Worker::error, this, &MyClass::errorString);
     connect( thread, &QThread::started, worker, &Worker::process);
     connect( worker, &Worker::finished, thread, &QThread::quit);
     connect( worker, &Worker::finished, worker, &Worker::deleteLater);
     connect( thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect( worker, &Worker::finished, this, &AnimationBar::finishFrame);
     thread->start();
-
     if (RProp->extra_time[0] == 1)
     {
         ui->hSlider_playback->setMinimum(-value/2);
@@ -145,16 +158,24 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 void AnimationBar::on_hSlider_playback_valueChanged(int value)
 {
     AState->setXpos(value);
+    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    AnimWindow aw;
+    aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
+    aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
+    aw.Width = window_width;
+    aw.Height = window_height;
     thread = new QThread();
-    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, window_width, window_height, APainter, AState, RProp, Layers, VRec, winName);
+    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, &aw, RProp, Layers, winName, APainter);
     worker->moveToThread(thread);
     //connect( worker, &Worker::error, this, &MyClass::errorString);
     connect( thread, &QThread::started, worker, &Worker::process);
     connect( worker, &Worker::finished, thread, &QThread::quit);
     connect( worker, &Worker::finished, worker, &Worker::deleteLater);
     connect( thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect( worker, &Worker::finished, this, &AnimationBar::finishFrame);
     thread->start();
-    APainter->appendFrame(*image, VRec);
 }
 
 void AnimationBar::onNumberChanged(int num)
@@ -178,6 +199,7 @@ void AnimationBar::onNumberChanged(int num)
 void AnimationBar::on_pb_play_clicked()
 {
     playThread->stop = false;
+    playThread->isFrameDone = true;
     AState->CurrentTime = ui->spb_playback->value();
     playThread->start(QThread::LowPriority);
     //ui->spinBox_2->setValue(ui->spinBox_2->value() + 1000/30);
@@ -221,18 +243,21 @@ void AnimationBar::setRecButtonEnabled(bool value)
     ui->pb_recVideo->setEnabled(value);
 }
 
+void AnimationBar::finishFrame()
+{
+    cv::imshow(winName, *image);
+    APainter->appendFrame(*image, VRec);
+    playThread->isFrameDone = true;
+    //qDebug() << "Frame drawn\n";
+}
 
-Worker::Worker(MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, int winWidth, int winHeight, AnimPainter *aPainter, AnimState *aState, RenderP *rProp, std::list<LayerContainer> *layers, VideoRecorder *vRec, char* winName) { // Constructor
+
+Worker::Worker(MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, AnimWindow *aw, RenderP *rProp, std::list<LayerContainer> *layers, char* winName, AnimPainter *aPainter) { // Constructor
     this->Mdt = mdt;
-    this->window_width = winWidth;
-    this->window_height = winHeight;
     this->winName = winName;
     this->RProp = rProp;
     this->Layers = layers;
-    this->APainter = aPainter;
-    this->AState = aState;
-    this->VRec = vRec;
-
+    this->Aw = aw;
     this->image = image;
     this->img_buffer_sep_tracks = img_buffer_sep_tracks;
     this->PlayingNote = playingNote;
@@ -247,16 +272,9 @@ void Worker::process() { // Process. Start processing data.
     // allocate resources using new here
     //mutex.lock();
 
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    AnimWindow aw;
-    aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
-    aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
-    aw.Width = window_width;
-    aw.Height = window_height;
-    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, aw, *Layers, *RProp);
-    cv::imshow(winName, *image);
+
+    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, *Aw, *Layers, *RProp);
+    qDebug() << "Frame rendered\n";
 
     //mutex.unlock();
 

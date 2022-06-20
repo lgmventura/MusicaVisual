@@ -49,9 +49,12 @@ void PlayThread::run()
         if (this->stop)
             break;
 
-        emit NumberChanged(i);
+        if (isFrameDone)
+        {
+            emit NumberChanged(i);
 
-        this->msleep(1000/fps);
+            this->msleep(1000/fps);
+        }
 
         //this->wait();
     }
