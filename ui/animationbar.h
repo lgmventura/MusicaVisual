@@ -88,6 +88,10 @@ private slots:
 
     void on_pb_recVideo_toggled(bool checked);
 
+    void on_hSlider_zoom_sliderReleased();
+
+    void on_hSlider_playback_sliderReleased();
+
 public slots:
     void onNumberChanged(int num);
 

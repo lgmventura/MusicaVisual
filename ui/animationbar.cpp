@@ -22,7 +22,7 @@
 
 
 #include "ui_animationbar.h"
-#include "mainwindow.h"
+#include "animationbar.h"
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
 #include "midimessages.h"
@@ -33,27 +33,6 @@
 #include <QThread>
 
 #include <QFileDialog>
-//#include <QTimer>
-
-//extern AnimwinP *animwinP;
-//extern AnimPainter *animPt;
-//extern std::list <TempoChange> *tempos;
-//extern int mdt->Tpq;
-//extern bool *videoRecord;
-//extern cv::VideoWriter *video;
-
-//cv::Mat *image;
-//int window_width;
-//int window_height;
-//char* winName;
-//int total_time;
-//bool play = false;
-
-//double current_time;
-
-//QTimer *timerPlay;
-//extern std::string *codec_fourcc;
-
 
 AnimationBar::AnimationBar(QWidget *parent) :
     QWidget(parent),
@@ -131,9 +110,6 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
     if (playThread->isReadyToDrawFrame == false) {
         return;
     }
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     this->startDrawingFrame();
 
     if (RProp->extra_time[0] == 1)
@@ -157,9 +133,6 @@ void AnimationBar::on_hSlider_playback_valueChanged(int value)
     if (playThread->isReadyToDrawFrame == false) {
         return;
     }
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     this->startDrawingFrame();
 }
 
@@ -216,6 +189,10 @@ void AnimationBar::setRecButtonEnabled(bool value)
 
 void AnimationBar::startDrawingFrame()
 {
+    // Clean the images:
+    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     // create worker, which will operate on a single frame. Assign it to qthread
     thread = new QThread();
     worker = new RenderWorker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, &aw, RProp, Layers, winName, APainter);
@@ -236,4 +213,14 @@ void AnimationBar::finishFrame()
     APainter->appendFrame(*image, VRec); // APainter will only record the video if it is checked in VideoRecorder. ToDo: change this!
     playThread->isReadyToDrawFrame = true;
     //qDebug() << "Frame drawn\n";
+}
+
+void AnimationBar::on_hSlider_zoom_sliderReleased()
+{
+    this->startDrawingFrame();
+}
+
+void AnimationBar::on_hSlider_playback_sliderReleased()
+{
+    this->startDrawingFrame();
 }
