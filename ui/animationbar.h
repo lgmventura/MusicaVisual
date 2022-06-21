@@ -35,31 +35,7 @@
 #include "visual/videorecorder.h"
 #include "rendersetup.h"
 #include "midimessages.h"
-
-class Worker : public QObject {
-    Q_OBJECT
-public:
-    Worker(MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, AnimWindow *aw, RenderP *rProp, std::list<LayerContainer> *layers, char* winName, AnimPainter *aPainter);
-    ~Worker();
-public slots:
-    void process();
-signals:
-    void finished();
-    void error(QString err);
-private:
-    MusicData *Mdt;
-    char* winName;
-    cv::Mat *image;
-    std::vector <cv::Mat> *img_buffer_sep_tracks;
-    cv::Mat *PlayingNote;
-    cv::Mat *MovingNote;
-    AnimWindow *Aw;
-    RenderP *RProp;
-    std::list<LayerContainer> *Layers;
-    AnimPainter *APainter;
-
-    QMutex mutex;
-};
+#include "renderworker.h"
 
 namespace Ui {
 class AnimationBar;
@@ -90,7 +66,7 @@ public:
 
     PlayThread *playThread;
 
-    Worker* worker;
+    RenderWorker* worker;
     QThread* thread;
 
     AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, int window_width, int window_height, float fps, RenderP *rProp, std::list<LayerContainer> *layers, AnimPainter *aPainter, AnimState *aState, VideoRecorder *vRec = nullptr);

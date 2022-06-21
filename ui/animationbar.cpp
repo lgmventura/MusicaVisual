@@ -54,6 +54,7 @@
 //QTimer *timerPlay;
 //extern std::string *codec_fourcc;
 
+
 AnimationBar::AnimationBar(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::AnimationBar)
@@ -217,14 +218,14 @@ void AnimationBar::startDrawingFrame()
 {
     // create worker, which will operate on a single frame. Assign it to qthread
     thread = new QThread();
-    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, &aw, RProp, Layers, winName, APainter);
+    worker = new RenderWorker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, &aw, RProp, Layers, winName, APainter);
     worker->moveToThread(thread);
     //connect( worker, &Worker::error, this, &MyClass::errorString);
-    connect( thread, &QThread::started, worker, &Worker::process);
-    connect( worker, &Worker::finished, thread, &QThread::quit);
-    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
+    connect( thread, &QThread::started, worker, &RenderWorker::process);
+    connect( worker, &RenderWorker::finished, thread, &QThread::quit);
+    connect( worker, &RenderWorker::finished, worker, &RenderWorker::deleteLater);
     connect( thread, &QThread::finished, thread, &QThread::deleteLater);
-    connect( worker, &Worker::finished, this, &AnimationBar::finishFrame);
+    connect( worker, &RenderWorker::finished, this, &AnimationBar::finishFrame);
     playThread->isReadyToDrawFrame = false; // because it is busy now
     thread->start();
 }
@@ -235,34 +236,4 @@ void AnimationBar::finishFrame()
     APainter->appendFrame(*image, VRec); // APainter will only record the video if it is checked in VideoRecorder. ToDo: change this!
     playThread->isReadyToDrawFrame = true;
     //qDebug() << "Frame drawn\n";
-}
-
-
-Worker::Worker(MusicData *mdt, cv::Mat *image, std::vector <cv::Mat> *img_buffer_sep_tracks, cv::Mat *playingNote, cv::Mat *movingNote, AnimWindow *aw, RenderP *rProp, std::list<LayerContainer> *layers, char* winName, AnimPainter *aPainter) { // Constructor
-    this->Mdt = mdt;
-    this->winName = winName;
-    this->RProp = rProp;
-    this->Layers = layers;
-    this->Aw = aw;
-    this->image = image;
-    this->img_buffer_sep_tracks = img_buffer_sep_tracks;
-    this->PlayingNote = playingNote;
-    this->MovingNote = movingNote;
-}
-
-Worker::~Worker() { // Destructor
-    // free resources
-}
-
-void Worker::process() { // Process. Start processing data.
-    // allocate resources using new here
-    mutex.lock();
-
-    //qDebug() << "Frame started";
-    APainter->paintLayers(*Mdt, *image, *img_buffer_sep_tracks, *PlayingNote, *MovingNote, *Aw, *Layers, *RProp);
-    //qDebug() << "Frame rendered\n";
-
-    mutex.unlock();
-
-    emit finished();
 }
