@@ -101,9 +101,6 @@ AnimationBar::AnimationBar(QWidget *parent, char* winName, MusicData *mdt, cv::M
     ui->hSlider_playback->setValue(0);
 
     ui->label_2->setText(QString::fromStdString(vRec->CodecFourCC));
-
-
-    //DrawBlThread = new DrawBlocksThread(mdt, image, img_buffer_sep_tracks, window_width, window_height, fps, RProp, TProp, APainter, AState, VRec);
 }
 
 AnimationBar::~AnimationBar()
@@ -126,25 +123,18 @@ AnimationBar::~AnimationBar()
 void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 {
     AState->setZoom(value);
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
     aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
     aw.Width = window_width;
     aw.Height = window_height;
-    // create worker, which will operate on a single frame
-    thread = new QThread();
-    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, &aw, RProp, Layers, winName, APainter);
-    worker->moveToThread(thread);
-    //connect( worker, &Worker::error, this, &MyClass::errorString);
-    connect( thread, &QThread::started, worker, &Worker::process);
-    connect( worker, &Worker::finished, thread, &QThread::quit);
-    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
-    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
-    connect( worker, &Worker::finished, this, &AnimationBar::finishFrame);
-    playThread->isFrameDone = false;
-    thread->start();
+    if (playThread->isReadyToDrawFrame == false) {
+        return;
+    }
+    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    this->startDrawingFrame();
+
     if (RProp->extra_time[0] == 1)
     {
         ui->hSlider_playback->setMinimum(-value/2);
@@ -159,24 +149,17 @@ void AnimationBar::on_hSlider_zoom_valueChanged(int value)
 void AnimationBar::on_hSlider_playback_valueChanged(int value)
 {
     AState->setXpos(value);
-    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
-    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
     aw.StartMidiTime = AState->xpos - (AState->zoom)/2;
     aw.EndMidiTime = AState->xpos + (AState->zoom)/2;
     aw.Width = window_width;
     aw.Height = window_height;
-    thread = new QThread();
-    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, &aw, RProp, Layers, winName, APainter);
-    worker->moveToThread(thread);
-    //connect( worker, &Worker::error, this, &MyClass::errorString);
-    connect( thread, &QThread::started, worker, &Worker::process);
-    connect( worker, &Worker::finished, thread, &QThread::quit);
-    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
-    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
-    connect( worker, &Worker::finished, this, &AnimationBar::finishFrame);
-    playThread->isFrameDone = false;
-    thread->start();
+    if (playThread->isReadyToDrawFrame == false) {
+        return;
+    }
+    *image = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *PlayingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    *MovingNote = cv::Mat::zeros( window_height, window_width, CV_8UC3 );
+    this->startDrawingFrame();
 }
 
 void AnimationBar::onNumberChanged(int num)
@@ -194,27 +177,13 @@ void AnimationBar::onNumberChanged(int num)
     ui->spb_playback->setValue(AState->CurrentTime);// + 1);
     if (ui->spb_playback->value() == Mdt->TotalTime)
         playThread->stop = true;
-    //playThread->wait(1); // wait with timeout for the next frame to respond
 }
 
 void AnimationBar::on_pb_play_clicked()
 {
     playThread->stop = false;
-    playThread->isFrameDone = true;
     AState->CurrentTime = ui->spb_playback->value();
     playThread->start(QThread::LowPriority);
-    //ui->spinBox_2->setValue(ui->spinBox_2->value() + 1000/30);
-//    play = true;
-//    //QThread::start(QThread::priority());
-//    timerPlay = new QTimer;
-//    while(play == true)
-//    {
-//        ui->spinBox_2->setValue(ui->spinBox_2->value() + 1000/30);
-//        timerPlay->start(1000/30);
-//        //QThread::wait(30);
-
-//        //Parei aqui!!!
-//    }
 }
 
 void AnimationBar::on_pb_pause_clicked()
@@ -244,11 +213,27 @@ void AnimationBar::setRecButtonEnabled(bool value)
     ui->pb_recVideo->setEnabled(value);
 }
 
+void AnimationBar::startDrawingFrame()
+{
+    // create worker, which will operate on a single frame. Assign it to qthread
+    thread = new QThread();
+    worker = new Worker(Mdt, image, img_buffer_sep_tracks, PlayingNote, MovingNote, &aw, RProp, Layers, winName, APainter);
+    worker->moveToThread(thread);
+    //connect( worker, &Worker::error, this, &MyClass::errorString);
+    connect( thread, &QThread::started, worker, &Worker::process);
+    connect( worker, &Worker::finished, thread, &QThread::quit);
+    connect( worker, &Worker::finished, worker, &Worker::deleteLater);
+    connect( thread, &QThread::finished, thread, &QThread::deleteLater);
+    connect( worker, &Worker::finished, this, &AnimationBar::finishFrame);
+    playThread->isReadyToDrawFrame = false; // because it is busy now
+    thread->start();
+}
+
 void AnimationBar::finishFrame()
 {
     cv::imshow(winName, *image);
-    APainter->appendFrame(*image, VRec);
-    playThread->isFrameDone = true;
+    APainter->appendFrame(*image, VRec); // APainter will only record the video if it is checked in VideoRecorder. ToDo: change this!
+    playThread->isReadyToDrawFrame = true;
     //qDebug() << "Frame drawn\n";
 }
 

@@ -117,6 +117,8 @@ public slots:
 
     void setRecButtonEnabled(bool value);
 
+    void startDrawingFrame();
+
     void finishFrame();
 private:
     Ui::AnimationBar *ui;

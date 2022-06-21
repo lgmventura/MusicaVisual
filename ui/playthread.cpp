@@ -29,12 +29,14 @@ PlayThread::PlayThread(QObject *parent) :
     QThread(parent)
 {
     this->fps = 30;
+    this->isReadyToDrawFrame = true;
 }
 
 PlayThread::PlayThread(QObject *parent, float fps) :
     QThread(parent)
 {
     this->fps = fps;
+    this->isReadyToDrawFrame = true;
 }
 
 QMutex PlayThread::mutex;
@@ -49,7 +51,7 @@ void PlayThread::run()
         if (this->stop)
             break;
 
-        if (isFrameDone)
+        if (isReadyToDrawFrame)
         {
             emit NumberChanged(i);
 
